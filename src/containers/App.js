@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch ,withRouter} from 'react-router-dom';
 import { ConnectedRouter as Router } from 'connected-react-router';
 import { history } from '../redux'
 import { ToastContainer } from 'react-toastify';
@@ -15,7 +15,7 @@ import Login from '../routes/Login';
 import Header from './Header/Header';
 import System from '../routes/System';
 import HomePage from './HomePage/HomePage.js';
-
+import { default as HomePageHeader } from './HomePage/Header.js';
 import { CustomToastCloseButton } from '../components/CustomToast';
 import ConfirmModal from '../components/ConfirmModal';
 
@@ -40,12 +40,14 @@ class App extends Component {
     }
 
     render() {
+        const { location } = this.props;
         return (
             <Fragment>
                 <Router history={history}>
                     <div className="main-container">
                         <ConfirmModal />
-                        {this.props.isLoggedIn && <Header />}
+                        
+                        {   location.pathname !== path.LOGIN&&( this.props.isLoggedIn ? <Header /> : <HomePageHeader />)}
 
                         <span className="content-container">
                             <Switch>
@@ -81,4 +83,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

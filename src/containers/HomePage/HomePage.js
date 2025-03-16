@@ -6,12 +6,8 @@ import Header from './Header'; // Đảm bảo đường dẫn đúng tới file
 class HomePage extends Component {
 
     render() {
-        const { isLoggedIn } = this.props;
-        let linkToRedirect = isLoggedIn ? '/system/user-manage' : '/home';
-
         return (
-            <div>
-                <Header />  {/* Thanh header với link đến /login */}
+            <div>  
                 <div> Hello word </div>
             </div>
         );
