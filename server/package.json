@@ -1,11 +1,19 @@
 {
-  "name": "BTL-SERVER",
+  "name": "btl-server",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.16.4"
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }
