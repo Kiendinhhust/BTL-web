@@ -1,0 +1,15 @@
+.products-container {
+  margin: 0;
+  padding: 0;
+  max-height: 90vh;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  .product-image {
+    height: 300px;
+  }
+  .product-checkmark {
+    height: 20px;
+  }
+  display: flex;
+  gap: 30px;
+}
