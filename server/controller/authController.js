@@ -16,7 +16,7 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const otp = generateOTP();
         saveTempUser(email, username, hashedPassword, otp);
-        //await sendOTP(email, otp);
+        await sendOTP(email, otp);
 
         res.json({ message: 'OTP đã được gửi đến email của bạn!' });
     } catch (error) {
@@ -128,13 +128,9 @@ const logout = async (req, res) => {
 };
 
 module.exports = {
+    register,
+    verifyOTP,
     login,
     refreshAccessToken,
     logout
-};
-
-
-module.exports = {
-    register,
-    verifyOTP
 };
