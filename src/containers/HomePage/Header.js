@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import "./Header.scss"; // Bạn cần tạo file CSS/SCSS tương ứng
 import cart from "../../assets/images/icons/cart.png";
-const Header = () => {
+const Header = (props) => {
   return (
     <header className="header">
       <nav className="nav-bar">
@@ -11,7 +11,7 @@ const Header = () => {
           <li className="nav-item">
             <Link to="/cart">
               <img className="header-cart" src={cart} alt="Header Cart"></img>
-              <div className="nav-cart-count">{0}</div>
+              <div className="nav-cart-count">{props.cartQuantity}</div>
             </Link>
             <Link to="/login">Login</Link>
           </li>
@@ -24,6 +24,7 @@ const Header = () => {
 const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.admin.isLoggedIn,
+    cartQuantity: state.cart.quantity,
   };
 };
 
