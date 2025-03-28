@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, sequelize } = require('../models');
+const { User, UserInfo , sequelize } = require('../models');
 const { sendOTP } = require('../utils/mailer');
 const { saveTempUser, getTempUser, deleteTempUser, allTempUser } = require('../utils/tempUser');
 
@@ -40,11 +40,15 @@ const verifyOTP = async (req, res) => {
         // Tạo user
         const user = await User.create({
             username: tempUser.username,
-            hash_password: tempUser.password,
-            role: 'user'
+            password_hash: tempUser.password,
+            role: 'buyer'
         });
-
-        console.log('User created:', user.id);
+        await UserInfo.create({
+            user_id: user.user_id,
+            email: email
+        })
+        
+        console.log('User created:', user.user_id);
         deleteTempUser(email);
 
         await transaction.commit();

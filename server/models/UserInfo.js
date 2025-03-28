@@ -28,11 +28,6 @@ const UserInfo = sequelize.define('UserInfo', {
   },
   img: {
     type: DataTypes.STRING(100)
-  },
-  role: {
-    type: DataTypes.ENUM('buyer', 'seller', 'admin'),
-    allowNull: false,
-    defaultValue: 'buyer'
   }
 }, {
   tableName: 'user_info',
