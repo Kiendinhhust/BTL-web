@@ -1,10 +1,10 @@
-const {User, UserInfor} = require('../models')
+const {User, UserInfo} = require('../models')
 
 // Lấy danh sách user + thông tin của họ
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
-            include: [{ model: UserInfor }] // Lấy cả thông tin user
+            include: [{ model: UserInfo }] // Lấy cả thông tin user
         });
 
         res.json(users); // Trả về JSON

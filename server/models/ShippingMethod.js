@@ -1,19 +1,22 @@
 const sequelize = require('../config/db');
 const { DataTypes } = require('sequelize');
 
-const User = sequelize.define('User', {
-  user_id: {
+const ShippingMethod = sequelize.define('ShippingMethod', {
+  shipping_id: {
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  username: {
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    unique: true
-  },
-  password_hash: {
+  name: {
     type: DataTypes.STRING(255),
+    allowNull: false
+  },
+  estimated_time: {
+    type: DataTypes.STRING(100),
+    allowNull: false
+  },
+  cost: {
+    type: DataTypes.DECIMAL(10, 2),
     allowNull: false
   },
   created_at: {
@@ -21,8 +24,8 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'users',
+  tableName: 'shipping_methods',
   timestamps: false
 });
 
-module.exports = User;
+module.exports = ShippingMethod;

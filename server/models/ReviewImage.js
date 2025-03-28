@@ -1,18 +1,21 @@
 const sequelize = require('../config/db');
 const { DataTypes } = require('sequelize');
 
-const User = sequelize.define('User', {
-  user_id: {
+const ReviewImage = sequelize.define('ReviewImage', {
+  image_id: {
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  username: {
-    type: DataTypes.STRING(50),
+  review_id: {
+    type: DataTypes.BIGINT,
     allowNull: false,
-    unique: true
+    references: {
+      model: 'product_reviews',
+      key: 'review_id'
+    }
   },
-  password_hash: {
+  image_url: {
     type: DataTypes.STRING(255),
     allowNull: false
   },
@@ -21,8 +24,8 @@ const User = sequelize.define('User', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'users',
+  tableName: 'review_images',
   timestamps: false
 });
 
-module.exports = User;
+module.exports = ReviewImage;

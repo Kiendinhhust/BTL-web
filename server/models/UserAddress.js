@@ -1,28 +1,30 @@
 const sequelize = require('../config/db');
 const { DataTypes } = require('sequelize');
 
-const User = sequelize.define('User', {
-  user_id: {
+const UserAddress = sequelize.define('UserAddress', {
+  address_id: {
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  username: {
-    type: DataTypes.STRING(50),
+  user_id: {
+    type: DataTypes.BIGINT,
     allowNull: false,
-    unique: true
+    references: {
+      model: 'users',
+      key: 'user_id'
+    }
   },
-  password_hash: {
-    type: DataTypes.STRING(255),
-    allowNull: false
+  address_infor: {
+    type: DataTypes.TEXT
   },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'users',
+  tableName: 'user_addresses',
   timestamps: false
 });
 
-module.exports = User;
+module.exports = UserAddress;
