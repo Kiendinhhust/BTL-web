@@ -78,24 +78,7 @@ class VerifyOTP extends Component {
         }
     }
 
-    handleResendOTP = async () => {
-        this.setState({ 
-            errorMessage: '',
-            successMessage: '' 
-        });
-        
-        try {
-            await handleRegisterApi(null, this.state.email, null, true); // Gửi lại OTP
-            this.setState({
-                successMessage: 'Mã OTP đã được gửi lại!'
-            });
-        } catch (error) {
-            this.setState({
-                errorMessage: 'Không thể gửi lại OTP, vui lòng thử lại sau!'
-            });
-        }
-    }
-
+    
     render() {
         const { otp, email, errorMessage, successMessage } = this.state;
 
@@ -153,14 +136,7 @@ class VerifyOTP extends Component {
                                 <FormattedMessage id="verify-otp.verify" defaultMessage="Xác nhận" />
                             </button>
                         </div>
-                        <div className="col-12 text-center mt-3">
-                            <span className="resend-otp-link" onClick={this.handleResendOTP}>
-                                <FormattedMessage id="verify-otp.not-received" defaultMessage="Không nhận được mã?" /> 
-                                <a href="#">
-                                    <FormattedMessage id="verify-otp.resend" defaultMessage="Gửi lại OTP" />
-                                </a>
-                            </span>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
