@@ -1,10 +1,13 @@
-const {User, UserInfo} = require('../models')
+const { User, UserInfo, UserAddress } = require('../models');
 
-// Lấy danh sách user + thông tin của họ
+// Lấy danh sách user + thông tin của họ + địa chỉ
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
-            include: [{ model: UserInfo }] // Lấy cả thông tin user
+            include: [
+                { model: UserInfo }, // Lấy cả thông tin user
+                { model: UserAddress } // Lấy cả địa chỉ của user
+            ]
         });
 
         res.json(users); // Trả về JSON
@@ -16,4 +19,4 @@ const getAllUsers = async (req, res) => {
 
 module.exports = {
     getAllUsers
-}
+};

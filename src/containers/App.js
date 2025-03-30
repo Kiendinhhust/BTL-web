@@ -14,6 +14,8 @@ import Home from '../routes/Home';
 import Login from '../routes/Login';
 import Header from './Header/Header';
 import System from '../routes/System';
+import Register from '../routes/Register.js';
+import VerifyOTP from '../routes/VerifyOTP.js';
 import HomePage from './HomePage/HomePage.js';
 import { default as HomePageHeader } from './HomePage/Header.js';
 import { CustomToastCloseButton } from '../components/CustomToast';
@@ -50,12 +52,14 @@ class App extends Component {
                         {   location.pathname !== path.LOGIN&&( this.props.isLoggedIn ? <Header /> : <HomePageHeader />)}
 
                         <span className="content-container">
-                            <Switch>
-                                <Route path={path.HOME} exact component={(Home)} />
-                                <Route path={path.HOMEPAGE}  component={(HomePage)} />
-                                <Route path={path.LOGIN} component={userIsNotAuthenticated(Login)} />
-                                <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
-                            </Switch>
+                        <Switch>
+                            <Route path={path.LOGIN} component={userIsNotAuthenticated(Login)} />
+                            <Route path={path.REGISTER} component={userIsNotAuthenticated(Register)} />
+                            <Route path={path.VERIFY_OTP} component={userIsNotAuthenticated(VerifyOTP)} />
+                            <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
+                            <Route path={path.HOME} exact component={HomePage} />
+                            <Route path={path.HOMEPAGE} component={HomePage} />
+                        </Switch>
                         </span>
 
                         <ToastContainer

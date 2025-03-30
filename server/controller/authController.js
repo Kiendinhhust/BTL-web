@@ -31,7 +31,8 @@ const verifyOTP = async (req, res) => {
     try {
         const { otp, email } = req.query;
         const tempUser = getTempUser(email);
-        console.log(allTempUser());
+       
+       
 
         if (!tempUser || tempUser.otp !== otp) {
             return res.status(400).json({ error: 'Mã OTP không hợp lệ!' });
@@ -41,7 +42,7 @@ const verifyOTP = async (req, res) => {
         const user = await User.create({
             username: tempUser.username,
             password_hash: tempUser.password,
-            role: 'buyer'
+            role: 'admin'
         });
         await UserInfo.create({
             user_id: user.user_id,
@@ -76,20 +77,21 @@ const generateRefreshToken = (userId) => {
 // Đăng nhập (Login)
 const login = async (req, res) => {
     try {
+        
         const { username, password } = req.body;
         const user = await User.findOne({ where: { username } });
         if (!user) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.hash_password);
+        const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
-
-        const accessToken = generateAccessToken(user.id);
-        const refreshToken = generateRefreshToken(user.id);
-
+        console.log("check",process.env.JWT_SECRET,user)
+        const accessToken = generateAccessToken(user.user_id);
+        const refreshToken = generateRefreshToken(user.user_id);
+        
         // Lưu Refresh Token trong HttpOnly Cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -97,9 +99,11 @@ const login = async (req, res) => {
             sameSite: 'Strict', // Chống CSRF
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày
         });
-
+        console.log('check',res.cookies);
+        
         res.json({ message: 'Đăng nhập thành công!', accessToken });
     } catch (error) {
+        console.error('Error during login:', error);
         res.status(500).json({ error: 'Lỗi đăng nhập!' });
     }
 };

@@ -2,6 +2,8 @@ export const path = {
     HOME: '/',
     HOMEPAGE: '/home',
     LOGIN: '/login',
+    REGISTER: '/register',
+    VERIFY_OTP: '/verify-otp',
     LOG_OUT: '/logout',
     SYSTEM: '/system'
 };
