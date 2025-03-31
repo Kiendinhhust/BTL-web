@@ -31,7 +31,8 @@ const verifyOTP = async (req, res) => {
     try {
         const { otp, email } = req.query;
         const tempUser = getTempUser(email);
-        console.log(allTempUser());
+       
+       
 
         if (!tempUser || tempUser.otp !== otp) {
             return res.status(400).json({ error: 'Mã OTP không hợp lệ!' });
@@ -41,7 +42,7 @@ const verifyOTP = async (req, res) => {
         const user = await User.create({
             username: tempUser.username,
             password_hash: tempUser.password,
-            role: 'buyer'
+            role: 'admin'
         });
         await UserInfo.create({
             user_id: user.user_id,
@@ -76,6 +77,7 @@ const generateRefreshToken = (userId) => {
 // Đăng nhập (Login)
 const login = async (req, res) => {
     try {
+        
         const { username, password } = req.body;
         const user = await User.findOne({ where: { username } });
         if (!user) {
@@ -99,9 +101,9 @@ const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày
         });
 
-        res.json({ message: 'Đăng nhập thành công!', accessToken, refreshToken});
+        res.json({ message: 'Đăng nhập thành công!', accessToken });
     } catch (error) {
-        console.log(error)
+        console.error('Error during login:', error);
         res.status(500).json({ error: 'Lỗi đăng nhập!' });
     }
 };

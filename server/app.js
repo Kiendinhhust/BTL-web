@@ -1,17 +1,25 @@
 require('dotenv').config()
 
 const express = require('express')
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser')
 const { sequelize } = require('./models')
 const userAPI = require('./routes/userRouter')
 const authAPI = require('./routes/authRouter')
-
+const cors = require('cors');
 const app = express();
+
+app.use(cors({
+    origin: 'http://localhost:3000',  // Cho phép frontend của bạn
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true  // Cho phép gửi cookies
+  }));
 
 // Middleware xử lý form
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
+app.use(cookieParser());
 // Kết nối database
 sequelize.authenticate()
     .then(() => console.log('Kết nối PostgreSQL thành công!'))
