@@ -82,11 +82,12 @@ const login = async (req, res) => {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.hash_password);
+        const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
-
+        console.log(process.env.JWT_REFRESH_SECRET)
+        console.log(user)
         const accessToken = generateAccessToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
 
@@ -98,8 +99,9 @@ const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày
         });
 
-        res.json({ message: 'Đăng nhập thành công!', accessToken });
+        res.json({ message: 'Đăng nhập thành công!', accessToken, refreshToken});
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: 'Lỗi đăng nhập!' });
     }
 };
