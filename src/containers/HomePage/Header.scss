@@ -1,50 +1,95 @@
 .header {
   background-color: #007bff;
-  padding: 10px 20px;
-  border-bottom: 1px solid #0056b3;
-  .header-cart {
-    height: 30px;
-    position: fixed;
-    right: 60px;
-  }
-  .nav-cart-count {
-    width: 15px;
-    height: 15px;
-    position: fixed;
-    display: flex;
-    right: 60px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 11px;
-    font-size: 10px;
-    background: red;
-    color: white;
-  }
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .nav-bar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .nav-list {
   list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .nav-item {
-  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
 }
 
-.nav-item a {
-  text-decoration: none;
-  color: #fff;
+.home-header {
+  width: 35px;
+  height: 35px;
+}
+
+.header-cart {
+  width: 30px;
+  height: 30px;
+  position: fixed; // Fix vị trí giỏ hàng
+  top: 10px; // Điều chỉnh khoảng cách từ trên cùng
+  right: 10px; // Điều chỉnh khoảng cách từ lề phải
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; // Đảm bảo giỏ hàng luôn hiển thị trên các phần tử khác
+}
+
+.nav-cart-count {
+  position: fixed; // Fix số lượng giỏ hàng
+  top: 2px; // Điều chỉnh số lượng giỏ hàng lên phía trên giỏ hàng
+  right: 2px; // Điều chỉnh số lượng giỏ hàng theo chiều ngang
+  background-color: #ff5a5a;
+  color: white;
+  font-size: 12px;
   font-weight: bold;
-  transition: color 0.2s ease-in-out;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001; // Đảm bảo số lượng giỏ hàng hiển thị trên giỏ hàng
 }
 
-.nav-item a:hover {
-  color: #cce5ff;
+.searchImage-header {
+  width: 18px;
+  height: 18px;
+}
+
+.searchBar {
+  flex-grow: 1;
+  max-width: 400px;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.8);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.searchBar:focus {
+  background-color: white;
+}
+
+.nav-list a {
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  transition: color 0.3s;
+}
+
+.nav-list a:hover {
+  color: #ff5a5a;
 }

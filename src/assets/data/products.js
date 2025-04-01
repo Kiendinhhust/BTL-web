@@ -45,8 +45,3 @@ export const products = [
     keywords: ["water bottle", "sports", "outdoor"],
   },
 ];
-
-// Hàm lấy sản phẩm theo ID
-export const getProduct = (productId) => {
-  return products.find((product) => product.id === productId) || null;
-};

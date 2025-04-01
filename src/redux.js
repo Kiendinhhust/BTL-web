@@ -10,6 +10,7 @@ import { persistStore } from "redux-persist";
 import createRootReducer from "./store/reducers/rootReducer";
 import actionTypes from "./store/actions/actionTypes";
 import { composeWithDevTools } from "redux-devtools-extension";
+import { fetchProduct } from "./store/actions/productActions";
 const environment = process.env.NODE_ENV || "development";
 let isDevelopment = environment === "development";
 
@@ -46,5 +47,8 @@ const reduxStore = createStore(
 export const dispatch = reduxStore.dispatch;
 
 export const persistor = persistStore(reduxStore);
+
+//Fetch Product
+reduxStore.dispatch(fetchProduct());
 
 export default reduxStore;

@@ -1,33 +1,33 @@
-import React, { Component, useState } from "react";
-import { Redirect } from "react-router-dom";
+import React from "react";
 import { connect } from "react-redux";
-import Header from "./Header"; // Đảm bảo đường dẫn đúng tới file Header.js
-import { products } from "../../assets/data/products";
 import "./HomePage.scss";
 import Product from "../../components/Product/Product";
-class HomePage extends Component {
-  render() {
-    return (
-      <div className="products-container">
-        {products.map((product) => (
-          <Product
-            key={product.id}
-            id={product.id}
-            rating={product.rating}
-            name={product.name}
-            image={product.image}
-            priceCents={product.priceCents}
-            keywords={product.keywords}
-          />
-        ))}
-      </div>
-    );
-  }
-}
+const HomePage = (props) => {
+  const filteredProducts = props.products.filter((product) =>
+    product.name.toLowerCase().includes(props.search.toLowerCase())
+  );
+  return (
+    <div className="products-container">
+      {filteredProducts.map((product) => (
+        <Product
+          key={product.id}
+          id={product.id}
+          rating={product.rating}
+          name={product.name}
+          image={product.image}
+          priceCents={product.priceCents}
+          keywords={product.keywords}
+        />
+      ))}
+    </div>
+  );
+};
 
 const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.admin.isLoggedIn,
+    search: state.navbarCart.search,
+    products: state.productR.products,
   };
 };
 

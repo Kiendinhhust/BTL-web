@@ -1,5 +1,5 @@
-import actionTypes from './actionTypes';
+import actionTypes from "./actionTypes";
 
 export const addUserSuccess = () => ({
-    type: actionTypes.ADD_USER_SUCCESS
-})
+  type: actionTypes.ADD_USER_SUCCESS,
+});
