@@ -18,3 +18,6 @@ export const updateCart = (payload) => ({
 export const updateQuantity = () => ({
   type: actionTypes.UPDATE_QUANTITY,
 });
+export const fetchCart = () => ({
+  type: actionTypes.FETCH_CART,
+});
