@@ -1,6 +1,6 @@
 .header {
   background-color: #007bff;
-  height: 40px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,19 +36,19 @@
 .header-cart {
   width: 30px;
   height: 30px;
-  position: fixed; // Fix vị trí giỏ hàng
-  top: 10px; // Điều chỉnh khoảng cách từ trên cùng
-  right: 10px; // Điều chỉnh khoảng cách từ lề phải
+  position: fixed;
+  top: 10px;
+  right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; // Đảm bảo giỏ hàng luôn hiển thị trên các phần tử khác
+  z-index: 1000;
 }
 
 .nav-cart-count {
-  position: fixed; // Fix số lượng giỏ hàng
-  top: 2px; // Điều chỉnh số lượng giỏ hàng lên phía trên giỏ hàng
-  right: 2px; // Điều chỉnh số lượng giỏ hàng theo chiều ngang
+  position: fixed;
+  top: 2px;
+  right: 2px;
   background-color: #ff5a5a;
   color: white;
   font-size: 12px;
@@ -59,7 +59,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1001; // Đảm bảo số lượng giỏ hàng hiển thị trên giỏ hàng
+  z-index: 1001;
 }
 
 .searchImage-header {
@@ -69,7 +69,7 @@
 
 .searchBar {
   flex-grow: 1;
-  max-width: 400px;
+  width: 600px;
   height: 30px;
   border: none;
   border-radius: 5px;
@@ -92,4 +92,96 @@
 
 .nav-list a:hover {
   color: #ff5a5a;
+}
+
+@media (max-width: 768px) {
+  .header {
+    height: 45px;
+  }
+
+  .home-header {
+    width: 30px;
+    height: 30px;
+  }
+
+  .header-cart {
+    width: 25px;
+    height: 25px;
+    top: 5px;
+    right: 5px;
+  }
+
+  .nav-cart-count {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+
+  .searchBar {
+    width: 400px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    height: 40px;
+  }
+
+  .home-header {
+    width: 25px;
+    height: 25px;
+  }
+
+  .header-cart {
+    width: 22px;
+    height: 22px;
+    top: 5px;
+    right: 5px;
+  }
+
+  .nav-cart-count {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+
+  .searchBar {
+    width: 300px;
+    height: 26px;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    height: 35px;
+  }
+
+  .home-header {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-cart {
+    width: 20px;
+    height: 20px;
+    top: 5px;
+    right: 5px;
+  }
+
+  .nav-cart-count {
+    width: 12px;
+    height: 12px;
+    font-size: 8px;
+  }
+
+  .searchBar {
+    width: 100px;
+    height: 24px;
+  }
+
+  .nav-list {
+    gap: 10px;
+    font-size: 12px;
+  }
 }

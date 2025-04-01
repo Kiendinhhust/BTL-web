@@ -63,11 +63,13 @@ const Product = (props) => {
           ))}
         </select>
       </div>
-      {props.id === state.checkCheckMark && (
+      {props.id === state.checkCheckMark ? (
         <div className={`added-to-cart js-added-to-cart-${props.id}`}>
           <img className="product-checkmark" src={checkmark} alt="checkmark" />{" "}
           Added
         </div>
+      ) : (
+        <br className={`added-to-cart js-added-to-cart-${props.id}`} />
       )}
       <button
         className={`addToCart-button button-primary js-add-to-cart`}

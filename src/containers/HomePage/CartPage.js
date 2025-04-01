@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import "./CartPage.scss";
 import remove_icon from "../../assets/images/icons/cross_icon.png";
-import { removeFromCart } from "../../store/actions/navbarCartActions";
+import {
+  removeFromCart,
+  updateCart,
+  updateQuantity,
+} from "../../store/actions/navbarCartActions";
+import { dispatch } from "../../redux";
 const CartPage = (props) => {
   const getTotalCartAmount = () => {
     let totalAmount = 0;
@@ -13,6 +18,15 @@ const CartPage = (props) => {
       }
     }
     return totalAmount;
+  };
+  const handleUpdate = (e, id) => {
+    console.log("handleUpdate ID:", id);
+    console.log("handleUpdate Quantity:", e.target.value);
+    props.updateCart({
+      quantity: e.target.value,
+      id,
+    });
+    props.updateQuantity();
   };
   return (
     <div className="cartpage">
@@ -26,25 +40,31 @@ const CartPage = (props) => {
       </div>
       <hr />
       <div>
-        {props.products.map((e, i) => {
-          if (props.carts[e.id] > 0) {
+        {props.products.map((item, i) => {
+          if (props.carts[item.id] > 0) {
             return (
               <React.Fragment key={i}>
                 <div className="cartpage-format cartpage-format-main">
-                  <img className="cartpage-product-icon" src={e.image} alt="" />
-                  <p>{e.name}</p>
-                  <p>${e.priceCents}</p>
-                  <button className="cartpage-quantity">
-                    {props.carts[e.id]}
-                  </button>
-                  <p>${e.priceCents * props.carts[e.id]}</p>
+                  <img
+                    className="cartpage-product-icon"
+                    src={item.image}
+                    alt=""
+                  />
+                  <p>{item.name}</p>
+                  <p>${item.priceCents}</p>
+                  <input
+                    value={props.carts[item.id]}
+                    onChange={(e) => handleUpdate(e, item.id)}
+                    className="cartpage-quantity"
+                  />
+                  <p>${item.priceCents * props.carts[item.id]}</p>
                   <img
                     className="cartpage-remove-icon"
                     src={remove_icon}
                     onClick={() => {
                       props.removeFromCart({
-                        id: e.id,
-                        quantity: props.carts[e.id],
+                        id: item.id,
+                        quantity: props.carts[item.id],
                       });
                     }}
                     alt=""
@@ -94,7 +114,11 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return { removeFromCart: (payload) => dispatch(removeFromCart(payload)) };
+  return {
+    removeFromCart: (payload) => dispatch(removeFromCart(payload)),
+    updateCart: (payload) => dispatch(updateCart(payload)),
+    updateQuantity: () => dispatch(updateQuantity()),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CartPage);
