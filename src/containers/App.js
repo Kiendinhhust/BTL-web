@@ -43,13 +43,16 @@ class App extends Component {
 
     render() {
         const { location } = this.props;
+        const excludedRoutes = ['/login', '/register', '/verify-otp'];
         return (
             <Fragment>
                 <Router history={history}>
                     <div className="main-container">
                         <ConfirmModal />
                         
-                        {   location.pathname !== path.LOGIN&&( this.props.isLoggedIn ? <Header /> : <HomePageHeader />)}
+                        {!excludedRoutes.includes(location.pathname) && 
+                             (this.props.isLoggedIn ? <Header /> : <HomePageHeader />)
+                        }
 
                         <span className="content-container">
                         <Switch>

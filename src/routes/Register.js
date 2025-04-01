@@ -7,7 +7,9 @@ import passIcon from '../../src/assets/images/pass.svg';
 import './Register.scss';
 import { FormattedMessage } from 'react-intl';
 import { handleRegisterApi } from '../services/userService';
-
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 class Register extends Component {
     constructor(props) {
         super(props);
@@ -94,17 +96,55 @@ class Register extends Component {
         }
     
         try {
-            let response = await handleRegisterApi(
+             handleRegisterApi(
                 this.state.username,
                 this.state.email,
                 this.state.password
             );
             
-            // Kiểm tra nếu response có message "OTP đã được gửi đến email của bạn!"
-            if (response && response.data && response.data.message === 'OTP đã được gửi đến email của bạn!') {
-                // Chuyển hướng đến trang VerifyOTP với email trong query string
-                this.props.navigate(`/verify-otp?email=${this.state.email}`);
-            }
+            
+            
+                
+                toast.success(
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <span style={{ fontSize: '24px', marginRight: '10px' }}>📧</span>
+                        <div>
+                            <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>Đã gửi OTP!</div>
+                            <div>OTP đang được gửi đến gmail của bạn, xin đợi một lát</div>
+                        </div>
+                    </div>, 
+                    {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        className: 'navy-toast',
+                        progressClassName: 'navy-toast-progress',
+                        style: {
+                            background: '#001f3f',
+                            color: 'white',
+                            fontSize: '16px',
+                            fontWeight: '500',
+                            padding: '15px 20px',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                            width: '380px',
+                            minHeight: '80px'
+                        },
+                        progressStyle: {
+                            background: 'rgba(255, 255, 255, 0.7)',
+                            height: '4px'
+                        }
+                    }
+                );
+                
+                
+                setTimeout(() => {
+                    this.props.navigate(`/verify-otp?email=${this.state.email}`);
+                }, 5000);
+              
         } catch (error) {
             if (error.response && error.response.data) {
                 this.setState({
@@ -226,9 +266,9 @@ class Register extends Component {
                         <div className="col-12 text-center mt-3">
                             <span className="login-link">
                                 <FormattedMessage id="register.have-account" defaultMessage="Đã có tài khoản?" /> 
-                                <a href="/login">
-                                    <FormattedMessage id="register.login" defaultMessage="Đăng nhập ngay" />
-                                </a>
+                                <Link to="/login" className="login-link">
+                                     Đăng nhập ngay
+                                </Link>
                             </span>
                         </div>
                     </div>

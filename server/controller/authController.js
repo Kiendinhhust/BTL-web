@@ -79,7 +79,8 @@ const login = async (req, res) => {
     try {
         
         const { username, password } = req.body;
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { username }, include: [{ model: UserInfo }]});
+        
         if (!user) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
@@ -101,7 +102,14 @@ const login = async (req, res) => {
         });
         console.log('check',res.cookies);
         
-        res.json({ message: 'Đăng nhập thành công!', accessToken });
+        res.json({ 
+            message: 'Đăng nhập thành công!', 
+            accessToken,
+            refreshToken,  
+            username: user.username,
+            email: user.UserInfo ? user.UserInfo.email : null,
+            role: user.role
+          });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Lỗi đăng nhập!' });

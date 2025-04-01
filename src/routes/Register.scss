@@ -125,3 +125,19 @@
         font-size: 1.8rem;
     }
 }
+.navy-toast {
+      background-color: #001f3f !important; /* Màu xanh navy */
+      color: white !important;
+      font-size: 16px !important;
+      font-weight: 500 !important;
+      padding: 15px 20px !important;
+      border-radius: 8px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      width: 380px !important;
+      min-height: 80px !important;
+    }
+    
+    .navy-toast-progress {
+      background: rgba(255, 255, 255, 0.7) !important;
+      height: 4px !important;
+    }
