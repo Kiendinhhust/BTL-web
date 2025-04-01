@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import checkmark from "../../assets/images/icons/checkmark.png";
 import { connect } from "react-redux";
-import { addToCart } from "../../store/actions/cartActions";
+import { addToCart } from "../../store/actions/navbarCartActions";
+import "./Product.scss";
+
 const Product = (props) => {
   const [state, setState] = useState({
     checkCheckMark: false,
     timeOut: null,
   });
   const [cartQuantity, setCartQuantity] = useState(1);
+
   const handleAddToCart = (id) => {
     setState((prevState) => {
       prevState.timeOut && clearTimeout(prevState.timeOut);
@@ -19,9 +22,15 @@ const Product = (props) => {
         timeOut,
       };
     });
-    props.addToCart(cartQuantity);
-    console.log(props.cartQuantity);
+    props.addToCart({ quantity: cartQuantity, id });
   };
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(state.timeOut);
+    };
+  }, [state.timeOut]);
+
   return (
     <div className="props-container">
       <div className="product-image-container">
@@ -39,16 +48,16 @@ const Product = (props) => {
         </div>
       </div>
       <div className="product-price">
-        {(props.priceCents / 1000).toFixed(3)} VNĐ
+        {props.priceCents.toLocaleString("vi-VN")} VNĐ
       </div>
       <div className="product-quantity-container">
         <select
           value={cartQuantity}
           onChange={(e) => setCartQuantity(e.target.value)}
-          className={`js-quantity-selector-${props.id}`}
+          className={`select-container js-quantity-selector-${props.id}`}
         >
           {[...Array(10).keys()].map((i) => (
-            <option key={i} value={i + 1} selected={i === 0}>
+            <option key={i} value={i + 1}>
               {i + 1}
             </option>
           ))}
@@ -61,7 +70,7 @@ const Product = (props) => {
         </div>
       )}
       <button
-        className={`add-to-cart-button button-primary js-add-to-cart `}
+        className={`addToCart-button button-primary js-add-to-cart`}
         data-products-id={props.id}
         onClick={() => handleAddToCart(props.id)}
       >
@@ -73,12 +82,14 @@ const Product = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    cartQuantity: state.cart.quantity,
+    cartQuantity: state.navbarCart.quantity,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return { addToCart: (quantity) => dispatch(addToCart(quantity)) };
+  return {
+    addToCart: (payload) => dispatch(addToCart(payload)),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Product);
