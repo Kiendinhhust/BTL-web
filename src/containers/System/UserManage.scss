@@ -1,0 +1,106 @@
+/* UserManage.scss */
+.users-container {
+    margin: 0 15px;
+    
+    .title {
+      text-align: center;
+      margin: 10px 0;
+      text-transform: uppercase;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .btn-edit {
+      width: 50px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: orange;
+      
+      &:hover {
+        background-color: transparent !important;
+        color: orange !important;
+      }
+    }
+    
+    .btn-delete {
+      width: 50px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: rgb(235, 15, 15);
+      
+      &:hover {
+        background-color: transparent !important;
+        color: rgb(235, 15, 15) !important;
+      }
+    }
+    
+    #customers {
+      font-family: Arial, Helvetica, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+      
+      td, th {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+      
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      
+      tr:hover {
+        background-color: #ddd;
+      }
+      
+      th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #04AA6D;
+        color: white;
+      }
+    }
+  }
+  
+  .modal-user-container {
+    .modal-content {
+      .modal-header {
+        button {
+          background-color: transparent !important;
+          color: white;
+          border: none;
+          font-size: 27px;
+        }
+      }
+    }
+    
+    .modal-user-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      
+      .input-container {
+        display: flex;
+        flex-direction: column;
+        width: 48%;
+        
+        &:last-child {
+          width: 100%;
+        }
+        
+        input, select {
+          border-radius: 3px;
+          border: 1px solid grey;
+          height: 30px;
+          padding: 0 10px;
+        }
+        
+        .required {
+          color: red;
+        }
+      }
+    }
+  }
+  
