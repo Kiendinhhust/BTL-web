@@ -59,7 +59,7 @@ class UserManage extends Component {
   render() {
     let { users } = this.props;
     let { isOpenModalUser, isOpenModalEditUser, userEdit } = this.state;
-    
+    console.log('check',users)
     return (
       <div className="users-container">
         <div className="title">
@@ -92,10 +92,11 @@ class UserManage extends Component {
               {users && users.length > 0 && 
                 users.map((item, index) => {
                   // Lấy thông tin từ các đối tượng lồng nhau
-                  const userInfo = item.UserInfo && item.UserInfo.length > 0 ? item.UserInfo[0] : {};
+                  const userInfo = item.UserInfo ? item.UserInfo : {};
                   const address = item.UserAddresses && item.UserAddresses.length > 0 
                     ? item.UserAddresses[0].address_infor 
                     : '';
+              
                   
                   return (
                     <tr key={index}>

@@ -1,106 +1,256 @@
-/* UserManage.scss */
+/* UserManage.scss - Modern Version */
+
+// Variables
+$navy-dark: #1a3a6c;
+$navy-medium: #2c4272;
+$navy-light: #3a5998;
+$white: #ffffff;
+$light-gray: #f7f9fc;
+$medium-gray: #e4e8f0;
+$dark-gray: #8492a6;
+$orange: #ff9800;
+$red: #e53935;
+$transition: all 0.3s ease;
+$border-radius: 8px;
+
+// Mixins
+@mixin navy-gradient {
+  background: linear-gradient(135deg, $navy-dark, $navy-medium, $navy-light);
+  background-size: 200% 200%;
+  animation: gradientMove 8s ease infinite;
+}
+
+@mixin star-effect {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 50%, transparent 100%),
+      radial-gradient(1.2px 1.2px at 70% 30%, rgba(255,255,255,0.5) 50%, transparent 100%),
+      radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.6) 50%, transparent 100%),
+      radial-gradient(1.3px 1.3px at 80% 60%, rgba(255,255,255,0.5) 50%, transparent 100%),
+      radial-gradient(1.1px 1.1px at 50% 40%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.3;
+    animation: twinkle 5s infinite alternate;
+  }
+}
+
+@mixin button-style {
+  padding: 8px 14px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: $border-radius;
+  transition: $transition;
+}
+
 .users-container {
-    margin: 0 15px;
+  margin: 0 20px;
+  background-color: $white;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  position: relative;
+  overflow: hidden;
+  
+  // Navy gradient strip at top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    @include navy-gradient;
+    @include star-effect;
+  }
+  
+  .title {
+    text-align: center;
+    margin: 5px 0 25px;
+    text-transform: uppercase;
+    font-size: 22px;
+    font-weight: 600;
+    color: $navy-dark;
+    position: relative;
+    padding-bottom: 12px;
     
-    .title {
-      text-align: center;
-      margin: 10px 0;
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      width: 70px;
+      @include navy-gradient;
+      border-radius: 3px;
+    }
+  }
+  
+  .btn-edit {
+    @include button-style;
+    background-color: rgba($orange, 0.1);
+    color: $orange;
+    
+    &:hover {
+      background-color: rgba($orange, 0.2) !important;
+      color: $orange !important;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 8px rgba($orange, 0.3);
+    }
+  }
+  
+  .btn-delete {
+    @include button-style;
+    background-color: rgba($red, 0.1);
+    color: $red;
+    
+    &:hover {
+      background-color: rgba($red, 0.2) !important;
+      color: $red !important;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 8px rgba($red, 0.3);
+    }
+  }
+  
+  #customers {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    border-radius: $border-radius;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    
+    td, th {
+      padding: 14px 16px;
+      text-align: left;
+    }
+    
+    th {
+      @include navy-gradient;
+      @include star-effect;
+      color: $white;
+      font-weight: 500;
       text-transform: uppercase;
-      font-size: 20px;
-      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.5px;
     }
     
-    .btn-edit {
-      width: 50px;
-      border: none;
-      outline: none;
-      background: transparent;
-      color: orange;
+    tr {
+      transition: $transition;
+      
+      td {
+        border-bottom: 1px solid $medium-gray;
+      }
+      
+      &:nth-child(even) {
+        background-color: $light-gray;
+      }
       
       &:hover {
-        background-color: transparent !important;
-        color: orange !important;
-      }
-    }
-    
-    .btn-delete {
-      width: 50px;
-      border: none;
-      outline: none;
-      background: transparent;
-      color: rgb(235, 15, 15);
-      
-      &:hover {
-        background-color: transparent !important;
-        color: rgb(235, 15, 15) !important;
-      }
-    }
-    
-    #customers {
-      font-family: Arial, Helvetica, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
-      
-      td, th {
-        border: 1px solid #ddd;
-        padding: 8px;
+        background-color: rgba($navy-light, 0.05);
       }
       
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-      
-      tr:hover {
-        background-color: #ddd;
-      }
-      
-      th {
-        padding-top: 12px;
-        padding-bottom: 12px;
-        text-align: left;
-        background-color: #04AA6D;
-        color: white;
+      &:last-child td {
+        border-bottom: none;
       }
     }
   }
-  
-  .modal-user-container {
-    .modal-content {
-      .modal-header {
-        button {
-          background-color: transparent !important;
-          color: white;
-          border: none;
-          font-size: 27px;
-        }
-      }
-    }
+}
+
+.modal-user-container {
+  .modal-content {
+    border-radius: $border-radius;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     
-    .modal-user-body {
+    .modal-header {
+      @include navy-gradient;
+      @include star-effect;
+      color: $white;
+      padding: 16px 20px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
+      align-items: center;
+      justify-content: space-between;
       
-      .input-container {
-        display: flex;
-        flex-direction: column;
-        width: 48%;
+      button {
+        background-color: transparent !important;
+        color: $white;
+        border: none;
+        font-size: 24px;
+        opacity: 0.8;
+        transition: $transition;
         
-        &:last-child {
-          width: 100%;
-        }
-        
-        input, select {
-          border-radius: 3px;
-          border: 1px solid grey;
-          height: 30px;
-          padding: 0 10px;
-        }
-        
-        .required {
-          color: red;
+        &:hover {
+          opacity: 1;
+          transform: rotate(90deg);
         }
       }
     }
   }
   
+  .modal-user-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    
+    .input-container {
+      display: flex;
+      flex-direction: column;
+      width: calc(50% - 10px);
+      
+      &:last-child {
+        width: 100%;
+      }
+      
+      label {
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: $navy-dark;
+        font-size: 14px;
+      }
+      
+      input, select {
+        border-radius: $border-radius;
+        border: 1px solid $medium-gray;
+        height: 42px;
+        padding: 0 15px;
+        transition: $transition;
+        
+        &:focus {
+          border-color: $navy-medium;
+          box-shadow: 0 0 0 3px rgba($navy-light, 0.15);
+          outline: none;
+        }
+      }
+      
+      .required {
+        color: $red;
+        margin-left: 3px;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes twinkle {
+  0% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+  100% { opacity: 0.15; }
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

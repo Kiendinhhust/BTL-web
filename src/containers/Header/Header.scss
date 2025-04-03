@@ -4,20 +4,24 @@
     z-index: 99;
     display: flex;
     justify-content: space-between;
-    background-color: $colormain;
-    color: $common-text-color;
-    height: 40px;
+    background-color: #1a3a6c; ;
+    color:#ffffff;;
+    height: 50px;
     position: relative;
+   
     .btn-logout {
-        color: $common-text-color;
-        line-height: 40px;
-        height: 40px;
+        color: #ffffff;
+        background-color: #2d5296;
+        line-height: 50px;
+        height: 50px;
         padding: 0 10px;
         &:hover {
             background-color: darken($colormain, 5);
+            transition: background-color 0.3s ease;
         }
         i {
             font-size: $base-size + 1px;
         }
     }
 }
+

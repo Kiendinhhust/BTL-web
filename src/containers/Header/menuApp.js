@@ -9,7 +9,7 @@ export const adminMenu = [
                     { name: 'menu.system.system-administrator.register-package-group-or-account', link: '/system/register-package-group-or-account' },
                 ]
             },
-            // { name: 'menu.system.system-parameter.header', link: '/system/system-parameter' },
+            
         ]
     },
 ];

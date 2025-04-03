@@ -4,93 +4,172 @@
     display: flex;
     margin: 0;
     padding: 0;
+    background: #1a3a6c; // Màu xanh navy
+    
     &.list-unstyled,
     .list-unstyled {
         list-style-type: none;
     }
+    
+    // Hiệu ứng ánh sao nhẹ nhàng
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 50%, transparent 100%),
+            radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.3) 50%, transparent 100%),
+            radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.4) 50%, transparent 100%);
+        pointer-events: none;
+        opacity: 0.2;
+    }
+    
     .menu-group {
+        position: relative;
+        
         &:hover {
             cursor: pointer;
-            background-color: darken($colormain, 5);
+            background-color: #2d5296; // Màu xanh navy đậm hơn khi hover
         }
+        
         .menu-group-name {
-            line-height: 40px;
-            padding: 0 15px;
-            border-right: 1px solid $border;
+            line-height: 45px;
+            padding: 0 18px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            font-weight: 500;
+            
             &:first-child {
-                border-left: 1px solid $border;
+                border-left: 1px solid rgba(255,255,255,0.1);
             }
         }
+        
         .menu-list {
             display: none;
-            background-color: $bg-menu-color;
-            box-shadow: 2px 2px 4px 0 $box-shadow-color;
-            -webkit-box-shadow: 2px 2px 4px 0 $box-shadow-color;
-            color: $text-in-light;
+            background-color: white;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+            border-radius: 6px;
+            color: #333;
             position: absolute;
-            padding: 0;
+            padding: 5px 0;
+            z-index: 100;
+            margin-top: 3px;
+            
+            // Hiển thị menu khi có class show (thay vì hover)
+            &.show {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
+            
             .menu {
                 width: 205px;
                 padding: 0 15px;
-                height: 35px;
-                line-height: 35px;
+                height: 38px;
+                line-height: 38px;
                 text-transform: none;
+                position: relative;
+                
                 .menu-link {
                     text-decoration: none;
-                    color: $text-in-light;
+                    color: #333;
+                    cursor: pointer;
+                    display: block;
                 }
+                
                 .sub-menu-list {
                     display: none;
-                    background-color: $bg-menu-color;
-                    box-shadow: 2px 2px 4px 0 $box-shadow-color;
-                    -webkit-box-shadow: 2px 2px 4px 0 $box-shadow-color;
+                    background-color: white;
+                    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+                    border-radius: 6px;
                     position: absolute;
                     top: 0;
                     left: 205px;
-                    padding: 0;
+                    padding: 5px 0;
+                    
+                    // Hiển thị submenu khi có class show (thay vì hover)
+                    &.show {
+                        display: block;
+                        animation: fadeIn 0.3s ease;
+                    }
+                    
                     .sub-menu {
                         padding: 0 15px;
-                        height: 35px;
-                        line-height: 35px;
+                        height: 38px;
+                        line-height: 38px;
                         white-space: nowrap;
+                        
                         &:hover {
-                            background-color: darken($bg-menu-color, 5);
+                            background-color: rgba(26,58,108,0.05);
                         }
+                        
                         .sub-menu-link {
                             text-decoration: none;
-                            color: $text-in-light;
+                            color: #333;
                         }
+                        
                         a {
                             display: block;
                         }
+                        
                         &.active a {
                             font-weight: 500;
-                            color: $colormain;
+                            color: #1a3a6c;
+                            
+                            // Thêm biểu tượng sao cho active items
+                            &::before {
+                                content: '★';
+                                margin-right: 6px;
+                                font-size: 10px;
+                                color: #1a3a6c;
+                            }
                         }
                     }
                 }
+                
                 &.active span {
                     font-weight: 500;
-                    color: $colormain;
-                }
-                &:hover {
-                    background-color: darken($bg-menu-color, 3);
-                    .sub-menu-list {
-                        display: block;
+                    color: #1a3a6c;
+                    
+                    // Thêm biểu tượng sao cho active items
+                    &::before {
+                        content: '★';
+                        margin-right: 6px;
+                        font-size: 10px;
+                        color: #1a3a6c;
                     }
                 }
+                
+                &:hover {
+                    background-color: rgba(26,58,108,0.05);
+                }
+                
                 .icon-right {
                     display: block;
                     position: absolute;
-                    top: 0;
+                    top: 50%;
                     right: 10px;
+                    transform: translateY(-50%);
+                    transition: transform 0.2s ease;
+                }
+                
+                &:hover .icon-right {
+                    transform: translateY(-50%) translateX(3px);
                 }
             }
         }
-        &:hover {
-            .menu-list {
-                display: block;
-            }
-        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
