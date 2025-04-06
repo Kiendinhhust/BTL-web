@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import { updateUser } from '../../store/actions/userActions';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
+import CommonUtils from '../../utils/CommonUtils';
 
 class ModalEditUser extends Component {
   constructor(props) {
@@ -14,7 +17,10 @@ class ModalEditUser extends Component {
       phone_number: '',
       role: '',
       address_infor: '',
-      errorMessage: ''
+      errorMessage: '',
+      previewImgURL: '',
+      isOpen: false,
+      avatar: ''
     };
   }
 
@@ -22,13 +28,17 @@ class ModalEditUser extends Component {
     let { currentUser } = this.props;
     if (currentUser) {
       // Lấy thông tin từ các đối tượng lồng nhau
-      const userInfo = currentUser.UserInfo && currentUser.UserInfo.length > 0 
-        ? currentUser.UserInfo[0] 
-        : {};
+      const userInfo = currentUser.UserInfo || {};
       
       const address = currentUser.UserAddresses && currentUser.UserAddresses.length > 0 
         ? currentUser.UserAddresses[0].address_infor 
         : '';
+      
+      // Nếu có ảnh, tạo URL để hiển thị
+      let imageUrl = '';
+      if (userInfo.img) {
+        imageUrl = new Buffer(userInfo.img, 'base64').toString('binary');
+      }
       
       this.setState({
         userId: currentUser.user_id,
@@ -36,7 +46,9 @@ class ModalEditUser extends Component {
         email: userInfo.email || '',
         phone_number: userInfo.phone_number || '',
         role: currentUser.role,
-        address_infor: address
+        address_infor: address,
+        previewImgURL: imageUrl,
+        avatar: userInfo.img || ''
       });
     }
   }
@@ -49,12 +61,40 @@ class ModalEditUser extends Component {
     });
   }
 
+  handleOnChangeImage = async (event) => {
+    let data = event.target.files;
+    let file = data[0];
+    if (file) {
+      let objectUrl = URL.createObjectURL(file);
+      this.setState({
+        previewImgURL: objectUrl
+      });
+
+      try {
+        let base64String = await CommonUtils.fileToBase64(file);
+        this.setState({
+          avatar: base64String
+        });
+      } catch (error) {
+        console.error("Error converting file to base64:", error);
+      }
+    }
+  }
+
+  openPreviewImage = () => {
+    if (!this.state.previewImgURL) return;
+    this.setState({
+      isOpen: true
+    });
+  }
+
   handleSaveUser = async () => {
     // Tạo đối tượng userData chỉ với các trường cần cập nhật
     let userData = {
       phone_number: this.state.phone_number,
       role: this.state.role,
-      address_infor: this.state.address_infor
+      address_infor: this.state.address_infor,
+      img: this.state.avatar
     };
     
     // Chỉ thêm password nếu người dùng đã nhập
@@ -96,6 +136,25 @@ class ModalEditUser extends Component {
                 value={this.state.username}
                 disabled
               />
+            </div>
+            
+            <div className="input-container">
+              <label>Ảnh đại diện</label>
+              <div className="preview-img-container">
+                <input 
+                  id="previewImg" 
+                  type="file" 
+                  hidden 
+                  onChange={(event) => this.handleOnChangeImage(event)}
+                />
+                <label className="label-upload" htmlFor="previewImg">Tải ảnh <i className="fas fa-upload"></i></label>
+                <div 
+                  className="preview-image" 
+                  style={{ backgroundImage: `url(${this.state.previewImgURL})` }}
+                  onClick={() => this.openPreviewImage()}
+                >
+                </div>
+              </div>
             </div>
             
             <div className="input-container">
@@ -164,6 +223,21 @@ class ModalEditUser extends Component {
             Đóng
           </Button>
         </ModalFooter>
+        
+        {this.state.isOpen && (
+          <Lightbox
+            mainSrc={this.state.previewImgURL}
+            onCloseRequest={() => this.setState({ isOpen: false })}
+            reactModalStyle={{
+              overlay: {
+                zIndex: 1050
+              },
+              content: {
+                zIndex: 1060
+              }
+            }}
+          />
+        )}
       </Modal>
     );
   }

@@ -5,6 +5,9 @@ import { fetchAllUsersStart, deleteUser } from '../../store/actions/userActions'
 import './UserManage.scss';
 import ModalUser from './ModalUser.js';
 import ModalEditUser from './ModalEditUser.js';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
+import CommonUtils from '../../utils/CommonUtils';
 
 class UserManage extends Component {
   constructor(props) {
@@ -12,7 +15,10 @@ class UserManage extends Component {
     this.state = {
       isOpenModalUser: false,
       isOpenModalEditUser: false,
-      userEdit: {}
+      userEdit: {},
+      isOpenLightbox: false,
+      photoIndex: 0,
+      currentImageUrl: ''
     };
   }
 
@@ -56,30 +62,40 @@ class UserManage extends Component {
     }
   }
 
+  openLightbox = (imageUrl) => {
+    if (imageUrl && imageUrl !== 'https://via.placeholder.com/40?text=User') {
+      this.setState({
+        isOpenLightbox: true,
+        currentImageUrl: imageUrl
+      });
+    }
+  }
+
   render() {
     let { users } = this.props;
-    let { isOpenModalUser, isOpenModalEditUser, userEdit } = this.state;
+    let { isOpenModalUser, isOpenModalEditUser, userEdit, isOpenLightbox, currentImageUrl } = this.state;
     console.log('check',users)
     return (
       <div className="users-container">
         <div className="title">
           <FormattedMessage id="manage-user.title" defaultMessage="Quản lý người dùng" />
         </div>
-        
+
         <div className="mx-1">
-          <button 
+          <button
             className="btn btn-primary px-3"
             onClick={this.handleAddNewUser}
           >
             <i className="fas fa-plus"></i> Thêm người dùng
           </button>
         </div>
-        
+
         <div className="users-table mt-3 mx-1">
           <table id="customers">
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Ảnh</th>
                 <th>Username</th>
                 <th>Email</th>
                 <th>Số điện thoại</th>
@@ -89,32 +105,59 @@ class UserManage extends Component {
               </tr>
             </thead>
             <tbody>
-              {users && users.length > 0 && 
+              {users && users.length > 0 &&
                 users.map((item, index) => {
                   // Lấy thông tin từ các đối tượng lồng nhau
                   const userInfo = item.UserInfo ? item.UserInfo : {};
-                  const address = item.UserAddresses && item.UserAddresses.length > 0 
-                    ? item.UserAddresses[0].address_infor 
+                  const address = item.UserAddresses && item.UserAddresses.length > 0
+                    ? item.UserAddresses[0].address_infor
                     : '';
-              
-                  
+
+                  // Tạo URL ảnh từ base64 nếu có
+                  let imageUrl = 'https://avatar.iran.liara.run/public';
+                  try {
+                    if (userInfo && userInfo.img ) {
+                     
+                      imageUrl = new Buffer(userInfo.img, 'base64').toString('binary');
+                    }else {
+                      console.error('Invalid image data:', userInfo.img);
+                    }
+                  } catch (error) {
+                    console.error('Lỗi xử lý ảnh:', error);
+                  }
+
                   return (
                     <tr key={index}>
                       <td>{item.user_id}</td>
+                      <td>
+                        <div
+                          className="user-image"
+                          style={{
+                            backgroundImage: `url(${imageUrl})`,
+                            width: '40px',
+                            height: '40px',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            borderRadius: '50%',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => this.openLightbox(imageUrl)}
+                        ></div>
+                      </td>
                       <td>{item.username}</td>
                       <td>{userInfo.email}</td>
                       <td>{userInfo.phone_number}</td>
                       <td>{item.role}</td>
                       <td>{address}</td>
                       <td>
-                        <button 
-                          className="btn-edit" 
+                        <button
+                          className="btn-edit"
                           onClick={() => this.handleEditUser(item)}
                         >
                           <i className="fas fa-pencil-alt"></i>
                         </button>
-                        <button 
-                          className="btn-delete" 
+                        <button
+                          className="btn-delete"
                           onClick={() => this.handleDeleteUser(item)}
                         >
                           <i className="fas fa-trash"></i>
@@ -127,19 +170,34 @@ class UserManage extends Component {
             </tbody>
           </table>
         </div>
-        
-        <ModalUser 
+
+        <ModalUser
           isOpen={isOpenModalUser}
           toggleFromParent={this.toggleUserModal}
         />
-        
-        {isOpenModalEditUser && 
-          <ModalEditUser 
+
+        {isOpenModalEditUser &&
+          <ModalEditUser
             isOpen={isOpenModalEditUser}
             toggleFromParent={this.toggleUserEditModal}
             currentUser={userEdit}
           />
         }
+
+        {isOpenLightbox && (
+          <Lightbox
+            mainSrc={currentImageUrl}
+            onCloseRequest={() => this.setState({ isOpenLightbox: false })}
+            reactModalStyle={{
+              overlay: {
+                zIndex: 1050
+              },
+              content: {
+                zIndex: 1060
+              }
+            }}
+          />
+        )}
       </div>
     );
   }

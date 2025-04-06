@@ -27,7 +27,7 @@ const UserInfo = sequelize.define('UserInfo', {
     }
   },
   img: {
-    type: DataTypes.STRING(100)
+    type: DataTypes.BLOB('long'),
   },
 }, {
   tableName: 'user_info',

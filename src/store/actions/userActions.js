@@ -1,6 +1,11 @@
 import actionTypes from './actionTypes';
 import axios from 'axios';
-
+import {
+  fetchAllUsersApi,
+  createUserApi,
+  updateUserApi,
+  deleteUserApi
+} from '../../services/adminService';
 const API_URL = 'http://localhost:3434';
 
 // Fetch all users
@@ -16,7 +21,7 @@ export const fetchAllUsersFailed = () => ({
 export const fetchAllUsersStart = () => {
   return async (dispatch) => {
     try {
-      const res = await axios.get(`${API_URL}/api/user`);
+      const res = await fetchAllUsersApi();
       if (res && res.data) {
         dispatch(fetchAllUsersSuccess(res.data));
       } else {
@@ -41,7 +46,7 @@ export const createUserFailed = () => ({
 export const createUser = (userData) => {
   return async (dispatch) => {
     try {
-      const res = await axios.post(`${API_URL}/api/user`, userData);
+      const res = await createUserApi(userData);
       if (res && res.data) {
         dispatch(createUserSuccess());
         dispatch(fetchAllUsersStart());
@@ -58,7 +63,8 @@ export const createUser = (userData) => {
       console.error('Error creating user:', e);
       return {
         success: false,
-        message: e.response?.data?.error || 'Tạo người dùng thất bại!'
+        message: e.response?.data?.error || 'Tạo người dùng thất bại!',
+        errorMessage: e.response?.data?.errorMessage || e.response?.data?.error || 'Tạo người dùng thất bại!'
       };
     }
   };
@@ -76,7 +82,7 @@ export const updateUserFailed = () => ({
 export const updateUser = (userId, userData) => {
   return async (dispatch) => {
     try {
-      const res = await axios.put(`${API_URL}/api/user/${userId}`, userData);
+      const res = await updateUserApi(userId, userData);
       if (res && res.data) {
         dispatch(updateUserSuccess());
         dispatch(fetchAllUsersStart());
@@ -93,7 +99,8 @@ export const updateUser = (userId, userData) => {
       console.error('Error updating user:', e);
       return {
         success: false,
-        message: e.response?.data?.error || 'Cập nhật người dùng thất bại!'
+        message: e.response?.data?.error || 'Cập nhật người dùng thất bại!',
+        errorMessage: e.response?.data?.errorMessage || e.response?.data?.error || 'Cập nhật người dùng thất bại!'
       };
     }
   };
@@ -111,7 +118,7 @@ export const deleteUserFailed = () => ({
 export const deleteUser = (userId) => {
   return async (dispatch) => {
     try {
-      const res = await axios.delete(`${API_URL}/api/user/${userId}`);
+      const res = await deleteUserApi(userId);
       if (res && res.data) {
         dispatch(deleteUserSuccess());
         dispatch(fetchAllUsersStart());

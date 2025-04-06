@@ -18,8 +18,10 @@ app.use(cors({
 
 // Middleware xử lý form
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '50mb' }))
 app.use(cookieParser());
+
+
 // Kết nối database
 sequelize.authenticate()
     .then(() => console.log('Kết nối PostgreSQL thành công!'))

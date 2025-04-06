@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import { createUser } from '../../store/actions/userActions';
+import Lightbox from 'react-image-lightbox';
+import 'react-image-lightbox/style.css';
 
+import CommonUtils from '../../utils/CommonUtils';
 class ModalUser extends Component {
   constructor(props) {
     super(props);
@@ -13,7 +16,10 @@ class ModalUser extends Component {
       phone_number: '',
       role: 'buyer',
       address_infor: '',
-      errorMessage: ''
+      errorMessage: '',
+      previewImgURL: '',
+      isOpen: false,
+      avatar: ''
     };
   }
 
@@ -50,12 +56,13 @@ class ModalUser extends Component {
         email: this.state.email,
         phone_number: this.state.phone_number,
         role: this.state.role,
-        address_infor: this.state.address_infor
+        address_infor: this.state.address_infor,
+        img: this.state.avatar
       };
-      
+
       let res = await this.props.createUser(userData);
-      
-      if (res && res.message) {
+
+      if (res && res.success !== false) {
         // Reset state
         this.setState({
           username: '',
@@ -64,24 +71,55 @@ class ModalUser extends Component {
           phone_number: '',
           role: 'buyer',
           address_infor: '',
-          errorMessage: ''
+          errorMessage: '',
+          previewImgURL: '',
+          avatar: ''
         });
-        
+
         this.props.toggleFromParent();
         alert('Thêm người dùng thành công!');
       } else {
+        // Hiển thị thông báo lỗi tương ứng
         this.setState({
-          errorMessage: res && res.message ? res.message : 'Có lỗi xảy ra!'
+          errorMessage: res && res.errorMessage ? res.errorMessage : 'Có lỗi xảy ra!'
         });
       }
     }
   }
 
+  handleOnChangeImage = async (event) => {
+    let data = event.target.files;
+    let file = data[0];
+    if (file) {
+      let objectUrl = URL.createObjectURL(file);
+      this.setState({
+        previewImgURL: objectUrl
+      });
+
+
+      try {
+        let base64String = await CommonUtils.fileToBase64(file);
+        this.setState({
+          avatar: base64String
+        });
+      } catch (error) {
+        console.error("Error converting file to base64:", error);
+      }
+    }
+  }
+
+  openPreviewImage = () => {
+    if (!this.state.previewImgURL) return;
+    this.setState({
+      isOpen: true
+    });
+  }
+
   render() {
     return (
-      <Modal 
-        isOpen={this.props.isOpen} 
-        toggle={this.props.toggleFromParent} 
+      <Modal
+        isOpen={this.props.isOpen}
+        toggle={this.props.toggleFromParent}
         className={'modal-user-container'}
         size="lg"
       >
@@ -91,43 +129,62 @@ class ModalUser extends Component {
             {this.state.errorMessage && (
               <div className="alert alert-danger">{this.state.errorMessage}</div>
             )}
-            
+
             <div className="input-container">
               <label>Username <span className="required">*</span></label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 onChange={(event) => { this.handleOnChangeInput(event, "username") }}
                 value={this.state.username}
               />
             </div>
-            
+
+            <div className="input-container">
+              <label>Ảnh đại diện</label>
+              <div className="preview-img-container">
+                <input
+                  id="previewImg"
+                  type="file"
+                  hidden
+                  onChange={(event) => this.handleOnChangeImage(event)}
+                />
+                <label className="label-upload" htmlFor="previewImg">Tải ảnh <i className="fas fa-upload"></i></label>
+                <div
+                  className="preview-image"
+                  style={{ backgroundImage: `url(${this.state.previewImgURL})` }}
+                  onClick={() => this.openPreviewImage()}
+                >
+                </div>
+              </div>
+            </div>
+
             <div className="input-container">
               <label>Password <span className="required">*</span></label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 onChange={(event) => { this.handleOnChangeInput(event, "password") }}
                 value={this.state.password}
               />
             </div>
-            
+
             <div className="input-container">
               <label>Email <span className="required">*</span></label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 onChange={(event) => { this.handleOnChangeInput(event, "email") }}
                 value={this.state.email}
               />
             </div>
-            
+
             <div className="input-container">
               <label>Số điện thoại</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 onChange={(event) => { this.handleOnChangeInput(event, "phone_number") }}
                 value={this.state.phone_number}
               />
             </div>
-            
+
             <div className="input-container">
               <label>Vai trò</label>
               <select
@@ -139,11 +196,11 @@ class ModalUser extends Component {
                 <option value="admin">Admin</option>
               </select>
             </div>
-            
+
             <div className="input-container">
               <label>Địa chỉ</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 onChange={(event) => { this.handleOnChangeInput(event, "address_infor") }}
                 value={this.state.address_infor}
               />
@@ -151,21 +208,36 @@ class ModalUser extends Component {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button 
-            color="primary" 
-            className="px-3" 
+          <Button
+            color="primary"
+            className="px-3"
             onClick={this.handleAddNewUser}
           >
             Lưu
           </Button>
-          <Button 
-            color="secondary" 
-            className="px-3" 
+          <Button
+            color="secondary"
+            className="px-3"
             onClick={this.props.toggleFromParent}
           >
             Hủy
           </Button>
         </ModalFooter>
+
+        {this.state.isOpen && (
+          <Lightbox
+            mainSrc={this.state.previewImgURL}
+            onCloseRequest={() => this.setState({ isOpen: false })}
+            reactModalStyle={{
+              overlay: {
+                zIndex: 1050
+              },
+              content: {
+                zIndex: 1060
+              }
+            }}
+          />
+        )}
       </Modal>
     );
   }
