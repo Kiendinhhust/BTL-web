@@ -1,0 +1,24 @@
+.user-detail-container {
+    padding: 20px;
+
+    .title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .user-info-section {
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 5px;
+
+        p {
+            margin-bottom: 10px;
+            font-size: 16px;
+
+            strong {
+                margin-right: 5px;
+            }
+        }
+    }
+}

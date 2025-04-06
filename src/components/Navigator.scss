@@ -4,13 +4,15 @@
     display: flex;
     margin: 0;
     padding: 0;
-    background: #1a3a6c; // Màu xanh navy
-    
+    background: linear-gradient(135deg, #1a3a6c, #0f2952);
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
     &.list-unstyled,
     .list-unstyled {
         list-style-type: none;
     }
-    
+
     // Hiệu ứng ánh sao nhẹ nhàng
     &::before {
         content: '';
@@ -19,34 +21,80 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-image: 
+        background-image:
             radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 50%, transparent 100%),
             radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.3) 50%, transparent 100%),
             radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.4) 50%, transparent 100%);
         pointer-events: none;
         opacity: 0.2;
     }
-    
+
     .menu-group {
         position: relative;
-        
+        transition: all 0.3s ease;
+
         &:hover {
             cursor: pointer;
-            background-color: #2d5296; // Màu xanh navy đậm hơn khi hover
+            background-color: rgba(255, 255, 255, 0.1);
         }
-        
-        .menu-group-name {
-            line-height: 45px;
-            padding: 0 18px;
-            border-right: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            font-weight: 500;
+
+        // Style cho menu group active
+        &.active {
+            background-color: #2d5296;
+            position: relative;
             
-            &:first-child {
-                border-left: 1px solid rgba(255,255,255,0.1);
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background-color: #4caf50; // Thanh bên trái màu xanh lá
+            }
+            
+            .menu-group-name {
+                color: #ffffff;
+                font-weight: bold;
             }
         }
-        
+
+        // Style đặc biệt cho menu Trang chủ khi active
+        &:first-child.active {
+            &::before {
+                background-color: #ff9800; // Màu cam cho trang chủ
+            }
+        }
+
+        // Style đặc biệt cho menu Hệ thống khi active
+        &:nth-child(2).active {
+            &::before {
+                background-color: #2196f3; // Màu xanh dương cho hệ thống
+            }
+        }
+
+        .menu-group-name {
+            line-height: 50px;
+            padding: 0 22px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            position: relative;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+            
+            &:first-child {
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            &.active {
+                color: #ffffff;
+                font-weight: bold;
+            }
+        }
+
         .menu-list {
             display: none;
             background-color: white;
@@ -57,28 +105,29 @@
             padding: 5px 0;
             z-index: 100;
             margin-top: 3px;
-            
-            // Hiển thị menu khi có class show (thay vì hover)
+            min-width: 220px;
+
+            // Hiển thị menu khi có class show
             &.show {
                 display: block;
                 animation: fadeIn 0.3s ease;
             }
-            
+
             .menu {
-                width: 205px;
+                width: 100%;
                 padding: 0 15px;
                 height: 38px;
                 line-height: 38px;
                 text-transform: none;
                 position: relative;
-                
+
                 .menu-link {
                     text-decoration: none;
                     color: #333;
                     cursor: pointer;
                     display: block;
                 }
-                
+
                 .sub-menu-list {
                     display: none;
                     background-color: white;
@@ -86,39 +135,37 @@
                     border-radius: 6px;
                     position: absolute;
                     top: 0;
-                    left: 205px;
+                    left: 100%;
                     padding: 5px 0;
-                    
-                    // Hiển thị submenu khi có class show (thay vì hover)
+                    min-width: 220px;
+
+                    // Hiển thị submenu khi có class show
                     &.show {
                         display: block;
                         animation: fadeIn 0.3s ease;
                     }
-                    
+
                     .sub-menu {
                         padding: 0 15px;
                         height: 38px;
                         line-height: 38px;
                         white-space: nowrap;
-                        
+
                         &:hover {
                             background-color: rgba(26,58,108,0.05);
                         }
-                        
+
                         .sub-menu-link {
                             text-decoration: none;
                             color: #333;
-                        }
-                        
-                        a {
                             display: block;
                         }
-                        
+
                         &.active a {
-                            font-weight: 500;
+                            font-weight: 600;
                             color: #1a3a6c;
+                            position: relative;
                             
-                            // Thêm biểu tượng sao cho active items
                             &::before {
                                 content: '★';
                                 margin-right: 6px;
@@ -128,24 +175,28 @@
                         }
                     }
                 }
-                
-                &.active span {
-                    font-weight: 500;
-                    color: #1a3a6c;
+
+                &.active {
+                    background-color: rgba(26,58,108,0.08);
                     
-                    // Thêm biểu tượng sao cho active items
-                    &::before {
-                        content: '★';
-                        margin-right: 6px;
-                        font-size: 10px;
+                    span {
+                        font-weight: 600;
                         color: #1a3a6c;
+                        position: relative;
+                        
+                        &::before {
+                            content: '★';
+                            margin-right: 6px;
+                            font-size: 10px;
+                            color: #1a3a6c;
+                        }
                     }
                 }
-                
+
                 &:hover {
                     background-color: rgba(26,58,108,0.05);
                 }
-                
+
                 .icon-right {
                     display: block;
                     position: absolute;
@@ -154,7 +205,7 @@
                     transform: translateY(-50%);
                     transition: transform 0.2s ease;
                 }
-                
+
                 &:hover .icon-right {
                     transform: translateY(-50%) translateX(3px);
                 }

@@ -1,4 +1,7 @@
 export const adminMenu = [
+    { // Trang chủ
+        name: 'Trang chủ', link: '/home'
+    },
     { //hệ thống
         name: 'menu.system.header', menus: [
             {
@@ -9,7 +12,7 @@ export const adminMenu = [
                     { name: 'menu.system.system-administrator.register-package-group-or-account', link: '/system/register-package-group-or-account' },
                 ]
             },
-            
+
         ]
     },
 ];

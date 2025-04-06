@@ -26,6 +26,9 @@
         "userpass-wrong": "Sai tên đăng nhập hoặc mật khẩu!"
     },
     "menu": {
+        "home": {
+            "header": "Trang chủ"
+        },
         "system": {
             "header": "Hệ thống",
             "system-administrator": {

@@ -11,25 +11,25 @@ class MenuGroup extends Component {
       this.wrapperRef = React.createRef();
       this.handleClickOutside = this.handleClickOutside.bind(this);
     }
-  
+
     componentDidMount() {
       document.addEventListener('mousedown', this.handleClickOutside);
     }
-  
+
     componentWillUnmount() {
       document.removeEventListener('mousedown', this.handleClickOutside);
     }
-  
+
     handleClickOutside(event) {
       if (this.wrapperRef && !this.wrapperRef.current.contains(event.target)) {
         this.setState({ isOpen: false });
       }
     }
-  
+
     toggleMenu = () => {
       this.setState(prevState => ({ isOpen: !prevState.isOpen }));
     }
-  
+
     render() {
       const { name, children } = this.props;
       const { isOpen } = this.state;
@@ -46,7 +46,7 @@ class MenuGroup extends Component {
       );
     }
 }
-  
+
 class Menu extends Component {
     constructor(props) {
       super(props);
@@ -54,33 +54,33 @@ class Menu extends Component {
       this.menuRef = React.createRef();
       this.handleClickOutside = this.handleClickOutside.bind(this);
     }
-  
+
     componentDidMount() {
       document.addEventListener('mousedown', this.handleClickOutside);
     }
-  
+
     componentWillUnmount() {
       document.removeEventListener('mousedown', this.handleClickOutside);
     }
-  
+
     handleClickOutside(event) {
       if (this.menuRef && !this.menuRef.current.contains(event.target)) {
         this.setState({ isSubMenuOpen: false });
       }
     }
-  
+
     toggleSubMenu = (e) => {
       e.preventDefault();
       e.stopPropagation();
       this.setState(prevState => ({ isSubMenuOpen: !prevState.isSubMenuOpen }));
       if (this.props.onClick) this.props.onClick();
     }
-  
+
     render() {
       const { name, link, children, active } = this.props;
       const { isSubMenuOpen } = this.state;
       const hasChildren = children && children.length > 0;
-      
+
       return (
         <li className={`menu ${active ? 'active' : ''}`} ref={this.menuRef}>
           {hasChildren ? (
@@ -102,7 +102,7 @@ class Menu extends Component {
       );
     }
 }
-  
+
 class SubMenu extends Component {
     render() {
       const { name, link, active, onLinkClick } = this.props;
@@ -145,8 +145,8 @@ class Navigator extends Component {
         const key = `${groupIndex}_${menuIndex}`;
         this.setState(prevState => {
             const needExpand = !(prevState.expandedMenu[key] === true);
-            return { 
-                expandedMenu: needExpand ? { [key]: true } : {} 
+            return {
+                expandedMenu: needExpand ? { [key]: true } : {}
             };
         });
     };
@@ -160,7 +160,7 @@ class Navigator extends Component {
 
     checkActiveMenu = () => {
         const { menus, location } = this.props;
-        
+
         for (let i = 0; i < menus.length; i++) {
             const group = menus[i];
             if (group.menus && group.menus.length > 0) {
@@ -189,23 +189,35 @@ class Navigator extends Component {
     }
 
     render() {
-        const { menus, location, onLinkClick } = this.props;
+        const { menus,children, link, location, onLinkClick, currentPath } = this.props;
+        const pathname = currentPath || (location && location.pathname);
+        const isActive = link ? location.pathname === link : 
+    children && children.some(child => 
+      child.link && location.pathname.startsWith(child.link));
         return (
             <ul className="navigator-menu list-unstyled">
                 {menus.map((group, groupIndex) => (
                     <Fragment key={groupIndex}>
-                        <MenuGroupWithRouter name={group.name}>
+                        {group.link ? (
+                            <li className={`menu-group ${group.link === pathname ? 'active' : ''}`}>
+                                <Link to={group.link} className={`menu-group-name ${group.link === pathname ? 'active' : ''}`}>
+                                    {group.name}
+                                </Link>
+                            </li>
+                        ) : (
+                            <MenuGroupWithRouter name={group.name}>
+
                             {group.menus && group.menus.map((menu, menuIndex) => {
                                 const isMenuHasSubMenuActive = this.isMenuHasSubMenuActive(
                                     location, menu.subMenus, menu.link
                                 );
                                 const key = `${groupIndex}_${menuIndex}`;
                                 const isSubMenuOpen = this.state.expandedMenu[key] === true;
-                                
+
                                 return (
                                     <MenuWithRouter
                                         key={menuIndex}
-                                        active={isMenuHasSubMenuActive}
+                                        active={isMenuHasSubMenuActive || (menu.link === pathname)}
                                         name={menu.name}
                                         link={menu.link}
                                         isOpen={isSubMenuOpen}
@@ -217,14 +229,15 @@ class Navigator extends Component {
                                                 key={subMenuIndex}
                                                 name={subMenu.name}
                                                 link={subMenu.link}
-                                                active={subMenu.link === location.pathname}
+                                            active={subMenu.link === pathname}
                                                 onLinkClick={onLinkClick}
                                             />
                                         ))}
                                     </MenuWithRouter>
                                 );
                             })}
-                        </MenuGroupWithRouter>
+                            </MenuGroupWithRouter>
+                        )}
                     </Fragment>
                 ))}
             </ul>
