@@ -9,7 +9,7 @@ class Footer extends Component {
             <footer className="footer-container">
                 <div className="footer-content">
                     <div className="footer-section about">
-                        <h2 className="logo-text">Google Clone</h2>
+                        <h2 className="logo-text">Nhóm 9 Xanh Chín</h2>
                         <p>
                             Nền tảng mua sắm trực tuyến hàng đầu Việt Nam, cung cấp đa dạng sản phẩm 
                             với chất lượng đảm bảo và dịch vụ khách hàng tuyệt vời.
