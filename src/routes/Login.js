@@ -40,7 +40,7 @@ class Login extends Component {
     }
 
     redirectToSystemPage = () => {
-        const redirectPath = '/system/user-manage';
+        const redirectPath = '/home';
         this.props.history.push(redirectPath);
       }
 

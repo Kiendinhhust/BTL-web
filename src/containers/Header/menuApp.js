@@ -16,3 +16,25 @@ export const adminMenu = [
         ]
     },
 ];
+export const sellerMenu = [
+    {
+        name: 'Trang chủ',
+        link: '/home'
+    },
+
+    {
+        name: 'Quản lý cửa hàng',
+        link: '/seller/shop-manage'
+    },
+];
+
+export const buyerMenu = [
+    {
+        name: 'Trang chủ',
+        link: '/home'
+    },
+    {
+        name: 'Đăng ký người bán',
+        link: '/buyer/register-seller'
+    },
+];

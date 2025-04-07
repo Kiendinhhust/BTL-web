@@ -2,11 +2,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
+import _ from 'lodash';
 
 import * as actions from "../../store/actions";
 import { adminLoginSuccess } from "../../store/actions/adminActions";
 import Navigator from '../../components/Navigator';
-import { adminMenu } from './menuApp';
+import { adminMenu ,sellerMenu,buyerMenu } from './menuApp';
 import './Header.scss';
 import defaultAvatar from '../../assets/images/user.svg';
 
@@ -15,7 +16,8 @@ class Header extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isDropdownOpen: false
+            isDropdownOpen: false,
+            menuApp: [],
         };
         this.wrapperRef = React.createRef();
     }
@@ -36,16 +38,22 @@ class Header extends Component {
 
     componentDidMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
-
-        // Thêm dữ liệu userInfo giả lập nếu chưa có
-        if (!this.props.userInfo) {
-            const mockUserInfo = {
-                username: 'Admin',
-                email: 'admin@example.com',
-                role: 'admin'
-            };
-            this.props.adminLoginSuccess(mockUserInfo);
+        let menu = [];
+        let userInfo = this.props.userInfo;
+        if(userInfo && !_.isEmpty(userInfo)){
+           let role = userInfo.role;
+           if(role === 'admin'){
+               menu = adminMenu;
+           }else if(role === 'seller'){
+                menu = sellerMenu;
+           }else if(role === 'buyer'){
+               menu = buyerMenu;
+           }
         }
+        this.setState({
+            menuApp: menu
+        });
+        console.log('check menuApp: ', menu);
     }
 
     componentWillUnmount() {
@@ -59,7 +67,7 @@ class Header extends Component {
         return (
             <div className="header-container">
                 <div className="header-tabs-container">
-                    <Navigator menus={adminMenu} currentPath={location.pathname} />
+                    <Navigator menus={this.state.menuApp} currentPath={location.pathname} />
                 </div>
 
                 <div className="header-right-content">

@@ -1,4 +1,19 @@
 {
+    "product-manage": "Quản lý gói",
+    "register-package-group-or-account": "Đăng ký gói dịch vụ cho nhóm/tài khoản",
+    "user": {
+        "detail": "Thông tin cá nhân",
+        "address": "Địa chỉ"
+    },
+    "shop": {
+        "manage": "Quản lý cửa hàng"
+    },
+    "seller": {
+        "register": "Đăng ký làm người bán"
+    },
+    "system-parameter": {
+        "header": "Tham số hệ thống"
+    },
     "common": {
         "add": "Thêm",
         "edit": "Sửa",
@@ -34,6 +49,8 @@
             "system-administrator": {
                 "header": "Quản trị hệ thống",
                 "user-manage": "Quản lý người sử dụng",
+                "user-address": "Quản lý địa chỉ",
+                "system-manage": "Quản lý hệ thống",
                 "product-manage": "Quản lý gói",
                 "register-package-group-or-account": "Đăng ký gói dịch vụ cho nhóm/tài khoản"
             },
@@ -90,11 +107,7 @@
             "invalid-input": {
                 "prid": "Quý khách vui lòng nhập mã gói",
                 "prname": "Quý khách vui lòng nhập tên gói"
-            },
-            "fail-to-load-decentralize-info": "Không thể tải về thông tin phân quyền chức năng",
-            "save-decentralize-success": "Lưu phân quyền chức năng thành công",
-            "save-decentralize-fail": "Lưu phân quyền chức năng thất bại",
-            "sure-delete-package": "Bạn có chắc chắn muốn xóa gói này?"
+            }
         },
         "register-package-group-or-acc": {
             "assign-service-package-to-customer": "Gán gói dịch vụ cho khách hàng",

@@ -1,25 +1,25 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { Route, Switch ,withRouter} from 'react-router-dom';
+import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import { ConnectedRouter as Router } from 'connected-react-router';
 import { history } from '../redux'
 import { ToastContainer } from 'react-toastify';
-
-
 import { userIsAuthenticated, userIsNotAuthenticated } from '../hoc/authentication';
-
 import { path } from '../utils'
-
 import Home from '../routes/Home';
 import Login from '../routes/Login';
 import Header from './Header/Header';
 import System from '../routes/System';
+import SellerSystem from '../routes/SellerSystem';
+import BuyerSystem from '../routes/BuyerSystem';
 import Register from '../routes/Register.js';
 import VerifyOTP from '../routes/VerifyOTP.js';
 import HomePage from './HomePage/HomePage.js';
 import { default as HomePageHeader } from './HomePage/Header.js';
 import { CustomToastCloseButton } from '../components/CustomToast';
 import ConfirmModal from '../components/ConfirmModal';
+import Footer from './Footer/Footer';
+import './App.scss';
 
 class App extends Component {
 
@@ -39,6 +39,11 @@ class App extends Component {
 
     componentDidMount() {
         this.handlePersistorState();
+
+
+    }
+
+    componentDidUpdate(prevProps) {
     }
 
     render() {
@@ -49,21 +54,34 @@ class App extends Component {
                 <Router history={history}>
                     <div className="main-container">
                         <ConfirmModal />
-                        
-                        {!excludedRoutes.includes(location.pathname) && 
+
+                        {!excludedRoutes.includes(location.pathname) &&
                              (this.props.isLoggedIn ? <Header /> : <HomePageHeader />)
                         }
 
-                        <span className="content-container">
-                        <Switch>
-                            <Route path={path.LOGIN} component={userIsNotAuthenticated(Login)} />
-                            <Route path={path.REGISTER} component={userIsNotAuthenticated(Register)} />
-                            <Route path={path.VERIFY_OTP} component={userIsNotAuthenticated(VerifyOTP)} />
-                            <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
-                            <Route path={path.HOME} exact component={HomePage} />
-                            <Route path={path.HOMEPAGE} component={HomePage} />
-                        </Switch>
-                        </span>
+                        <div className="content-container">
+                            <div className="custom-scrollbar">
+                                <Switch>
+                                    <Route path={path.LOGIN} component={userIsNotAuthenticated(Login)} />
+                                    <Route path={path.REGISTER} component={userIsNotAuthenticated(Register)} />
+                                    <Route path={path.VERIFY_OTP} component={userIsNotAuthenticated(VerifyOTP)} />
+                                    <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
+                                    <Route path={path.SELLER} component={userIsAuthenticated(SellerSystem)} />
+                                    <Route path={path.BUYER} component={userIsAuthenticated(BuyerSystem)} />
+                                    <Route path={path.HOME} exact component={HomePage} />
+                                    <Route path={path.HOMEPAGE} component={HomePage} />
+
+                                    <Route component={() => <Redirect to="/" />} />
+                                </Switch>
+
+                                <div className="page-content">
+                                    {/* Nội dung trang */}
+                                </div>
+
+                                {/* Footer luôn ở cuối trang */}
+                                {!excludedRoutes.includes(location.pathname) && <Footer />}
+                            </div>
+                        </div>
 
                         <ToastContainer
                             className="toast-container" toastClassName="toast-item" bodyClassName="toast-item-body"
@@ -81,12 +99,14 @@ class App extends Component {
 const mapStateToProps = state => {
     return {
         started: state.app.started,
-        isLoggedIn: state.admin.isLoggedIn
+        isLoggedIn: state.admin.isLoggedIn,
+        userInfo: state.admin.userInfo
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
+        // Các action có thể được thêm vào đây nếu cần
     };
 };
 

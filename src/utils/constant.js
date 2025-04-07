@@ -5,14 +5,16 @@ export const path = {
     REGISTER: '/register',
     VERIFY_OTP: '/verify-otp',
     LOG_OUT: '/logout',
-    SYSTEM: '/system'
+    SYSTEM: '/system',
+    SELLER: '/seller',
+    BUYER: '/buyer'
 };
 
 export const languages = {
     VI: 'vi',
     EN: 'en'
 };
- 
+
 export const manageActions = {
     ADD: "ADD",
     EDIT: "EDIT",

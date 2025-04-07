@@ -33,7 +33,7 @@ class MenuGroup extends Component {
     render() {
       const { name, children } = this.props;
       const { isOpen } = this.state;
-      
+
       return (
         <li className="menu-group" ref={this.wrapperRef}>
           <div className="menu-group-name" onClick={this.toggleMenu}>
@@ -153,9 +153,13 @@ class Navigator extends Component {
 
     isMenuHasSubMenuActive = (location, subMenus, link) => {
         if (subMenus && subMenus.length > 0) {
-            return subMenus.some(subMenu => subMenu.link === location.pathname);
+            return subMenus.some(subMenu => {
+                // Kiểm tra xem đường dẫn hiện tại có bắt đầu bằng đường dẫn của submenu không
+                return location.pathname === subMenu.link || location.pathname.startsWith(subMenu.link + '/');
+            });
         }
-        return link && this.props.location.pathname === link;
+        // Kiểm tra xem đường dẫn hiện tại có bắt đầu bằng đường dẫn của menu không
+        return link && (this.props.location.pathname === link || this.props.location.pathname.startsWith(link + '/'));
     };
 
     checkActiveMenu = () => {
@@ -191,8 +195,8 @@ class Navigator extends Component {
     render() {
         const { menus,children, link, location, onLinkClick, currentPath } = this.props;
         const pathname = currentPath || (location && location.pathname);
-        const isActive = link ? location.pathname === link : 
-    children && children.some(child => 
+        const isActive = link ? location.pathname === link :
+    children && children.some(child =>
       child.link && location.pathname.startsWith(child.link));
         return (
             <ul className="navigator-menu list-unstyled">

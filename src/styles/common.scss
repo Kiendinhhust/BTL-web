@@ -1,5 +1,26 @@
 @import "variables";
+@import "scrollbar";
 
+/* Base styles for full height layout */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Common text classes */
 .text-center {
     text-align: center !important;
 }
