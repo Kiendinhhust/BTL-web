@@ -296,6 +296,201 @@ $border-radius: 8px;
   }
 }
 
+// Modern Confirm Modal
+.confirm-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 500px;
+  width: 100%;
+  z-index: 1060;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: modalFadeIn 0.3s ease-out;
+
+  .modal-content {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, $navy-dark, $navy-medium);
+    color: white;
+    padding: 18px 24px;
+    border-bottom: none;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 50%, transparent 100%),
+        radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.3) 50%, transparent 100%),
+        radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      pointer-events: none;
+      opacity: 0.2;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+
+      i {
+        margin-right: 12px;
+        font-size: 22px;
+      }
+    }
+
+    .close {
+      color: white;
+      opacity: 0.8;
+      font-size: 24px;
+      padding: 0;
+      margin: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transition: all 0.2s;
+
+      &:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 24px;
+    background-color: white;
+
+    p {
+      font-size: 16px;
+      color: $dark-gray;
+      margin-bottom: 20px;
+
+      strong {
+        color: $navy-dark;
+        font-weight: 600;
+      }
+    }
+
+    .user-info-preview {
+      display: flex;
+      align-items: center;
+      background-color: $light-gray;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      border: 1px solid $medium-gray;
+
+      img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        margin-right: 15px;
+      }
+
+      .user-info-text {
+        p {
+          margin: 0 0 8px;
+          font-size: 14px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          strong {
+            display: inline-block;
+            width: 70px;
+          }
+        }
+      }
+    }
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    background-color: $light-gray;
+    border-top: 1px solid $medium-gray;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    button {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      min-width: 100px;
+
+      i {
+        margin-right: 8px;
+      }
+
+      &.btn-secondary {
+        background-color: white;
+        color: $dark-gray;
+        border: 1px solid $medium-gray;
+
+        &:hover {
+          background-color: #f1f1f1;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+      }
+
+      &.btn-primary {
+        background: linear-gradient(135deg, $navy-dark, $navy-medium);
+        border: none;
+        color: white;
+
+        &:hover {
+          background: linear-gradient(135deg, darken($navy-dark, 5%), darken($navy-medium, 5%));
+          box-shadow: 0 4px 10px rgba($navy-dark, 0.3);
+          transform: translateY(-2px);
+        }
+      }
+
+      &.btn-danger {
+        background: linear-gradient(135deg, $red, darken($red, 10%));
+        border: none;
+        color: white;
+
+        &:hover {
+          background: linear-gradient(135deg, darken($red, 5%), darken($red, 15%));
+          box-shadow: 0 4px 10px rgba($red, 0.3);
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+}
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  animation: backdropFadeIn 0.3s ease-out;
+}
+
 // Animations
 @keyframes twinkle {
   0% { opacity: 0.15; }
@@ -307,6 +502,32 @@ $border-radius: 8px;
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translate(-50%, -60%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
 }
 
 .user-manage-confirm-modal {
