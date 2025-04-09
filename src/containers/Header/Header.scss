@@ -137,8 +137,16 @@
             width: 30px;
             height: 30px;
             border-radius: 50%; // Make it circular
-            object-fit: cover; // Ensure image covers the area
             border: 1px solid #ccc; // Optional border
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            }
         }
     }
 
@@ -149,7 +157,7 @@
         height: 50px;
         padding: 0 10px;
         &:hover {
-            background-color: darken($colormain, 5);
+            background-color: adjust-color($colormain, $lightness: -5);
             transition: background-color 0.3s ease;
         }
         i {

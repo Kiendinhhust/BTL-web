@@ -25,10 +25,10 @@
     border-bottom: 1px solid $border;
     &:hover {
         cursor: pointer;
-        background-color: darken($footer-container, 5);
+        background-color: adjust-color($footer-container, $lightness: -5);
     }
 }
 
 .react-autosuggest__suggestion--highlighted {
-    background-color: darken($footer-container, 5);
+    background-color: adjust-color($footer-container, $lightness: -5);
 }

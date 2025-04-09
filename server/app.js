@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const { sequelize } = require('./models')
 const userAPI = require('./routes/userRouter')
 const authAPI = require('./routes/authRouter')
+const shopAPI = require('./routes/shopRouter')
 const cors = require('cors');
 const app = express();
 
@@ -29,7 +30,8 @@ sequelize.authenticate()
 
 // Lấy danh sách users và thông tin của họ khi truy cập "/"
 app.use('/api/user', userAPI);
-app.use('/auth', authAPI)
+app.use('/auth', authAPI);
+app.use('/api/shop', shopAPI);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -101,7 +101,7 @@
                         transition: background-color 0.3s;
                         
                         &:hover {
-                            background-color: darken(#1a3a6c, 10%);
+                            background-color: adjust-color(#1a3a6c, $lightness: -10%);
                         }
                         
                         i {
@@ -176,7 +176,7 @@
                     gap: 10px;
                     
                     &:hover {
-                        background-color: darken(#4caf50, 10%);
+                        background-color: adjust-color(#4caf50, $lightness: -10%);
                     }
                     
                     &:disabled {

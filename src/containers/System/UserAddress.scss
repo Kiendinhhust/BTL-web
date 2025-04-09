@@ -68,7 +68,7 @@
       transition: background-color 0.3s;
       
       &:hover {
-        background-color: darken(#4caf50, 10%);
+        background-color: adjust-color(#4caf50, $lightness: -10%);
       }
       
       i {
@@ -142,7 +142,7 @@
             color: #3a5998;
             
             &:hover {
-              color: darken(#3a5998, 15%);
+              color: adjust-color(#3a5998, $lightness: -15%);
             }
           }
           
@@ -150,7 +150,7 @@
             color: #e53935;
             
             &:hover {
-              color: darken(#e53935, 15%);
+              color: adjust-color(#e53935, $lightness: -15%);
             }
           }
           
@@ -160,7 +160,7 @@
             font-size: 14px;
             
             &:hover {
-              color: darken(#4caf50, 15%);
+              color: adjust-color(#4caf50, $lightness: -15%);
             }
           }
         }

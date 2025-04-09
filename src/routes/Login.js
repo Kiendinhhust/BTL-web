@@ -55,6 +55,7 @@ class Login extends Component {
                 // Tạo đối tượng userInfo  từ phản hồi API
                 let userInfo  = {
                     username: response.data.username,
+                    userId: response.data.userId,
                     email: response.data.email,
                     role: response.data.role,
                     accessToken: response.data.accessToken,

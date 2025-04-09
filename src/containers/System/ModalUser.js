@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { createUser } from '../../store/actions/userActions';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
@@ -77,9 +78,28 @@ class ModalUser extends Component {
         });
 
         this.props.toggleFromParent();
-        alert('Thêm người dùng thành công!');
+
+        // Hiển thị thông báo thành công với Toast
+        toast.success('Thêm người dùng thành công!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       } else {
-        // Hiển thị thông báo lỗi tương ứng
+        // Hiển thị thông báo lỗi với Toast
+        toast.error(res && res.errorMessage ? res.errorMessage : 'Có lỗi xảy ra!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        // Cập nhật state để hiển thị lỗi trong form
         this.setState({
           errorMessage: res && res.errorMessage ? res.errorMessage : 'Có lỗi xảy ra!'
         });

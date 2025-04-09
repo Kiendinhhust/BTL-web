@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { updateUser } from '../../store/actions/userActions';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
@@ -29,17 +30,17 @@ class ModalEditUser extends Component {
     if (currentUser) {
       // Lấy thông tin từ các đối tượng lồng nhau
       const userInfo = currentUser.UserInfo || {};
-      
-      const address = currentUser.UserAddresses && currentUser.UserAddresses.length > 0 
-        ? currentUser.UserAddresses[0].address_infor 
+
+      const address = currentUser.UserAddresses && currentUser.UserAddresses.length > 0
+        ? currentUser.UserAddresses[0].address_infor
         : '';
-      
+
       // Nếu có ảnh, tạo URL để hiển thị
       let imageUrl = '';
       if (userInfo.img) {
         imageUrl = new Buffer(userInfo.img, 'base64').toString('binary');
       }
-      
+
       this.setState({
         userId: currentUser.user_id,
         username: currentUser.username,
@@ -65,6 +66,7 @@ class ModalEditUser extends Component {
     let data = event.target.files;
     let file = data[0];
     if (file) {
+      
       let objectUrl = URL.createObjectURL(file);
       this.setState({
         previewImgURL: objectUrl
@@ -96,18 +98,37 @@ class ModalEditUser extends Component {
       address_infor: this.state.address_infor,
       img: this.state.avatar
     };
-    
+
     // Chỉ thêm password nếu người dùng đã nhập
     if (this.state.password) {
       userData.password = this.state.password;
     }
-    
+
     let res = await this.props.updateUser(this.state.userId, userData);
-    
+
     if (res && res.message) {
       this.props.toggleFromParent();
-      alert('Cập nhật người dùng thành công!');
+
+      // Hiển thị thông báo thành công với Toast
+      toast.success('Cập nhật người dùng thành công!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } else {
+      // Hiển thị thông báo lỗi với Toast
+      toast.error(res && res.message ? res.message : 'Có lỗi xảy ra!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+
       this.setState({
         errorMessage: res && res.message ? res.message : 'Có lỗi xảy ra!'
       });
@@ -116,9 +137,9 @@ class ModalEditUser extends Component {
 
   render() {
     return (
-      <Modal 
-        isOpen={this.props.isOpen} 
-        toggle={this.props.toggleFromParent} 
+      <Modal
+        isOpen={this.props.isOpen}
+        toggle={this.props.toggleFromParent}
         className={'modal-user-container'}
         size="lg"
       >
@@ -128,63 +149,63 @@ class ModalEditUser extends Component {
             {this.state.errorMessage && (
               <div className="alert alert-danger">{this.state.errorMessage}</div>
             )}
-            
+
             <div className="input-container">
               <label>Username</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={this.state.username}
                 disabled
               />
             </div>
-            
+
             <div className="input-container">
               <label>Ảnh đại diện</label>
               <div className="preview-img-container">
-                <input 
-                  id="previewImg" 
-                  type="file" 
-                  hidden 
+                <input
+                  id="previewImg"
+                  type="file"
+                  hidden
                   onChange={(event) => this.handleOnChangeImage(event)}
                 />
                 <label className="label-upload" htmlFor="previewImg">Tải ảnh <i className="fas fa-upload"></i></label>
-                <div 
-                  className="preview-image" 
+                <div
+                  className="preview-image"
                   style={{ backgroundImage: `url(${this.state.previewImgURL})` }}
                   onClick={() => this.openPreviewImage()}
                 >
                 </div>
               </div>
             </div>
-            
+
             <div className="input-container">
               <label>Password</label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 onChange={(event) => { this.handleOnChangeInput(event, "password") }}
                 value={this.state.password}
                 placeholder="Để trống nếu không muốn thay đổi"
               />
             </div>
-            
+
             <div className="input-container">
               <label>Email</label>
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={this.state.email}
                 disabled
               />
             </div>
-            
+
             <div className="input-container">
               <label>Số điện thoại</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 onChange={(event) => { this.handleOnChangeInput(event, "phone_number") }}
                 value={this.state.phone_number}
               />
             </div>
-            
+
             <div className="input-container">
               <label>Vai trò</label>
               <select
@@ -196,11 +217,11 @@ class ModalEditUser extends Component {
                 <option value="admin">Admin</option>
               </select>
             </div>
-            
+
             <div className="input-container">
               <label>Địa chỉ</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 onChange={(event) => { this.handleOnChangeInput(event, "address_infor") }}
                 value={this.state.address_infor}
               />
@@ -208,22 +229,22 @@ class ModalEditUser extends Component {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button 
-            color="primary" 
-            className="px-3" 
+          <Button
+            color="primary"
+            className="px-3"
             onClick={this.handleSaveUser}
           >
             Lưu thay đổi
           </Button>
-          <Button 
-            color="secondary" 
-            className="px-3" 
+          <Button
+            color="secondary"
+            className="px-3"
             onClick={this.props.toggleFromParent}
           >
             Đóng
           </Button>
         </ModalFooter>
-        
+
         {this.state.isOpen && (
           <Lightbox
             mainSrc={this.state.previewImgURL}

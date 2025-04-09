@@ -12,7 +12,7 @@ class UserAddress extends Component {
   }
 
   componentDidMount() {
-    // Giả lập việc lấy địa chỉ từ API
+    
     setTimeout(() => {
       this.setState({
         userAddresses: [

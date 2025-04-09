@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Modal } from 'reactstrap';
-
-import './ConfirmModal.scss';
 import * as actions from "../store/actions";
 import { KeyCodeUtils } from "../utils";
 
@@ -38,9 +36,9 @@ class ConfirmModal extends Component {
     }
 
     onAcceptBtnClick = () => {
-        const { contentOfConfirmModal } = this.props;
-        if (contentOfConfirmModal.handleFunc) {
-            contentOfConfirmModal.handleFunc(contentOfConfirmModal.dataFunc);
+        const { contentOfConfirmModal, onConfirm } = this.props;
+        if (onConfirm) {
+            onConfirm(contentOfConfirmModal.dataFunc);
         }
         this.onClose();
     }
@@ -58,7 +56,7 @@ class ConfirmModal extends Component {
         const { contentOfConfirmModal } = this.props;
 
         return (
-            <Modal isOpen={contentOfConfirmModal.isOpen} className='confirm-modal' centered={true}>
+            <Modal isOpen={contentOfConfirmModal.isOpen} className='confirm-modal' centered={true} >
                 <div className="modal-header">
                     <div className="modal-title">
                         <FormattedMessage id={"common.confirm"} />
@@ -81,10 +79,10 @@ class ConfirmModal extends Component {
 
                             <div className="col-12">
                                 <div className="btn-container text-center">
-                                    <button className="btn btn-add" onClick={this.onClose} >
+                                    <button className="btn btn-secondary" onClick={this.onClose} >
                                         <FormattedMessage id="common.close" />
                                     </button>
-                                    <button ref={this.acceptBtnRef} className="btn btn-add" onClick={this.onAcceptBtnClick}>
+                                    <button ref={this.acceptBtnRef} className="btn btn-primary" onClick={this.onAcceptBtnClick}>
                                         <FormattedMessage id={"common.accept"} />
                                     </button>
                                 </div>

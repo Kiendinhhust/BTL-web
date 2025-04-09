@@ -66,7 +66,7 @@ class RegisterSeller extends Component {
     handleSubmit = async (event) => {
         event.preventDefault();
         
-        const { shopName, description, address, phone, email, businessLicense, avatar } = this.state;
+        const { shopName, description, address, phone, email, avatar } = this.state;
         
         // Kiểm tra dữ liệu
         if (!shopName) {
@@ -94,10 +94,6 @@ class RegisterSeller extends Component {
             return;
         }
         
-        if (!businessLicense) {
-            this.setState({ errorMessage: 'Vui lòng nhập mã giấy phép kinh doanh' });
-            return;
-        }
         
         // Gửi dữ liệu đăng ký
         this.setState({ isSubmitting: true, errorMessage: '' });
@@ -154,16 +150,6 @@ class RegisterSeller extends Component {
                             </div>
                             
                             <div className="form-row">
-                                <div className="form-group col-6">
-                                    <label>Số điện thoại:</label>
-                                    <input 
-                                        type="text" 
-                                        value={phone}
-                                        onChange={(event) => this.handleOnChangeInput(event, 'phone')}
-                                        placeholder="Nhập số điện thoại"
-                                    />
-                                </div>
-                                
                                 <div className="form-group col-6">
                                     <label>Mã giấy phép kinh doanh:</label>
                                     <input 

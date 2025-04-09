@@ -1,6 +1,6 @@
 const { User, UserInfo, UserAddress } = require('../models');
 const bcrypt = require('bcrypt');
-// Lấy danh sách user + thông tin của họ + địa chỉ
+
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
@@ -16,7 +16,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-// Lấy thông tin user theo ID
+
 const getUserById = async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -38,12 +38,11 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Tạo user mới
+
 const createUser = async (req, res) => {
     try {
       const { username, password, email, role, phone_number, img, address_infor } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
-      // Kiểm tra username đã tồn tại chưa
       const existingUser = await User.findOne({ where: { username } });
       if (existingUser) {
         return res.status(400).json({
@@ -52,7 +51,6 @@ const createUser = async (req, res) => {
         });
       }
 
-      // Kiểm tra email đã tồn tại chưa
       const existingEmail = await UserInfo.findOne({ where: { email } });
       if (existingEmail) {
         return res.status(400).json({
@@ -61,7 +59,6 @@ const createUser = async (req, res) => {
         });
       }
 
-      // Kiểm tra số điện thoại đã tồn tại chưa
       if (phone_number) {
         const existingUserInfo = await UserInfo.findOne({ where: { phone_number } });
         if (existingUserInfo) {
@@ -72,7 +69,6 @@ const createUser = async (req, res) => {
         }
       }
 
-      // Tạo user cơ bản
       const newUser = await User.create({
         username,
         password_hash: hashedPassword,
@@ -81,7 +77,6 @@ const createUser = async (req, res) => {
 
       if (newUser) {
         try {
-          // Tạo thông tin user
           await UserInfo.create({
             user_id: newUser.user_id,
             email,
@@ -90,11 +85,9 @@ const createUser = async (req, res) => {
           });
         } catch (infoError) {
           console.error('Lỗi tạo thông tin người dùng:', infoError);
-          // Xử lý lỗi, có thể xóa user đã tạo nếu cần
         }
 
 
-        // Tạo địa chỉ người dùng nếu có
         if (address_infor) {
           const newAddress = await UserAddress.create({
             user_id: newUser.user_id,
@@ -186,6 +179,105 @@ const updateUser = async (req, res) => {
     }
   };
 
+  const updateUserDetail = async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const { 
+        phone_number,  
+        firstname, 
+        lastname, 
+        address_infor, 
+        img, 
+        currentPassword, 
+        newPassword 
+      } = req.body;
+      
+      // Kiểm tra user tồn tại
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'Không tìm thấy người dùng' });
+      }
+      
+      // Xử lý cập nhật mật khẩu nếu có
+      if (currentPassword && newPassword) {
+        // Kiểm tra mật khẩu hiện tại
+        const isPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
+        if (!isPasswordValid) {
+          return res.status(400).json({ 
+            error: 'Lỗi cập nhật người dùng',
+            errorMessage: 'Mật khẩu hiện tại không đúng'
+          });
+        }
+        
+        
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+       
+        await user.update({
+          password_hash: hashedPassword
+        });
+      }
+      
+      
+     
+      const userInfo = await UserInfo.findOne({ where: { user_id: userId } });
+      if (userInfo) {
+        const updateData = {};
+        
+        if (phone_number) {
+          updateData.phone_number = phone_number;
+        }
+        
+      
+        if (firstname !== undefined) {
+          updateData.firstname = firstname;
+        }
+        
+        if (lastname !== undefined) {
+          updateData.lastname = lastname;
+        }
+        
+       
+        if (img !== undefined) {
+          updateData.img = img;
+        }
+        
+        if (Object.keys(updateData).length > 0) {
+          await userInfo.update(updateData);
+        }
+      }
+      
+     
+      if (address_infor) {
+        
+        let address = await UserAddress.findOne({ where: { user_id: userId } });
+        if (address) {
+         
+          await address.update({ address_infor });
+        } else {
+         
+          address = await UserAddress.create({
+            user_id: userId,
+            address_infor
+          });
+        }
+      }
+      
+      res.json({
+        message: 'Cập nhật người dùng thành công',
+        success: true,
+        user: await User.findByPk(userId, {
+          include: [
+            { model: UserInfo },
+            { model: UserAddress }
+          ]
+        })
+      });
+    } catch (error) {
+      console.error('Lỗi cập nhật người dùng:', error);
+      res.status(500).json({ error: 'Lỗi máy chủ' });
+    }
+  };
 // Xóa user
 const deleteUser = async (req, res) => {
   try {
@@ -216,5 +308,6 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  updateUserDetail
 };

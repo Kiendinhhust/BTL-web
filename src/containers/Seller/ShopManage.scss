@@ -48,7 +48,7 @@
                     color: white;
                     
                     &:hover {
-                        background-color: darken(#2196f3, 10%);
+                        background-color: adjust-color(#2196f3, $lightness: -10%);
                     }
                 }
                 
@@ -57,7 +57,7 @@
                     color: white;
                     
                     &:hover {
-                        background-color: darken(#4caf50, 10%);
+                        background-color: adjust-color(#4caf50, $lightness: -10%);
                     }
                 }
             }
@@ -231,7 +231,7 @@
                             color: white;
                             
                             &:hover {
-                                background-color: darken(#2196f3, 10%);
+                                background-color: adjust-color(#2196f3, $lightness: -10%);
                             }
                         }
                         
@@ -240,7 +240,7 @@
                             color: white;
                             
                             &:hover {
-                                background-color: darken(#e53935, 10%);
+                                background-color: adjust-color(#e53935, $lightness: -10%);
                             }
                         }
                     }

@@ -105,7 +105,8 @@ const login = async (req, res) => {
         res.json({ 
             message: 'Đăng nhập thành công!', 
             accessToken,
-            refreshToken,  
+            refreshToken,
+            userId: user.user_id,  
             username: user.username,
             email: user.UserInfo ? user.UserInfo.email : null,
             role: user.role

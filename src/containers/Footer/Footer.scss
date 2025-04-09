@@ -170,8 +170,8 @@
                     cursor: pointer;
                     transition: background-color 0.3s;
 
-                    &:hover {
-                        background-color: darken(#4caf50, 10%);
+                        &:hover {
+                        background-color: adjust-color(#4caf50, $lightness: -10%);
                     }
 
                     i {

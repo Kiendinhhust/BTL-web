@@ -31,16 +31,15 @@ $dropdown-image: url("../assets/images/dropdown.svg");
 
 //date picker
 $date-picker-bg: $common-white;
-$date-picker-border: darken(#3f4458, 50%);
+$date-picker-border: adjust-color(#3f4458, $lightness: -50%);
 $date-picker-arrow-hover: $common-orange;
 $date-picker-month-fg: #000;
 $date-picker-month-bg: $common-white;
 $date-picker-weekdays-fg: #000;
 $date-picker-weekdays-bg: transparent;
 $date-picker-day-fg: #000;
-$date-picker-day-hover-bg: darken($common-white, 25%);
+$date-picker-day-hover-bg: adjust-color($common-white, $lightness: -25%);
 $date-picker-today-border: $common-orange;
 $date-picker-today-bg: $common-orange;
 $date-picker-today-fg: #000;
 $date-picker-day-selected-fg: $common-white;
-

@@ -7,7 +7,6 @@ const UserInfo = require("./UserInfo")
 const UserActivityLog = require("./UserActivityLog")
 const AdminUser = require("./AdminUser")
 const Shop = require("./Shop")
-const ShopAddress = require("./ShopAddress")
 const Product = require("./Product")
 const Item = require("./Item")
 const ProductImage = require("./ProductImage")
@@ -36,9 +35,7 @@ UserInfo.belongsTo(UserAddress, { foreignKey: "default_address", onDelete: "SET 
 User.hasMany(Shop, { foreignKey: "owner_id", onDelete: "CASCADE" });
 Shop.belongsTo(User, { foreignKey: "owner_id" });
 
-// 1 Shop có nhiều địa chỉ
-Shop.hasMany(ShopAddress, { foreignKey: "shop_id", onDelete: "CASCADE" });
-ShopAddress.belongsTo(Shop, { foreignKey: "shop_id" });
+
 
 // 1 Shop có nhiều Product
 Shop.hasMany(Product, { foreignKey: "shop_id", onDelete: "CASCADE" });
@@ -128,7 +125,6 @@ module.exports = {
   UserInfo,
   AdminUser,
   Shop,
-  ShopAddress,
   Product,
   ProductImage,
   Item,
