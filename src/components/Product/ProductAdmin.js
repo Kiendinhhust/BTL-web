@@ -2,32 +2,39 @@ import React from "react";
 import { connect } from "react-redux";
 import cross_icon from "../../assets/images/icons/cross_icon.png";
 import { removeProduct } from "../../store/actions/productActions";
-import "./Product.scss";
+import "./ProductAdmin.scss";
 const ProductAdmin = (props) => {
   return (
-    <div className="props-container">
-      <div className="product-image-container">
-        <img className="product-image" src={props.image} alt={props.name} />
-      </div>
-      <div className="product-name limit-text-to-2-lines">{props.name}</div>
-      <div className="product-rating-container">
+    <div className="productadmin-container">
+      <div className="productadmin-image-container">
         <img
-          className="product-rating-stars"
+          className="productadmin-image"
+          src={props.image}
+          alt={props.name}
+        />
+      </div>
+      <div className="productadmin-name limit-text-to-2-lines">
+        {props.name}
+      </div>
+      <div className="productadmin-rating-container">
+        <img
+          className="productadmin-rating-stars"
           src={`images/ratings/rating-${props.rating.stars * 10}.png`}
           alt=""
         />
-        <div className="product-rating-count link-primary">
+        <div className="productadmin-rating-count link-primary">
           Product rating count: {props.rating.count}
         </div>
       </div>
-      <div className="product-price">
-        {(props.priceCents / 1000).toFixed(3)} VNĐ
+      <div className="productadmin-price">
+        {props.priceCents.toLocaleString("vi-VN")} VNĐ
       </div>
+
       <img
         onClick={() => {
           props.removeProduct({ id: props.id });
         }}
-        className="listproduct-remove-icon"
+        className="productadmin-remove-icon"
         src={cross_icon}
         alt=""
       />

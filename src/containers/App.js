@@ -21,7 +21,9 @@ import { default as HomePageHeader } from "./HomePage/Header.js";
 import { CustomToastCloseButton } from "../components/CustomToast";
 import ConfirmModal from "../components/ConfirmModal";
 import CartPage from "./HomePage/CartPage.js";
-
+import Order from "../components/Product/Order.js";
+import MyOrders from "../components/Product/MyOrders.js";
+import ProductDetail from "../components/Product/ProductDetail.js";
 class App extends Component {
   handlePersistorState = () => {
     const { persistor } = this.props;
@@ -60,10 +62,21 @@ class App extends Component {
                   path={path.LOGIN}
                   component={userIsNotAuthenticated(Login)}
                 />
+                <Route path={"/home"} component={HomePage} />
+                <Route
+                  path={path.LOGIN}
+                  component={userIsNotAuthenticated(Login)}
+                />
                 <Route
                   path={path.CART}
                   component={userIsNotAuthenticated(CartPage)}
                 />
+                <Route path={"/myorders"} component={MyOrders} />
+                <Route
+                  path={"/order/:id"}
+                  component={userIsNotAuthenticated(Order)}
+                />
+                <Route path={"/productdetail/:id"} component={ProductDetail} />
                 <Route
                   path={path.SYSTEM}
                   component={userIsAuthenticated(System)}

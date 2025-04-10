@@ -1,28 +1,29 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import 'react-toastify/dist/ReactToastify.css';
-import './styles/styles.scss';
-import { ConnectedRouter } from 'connected-react-router';
-import App from './containers/App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/styles.scss";
+import { ConnectedRouter } from "connected-react-router";
+import App from "./containers/App";
+import * as serviceWorker from "./serviceWorker";
 import IntlProviderWrapper from "./hoc/IntlProviderWrapper";
+import { PersistGate } from "redux-persist/integration/react";
 
-
-import { Provider } from 'react-redux';
-import reduxStore, { persistor ,history} from './redux';
+import { Provider } from "react-redux";
+import reduxStore, { persistor, history } from "./redux";
 
 const renderApp = () => {
-    ReactDOM.render(
-        <Provider store={reduxStore}>
-            <IntlProviderWrapper>
-            <ConnectedRouter history={history}>
-            <App persistor={persistor}/>
-            </ConnectedRouter>
-                
-            </IntlProviderWrapper>
-        </Provider>,
-        document.getElementById('root')
-    );
+  ReactDOM.render(
+    <PersistGate loading={null} persistor={persistor}>
+      <Provider store={reduxStore}>
+        <IntlProviderWrapper>
+          <ConnectedRouter history={history}>
+            <App persistor={persistor} />
+          </ConnectedRouter>
+        </IntlProviderWrapper>
+      </Provider>
+    </PersistGate>,
+    document.getElementById("root")
+  );
 };
 
 renderApp();

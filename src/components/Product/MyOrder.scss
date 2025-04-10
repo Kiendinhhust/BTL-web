@@ -1,0 +1,264 @@
+// Variables
+$navy-dark: #1a3a6c;
+$navy-medium: #2c4272;
+$navy-light: #3a5998;
+$white: #ffffff;
+$light-gray: #f7f9fc;
+$medium-gray: #e4e8f0;
+$dark-gray: #8492a6;
+$transition: all 0.3s ease;
+$border-radius: 8px;
+
+// Mixins
+@mixin navy-gradient {
+  background: linear-gradient(135deg, $navy-dark, $navy-medium, $navy-light);
+  background-size: 200% 200%;
+  animation: gradientMove 8s ease infinite;
+}
+
+@mixin star-effect {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(
+        1px 1px at 10% 20%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1.2px 1.2px at 70% 30%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 30% 70%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1.3px 1.3px at 80% 60%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1.1px 1.1px at 50% 40%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 100%
+      );
+    pointer-events: none;
+    opacity: 0.3;
+    animation: twinkle 5s infinite alternate;
+  }
+}
+
+.myOrder {
+  margin: 50px 0px 0px 100px;
+  overflow-y: auto;
+  max-height: 90vh;
+  background-color: $white;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  position: relative;
+
+  // Navy gradient strip at top
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    @include navy-gradient;
+    @include star-effect;
+  }
+
+  .myOrder-title {
+    text-align: center;
+    margin: 5px 0 25px;
+    text-transform: uppercase;
+    font-size: 22px;
+    font-weight: 600;
+    color: $navy-dark;
+    position: relative;
+    padding-bottom: 12px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      width: 70px;
+      @include navy-gradient;
+      border-radius: 3px;
+    }
+  }
+
+  .dash {
+    margin: 0px 100px 0px 0px;
+    height: 3px;
+    background: $medium-gray;
+    border: 0;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 50px;
+      height: 100%;
+      @include navy-gradient;
+      border-radius: 3px;
+    }
+  }
+
+  // Styling for order items
+  > div {
+    margin-bottom: 30px;
+    transition: $transition;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  // Scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $light-gray;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $navy-medium;
+    border-radius: 10px;
+
+    &:hover {
+      background: $navy-dark;
+    }
+  }
+}
+
+// Animations
+@keyframes twinkle {
+  0% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+// Thêm Media Queries cho responsive
+@media (max-width: 1200px) {
+  .myOrder {
+    margin: 40px 0px 0px 80px;
+    width: calc(100% - 100px);
+    padding: 20px;
+
+    .dash {
+      margin: 0px 80px 0px 0px;
+    }
+
+    .myOrder-title {
+      font-size: 20px;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .myOrder {
+    margin: 30px 0px 0px 60px;
+    width: calc(100% - 80px);
+    padding: 18px;
+
+    .dash {
+      margin: 0px 60px 0px 0px;
+    }
+
+    .myOrder-title {
+      font-size: 18px;
+      margin: 5px 0 20px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .myOrder {
+    margin: 25px 0px 0px 40px;
+    width: calc(100% - 60px);
+    padding: 15px;
+    max-height: 85vh;
+
+    .dash {
+      margin: 0px 40px 0px 0px;
+    }
+
+    .myOrder-title {
+      font-size: 16px;
+      margin: 5px 0 15px;
+
+      &::after {
+        width: 50px;
+      }
+    }
+
+    > div {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .myOrder {
+    margin: 20px 0px 0px 20px;
+    width: calc(100% - 40px);
+    padding: 12px;
+    max-height: 80vh;
+
+    .dash {
+      margin: 0px 20px 0px 0px;
+    }
+
+    .myOrder-title {
+      font-size: 15px;
+      margin: 5px 0 12px;
+
+      &::after {
+        width: 40px;
+      }
+    }
+
+    > div {
+      margin-bottom: 15px;
+    }
+  }
+}
+
+// Giữ nguyên phần Animations

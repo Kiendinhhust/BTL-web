@@ -3,8 +3,10 @@ import checkmark from "../../assets/images/icons/checkmark.png";
 import { connect } from "react-redux";
 import { addToCart } from "../../store/actions/navbarCartActions";
 import "./Product.scss";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const Product = (props) => {
+  const history = useHistory();
   const [state, setState] = useState({
     checkCheckMark: false,
     timeOut: null,
@@ -24,7 +26,6 @@ const Product = (props) => {
     });
     props.addToCart({ quantity: cartQuantity, id });
   };
-
   useEffect(() => {
     return () => {
       clearTimeout(state.timeOut);
@@ -32,13 +33,20 @@ const Product = (props) => {
   }, [state.timeOut]);
 
   return (
-    <div className="props-container">
+    <div className="product-container">
       <div className="product-image-container">
-        <img className="product-image" src={props.image} alt={props.name} />
+        <img
+          className="product-image"
+          loading="lazy"
+          src={props.image}
+          alt={props.name}
+          onClick={() => history.push(`/productdetail/${props.id}`)}
+        />
       </div>
       <div className="product-name limit-text-to-2-lines">{props.name}</div>
       <div className="product-rating-container">
         <img
+          loading="lazy"
           className="product-rating-stars"
           src={`images/ratings/rating-${props.rating.stars * 10}.png`}
           alt=""
@@ -66,7 +74,7 @@ const Product = (props) => {
       {props.id === state.checkCheckMark ? (
         <div className={`added-to-cart js-added-to-cart-${props.id}`}>
           <img className="product-checkmark" src={checkmark} alt="checkmark" />{" "}
-          Added
+          <span className="product-added">Added</span>
         </div>
       ) : (
         <br className={`added-to-cart js-added-to-cart-${props.id}`} />
@@ -94,4 +102,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Product);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(React.memo(Product));

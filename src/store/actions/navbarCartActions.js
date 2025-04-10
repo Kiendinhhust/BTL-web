@@ -7,6 +7,9 @@ export const removeFromCart = (payload) => ({
   type: actionTypes.REMOVE_FROM_CART,
   payload,
 });
+export const removeAllCart = () => ({
+  type: actionTypes.REMOVE_ALL_CART,
+});
 export const searchAction = (payload) => ({
   type: actionTypes.SEARCH_ACTION,
   payload,

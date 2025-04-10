@@ -9,6 +9,8 @@ const ProductAdd = (props) => {
   const [productDetails, setProductDetails] = useState({
     name: "",
     priceCents: "",
+    description: "",
+    category: "Quần áo",
   });
   const [keywords, setKeywords] = useState([]);
   const [added, setAdded] = useState({
@@ -55,8 +57,8 @@ const ProductAdd = (props) => {
   };
 
   return (
-    <div className="product-add-container">
-      <div className="addproduct-itemfield">
+    <div className="productadd-container">
+      <div className="productadd-itemfield">
         <p>Product name</p>
         <input
           value={productDetails.name}
@@ -66,8 +68,8 @@ const ProductAdd = (props) => {
           placeholder="Type here"
         />
       </div>
-      <div className="addproduct-price">
-        <div className="addproduct-itemfield">
+      <div className="productadd-price">
+        <div className="productadd-itemfield">
           <p>Price</p>
           <input
             value={productDetails.priceCents}
@@ -78,8 +80,8 @@ const ProductAdd = (props) => {
           />
         </div>
       </div>
-      <div className="addproduct-keywords">
-        <button className="addproduct-keyword-btn" onClick={addKeyword}>
+      <div className="productadd-keywords">
+        <button className="productadd-keyword-btn" onClick={addKeyword}>
           Add Keyword
         </button>
         {keywords.map((keyword, index) => (
@@ -89,14 +91,42 @@ const ProductAdd = (props) => {
             value={keyword}
             onChange={(e) => handleKeywordChange(index, e.target.value)}
             placeholder="Enter keyword..."
-            className="addproduct-keyword-input"
+            className="productadd-keyword-input"
           />
         ))}
       </div>
-      <div className="addproduct-itemfield">
-        <label htmlFor="file-input" className="addproduct-thumbnail-label">
+      <br />
+      <div className="productadd-itemfield">
+        <p>Description</p>
+        <textarea
+          className="productadd-description"
+          value={productDetails.description}
+          onChange={changeHandler}
+          name="description"
+          placeholder="Type here"
+        />
+        <p>Category</p>
+        <select
+          className="productadd-category"
+          value={productDetails.category}
+          name="category"
+          onChange={changeHandler}
+          id=""
+        >
+          <option value="Quần áo">Quần áo</option>
+          <option value="Phụ kiện">Phụ kiện</option>
+          <option value="Giày dép">Giày dép</option>
+          <option value="Đồ chơi">Đồ chơi</option>
+          <option value="Đồ điện tử">Đồ điện tử</option>
+          <option value="Đồ gia dụng">Đồ gia dụng</option>
+          <option value="Đồ dùng cá nhân">Đồ dùng cá nhân</option>
+        </select>
+      </div>
+      <br />
+      <div className="productadd-itemfield">
+        <label htmlFor="file-input" className="productadd-thumbnail-label">
           <img
-            className="addproduct-thumbnail-img"
+            className="productadd-thumbnail-img"
             src={image ? URL.createObjectURL(image) : upload_area}
             alt="Upload Thumbnail"
           />
@@ -109,6 +139,7 @@ const ProductAdd = (props) => {
           hidden
         />
       </div>
+
       <button
         onClick={() => {
           props.addProduct({
@@ -119,7 +150,7 @@ const ProductAdd = (props) => {
           });
           handleAdded();
         }}
-        className="addproduct-btn"
+        className="productadd-btn"
       >
         Add Product
       </button>

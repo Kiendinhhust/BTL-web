@@ -19,7 +19,7 @@ const navbarCartReducer = (state = initialState, action) => {
             Number(action.payload.quantity),
         },
       };
-      localStorage.setItem("navbarCart", JSON.stringify(newState1));
+      // localStorage.setItem("navbarCart", JSON.stringify(newState1));
       return {
         ...newState1,
       };
@@ -32,7 +32,7 @@ const navbarCartReducer = (state = initialState, action) => {
           [action.payload.id]: 0,
         },
       };
-      localStorage.setItem("navbarCart", JSON.stringify(newState2));
+      // localStorage.setItem("navbarCart", JSON.stringify(newState2));
       return {
         ...newState2,
       };
@@ -44,7 +44,7 @@ const navbarCartReducer = (state = initialState, action) => {
           [action.payload.id]: Number(action.payload.quantity || 1),
         },
       };
-      localStorage.setItem("navbarCart", JSON.stringify(newState3));
+      // localStorage.setItem("navbarCart", JSON.stringify(newState3));
       return {
         ...newState3,
       };
@@ -57,21 +57,31 @@ const navbarCartReducer = (state = initialState, action) => {
         ...state,
         quantity: Number(totalQuantity),
       };
-      localStorage.setItem("navbarCart", JSON.stringify(newState4));
+      // localStorage.setItem("navbarCart", JSON.stringify(newState4));
       return {
         ...newState4,
+      };
+    case actionTypes.REMOVE_ALL_CART:
+      const newState5 = {
+        ...state,
+        quantity: 0,
+        carts: [],
+      };
+      // localStorage.removeItem("navbarCart");
+      return {
+        ...newState5,
       };
     case actionTypes.SEARCH_ACTION:
       return {
         ...state,
         search: action.payload.search,
       };
-    case actionTypes.FETCH_CART:
-      const navbarCart = JSON.parse(localStorage.getItem("navbarCart")) || {};
-      return {
-        ...state,
-        ...navbarCart,
-      };
+    // case actionTypes.FETCH_CART:
+    //   // const navbarCart = JSON.parse(localStorage.getItem("navbarCart")) || {};
+    //   return {
+    //     ...state,
+    //     ...navbarCart,
+    //   };
     default:
       return { ...state, quantity: state.quantity };
   }
