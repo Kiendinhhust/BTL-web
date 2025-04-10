@@ -1,32 +1,35 @@
-import React, { Component } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import ProductAdmin from "../../components/Product/ProductAdmin";
+import "./ProductManage.scss";
 class ProductManage extends Component {
-
-    state = {
-
-    }
-
-    componentDidMount() {
-    }
-
-
-    render() {
-        return (
-            <div className="text-center" >Manage products</div>
-        )
-    }
-
+  render() {
+    return (
+      <div className="productmanage-container">
+        {this.props.products.map((product) => (
+          <ProductAdmin
+            key={product.id}
+            id={product.id}
+            rating={product.rating}
+            name={product.name}
+            image={product.image}
+            priceCents={product.priceCents}
+            keywords={product.keywords}
+          />
+        ))}
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = state => {
-    return {
-    };
+const mapStateToProps = (state) => {
+  return {
+    products: state.productR.products,
+  };
 };
 
-const mapDispatchToProps = dispatch => {
-    return {
-    };
+const mapDispatchToProps = (dispatch) => {
+  return {};
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductManage);

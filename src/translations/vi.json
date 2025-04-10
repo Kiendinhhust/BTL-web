@@ -51,7 +51,7 @@
                 "user-manage": "Quản lý người sử dụng",
                 "user-address": "Quản lý địa chỉ",
                 "system-manage": "Quản lý hệ thống",
-                "product-manage": "Quản lý gói",
+                "product-manage": "Quản lý sản phẩm",
                 "register-package-group-or-account": "Đăng ký gói dịch vụ cho nhóm/tài khoản"
             },
             "system-parameter": {
@@ -95,7 +95,7 @@
             "description": "Diễn giải",
             "effective-date": "Ngày hiệu lực",
             "expiration-date": "Ngày hết hiệu lực",
-            "add-product": "Thêm gói",
+            "add-product": "Thêm sản phẩm",
             "add-product-success": "Thêm gói thành công",
             "add-product-fail": "Thêm gói thất bại",
             "edit-product": "Sửa thông tin gói",

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from 'react-router-dom';
 import UserManage from '../containers/System/UserManage';
@@ -17,6 +17,7 @@ class System extends Component {
                         <Route path="/system/user-manage" component={UserManage} />
                         <Route path="/system/user-detail" component={UserDetail} />
                         <Route path="/system/user-address" component={UserAddress} />
+                        <Route path="/system/add-product" component={ProductAdd} />
                         <Route path="/system/product-manage" component={ProductManage} />
                         <Route path="/system/register-package-group-or-account" component={RegisterPackageGroupOrAcc} />
                         <Route component={() => { return (<Redirect to={systemMenuPath} />) }} />
@@ -27,15 +28,14 @@ class System extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        systemMenuPath: state.app.systemMenuPath
-    };
+const mapStateToProps = (state) => {
+  return {
+    systemMenuPath: state.app.systemMenuPath,
+  };
 };
 
-const mapDispatchToProps = dispatch => {
-    return {
-    };
+const mapDispatchToProps = (dispatch) => {
+  return {};
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(System);

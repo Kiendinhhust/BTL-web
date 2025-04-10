@@ -42,7 +42,7 @@ const verifyOTP = async (req, res) => {
         const user = await User.create({
             username: tempUser.username,
             password_hash: tempUser.password,
-            role: 'admin'
+            role: 'buyer'
         });
         await UserInfo.create({
             user_id: user.user_id,
@@ -89,10 +89,19 @@ const login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
-        console.log("check",process.env.JWT_SECRET,user)
-        const accessToken = generateAccessToken(user.user_id);
-        const refreshToken = generateRefreshToken(user.user_id);
-        
+        console.log(process.env.JWT_REFRESH_SECRET)
+        console.log(user)
+        const accessToken = generateAccessToken(user.id);
+        const refreshToken = generateRefreshToken(user.id);
+
+        // Lưu Access Token trong HttpOnly Cookie
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict', // Chống CSRF
+            maxAge: 15 * 60 * 1000 // 15m
+        });
+
         // Lưu Refresh Token trong HttpOnly Cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -128,6 +137,15 @@ const refreshAccessToken = (req, res) => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         const newAccessToken = generateAccessToken(decoded.userId);
+        
+        // Lưu accesstoken mới
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict', // Chống CSRF
+            maxAge: 15 * 60 * 1000 // 15m
+        });
+
         res.json({ accessToken: newAccessToken });
     } catch (error) {
         res.status(403).json({ error: 'Refresh Token không hợp lệ!' });

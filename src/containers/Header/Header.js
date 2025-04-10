@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -6,14 +5,13 @@ import _ from 'lodash';
 
 import * as actions from "../../store/actions";
 import { adminLoginSuccess } from "../../store/actions/adminActions";
+import { fetchUserDetail } from "../../store/actions/userDetailActions";
 import Navigator from '../../components/Navigator';
-import { adminMenu ,sellerMenu,buyerMenu } from './menuApp';
+import { adminMenu, sellerMenu, buyerMenu } from './menuApp';
 import './Header.scss';
 import defaultAvatar from '../../assets/images/user.svg';
-import { getUserById} from '../../services/userService';
 
 class Header extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -61,35 +59,14 @@ class Header extends Component {
         });
     }
 
-    // Hàm lấy thông tin người dùng và ảnh đại diện
-    fetchUserData = async (userId) => {
-        if (!userId) return;
 
-        this.setState({ loading: true });
 
-        try {
-            // Lấy thông tin người dùng
-            const userResponse = await getUserById(userId);
-                
-            if (userResponse && userResponse.data) {
-                const userData = userResponse.data;
-                
-                // Kiểm tra xem có ảnh không
-                if (userData.UserInfo && userData.UserInfo.img) {
-                    try {
-                        console.log('userData.UserInfo.img', userData.UserInfo.img);
-                        // Chuyển đổi buffer thành binary
-                        const imageUrl = new Buffer(userData.UserInfo.img, 'base64').toString('binary');
-                        this.setState({ userAvatar: imageUrl });
-                    } catch (error) {
-                        console.error('Lỗi khi chuyển đổi ảnh:', error);
-                    }
-                } 
+    componentDidUpdate(prevProps) {
+        // Cập nhật avatar khi userDetail thay đổi
+        if (this.props.userDetail && this.props.userDetail !== prevProps.userDetail) {
+            if (this.props.userDetail.previewImgURL) {
+                this.setState({ userAvatar: this.props.userDetail.previewImgURL });
             }
-        } catch (error) {
-            console.error('Lỗi khi lấy thông tin người dùng:', error);
-        } finally {
-            this.setState({ loading: false });
         }
     }
 
@@ -136,13 +113,13 @@ class Header extends Component {
             </div>
         );
     }
-
 }
 
 const mapStateToProps = state => {
     return {
         isLoggedIn: state.admin.isLoggedIn,
         userInfo: state.admin.userInfo,
+        userDetail: state.admin.userDetail
     };
 };
 
@@ -150,6 +127,7 @@ const mapDispatchToProps = dispatch => {
     return {
         processLogout: () => dispatch(actions.processLogout()),
         adminLoginSuccess: (userInfo) => dispatch(adminLoginSuccess(userInfo)),
+        fetchUserDetail: (userId) => dispatch(fetchUserDetail(userId))
     };
 };
 

@@ -1,0 +1,275 @@
+// Đây là code mẫu để tạo 100 sản phẩm
+export const products = [
+  {
+    id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
+    image:
+      "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?q=80&w=1000&auto=format&fit=crop",
+    name: "Black and Gray Athletic Cotton Socks - 6 Pairs",
+    rating: { stars: 4.5, count: 87 },
+    priceCents: 10900000000,
+    keywords: ["socks", "sports", "apparel"],
+    shop_id: 2,
+    description:
+      "Bộ 6 đôi tất thể thao chất lượng cao, phù hợp cho các hoạt động thể thao và sử dụng hàng ngày.",
+    stock_quantity: 145,
+    category: "Phụ kiện",
+    created_at: "2023-05-12",
+    status: "Còn hàng",
+  },
+  {
+    id: "f57c8b49-9a78-4ad1-8b7a-778a3b37a33f",
+    image:
+      "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=1000&auto=format&fit=crop",
+    name: "Plain Cotton T-Shirt - 2 Pack (Teal)",
+    rating: { stars: 4.6, count: 56 },
+    priceCents: 1599,
+    keywords: ["t-shirt", "cotton", "apparel"],
+    shop_id: 1,
+    description:
+      "Bộ 2 áo thun cotton màu xanh ngọc, chất liệu mềm mịn, thoáng mát, phù hợp cho mùa hè.",
+    stock_quantity: 210,
+    category: "Quần áo",
+    created_at: "2023-02-18",
+    status: "Còn hàng",
+  },
+  {
+    id: "a74b1ed6-b349-4c2c-a6db-48fdbf4dffb2",
+    image:
+      "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=1000&auto=format&fit=crop",
+    name: "Women's Chunky Knit Sweater",
+    rating: { stars: 4.8, count: 190 },
+    priceCents: 3499,
+    keywords: ["sweater", "women", "fashion"],
+    shop_id: 3,
+    description:
+      "Áo len dệt dày dành cho nữ, giữ ấm tốt trong mùa đông, thiết kế hiện đại và thời trang.",
+    stock_quantity: 45,
+    category: "Thời trang",
+    created_at: "2022-08-30",
+    status: "Còn hàng",
+  },
+  {
+    id: "22cb7fd5-51d6-4f3b-bd40-7efb29260c3a",
+    image:
+      "https://images.unsplash.com/photo-1602143407151-7111542de6e8?q=80&w=1000&auto=format&fit=crop",
+    name: "Stainless Steel Water Bottle",
+    rating: { stars: 4.7, count: 211 },
+    priceCents: 2499,
+    keywords: ["water bottle", "sports", "outdoor"],
+    shop_id: 4,
+    description:
+      "Bình nước thép không gỉ cao cấp, giữ nhiệt tốt, dung tích 750ml, phù hợp cho các hoạt động ngoài trời.",
+    stock_quantity: 0,
+    category: "Đồ dùng cá nhân",
+    created_at: "2023-01-05",
+    status: "Hết hàng",
+  },
+  {
+    id: "22f901aa-b3b0-4eec-924e-dd1760b71c41",
+    image:
+      "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?q=80&w=1000&auto=format&fit=crop",
+    name: "Durable Hat",
+    rating: { stars: 4.7, count: 267 },
+    priceCents: 1857,
+    keywords: ["hat", "outdoor", "fashion"],
+    shop_id: 5,
+    description:
+      "Mũ bền bỉ, chống nắng tốt, phù hợp cho cả nam và nữ, có thể điều chỉnh kích thước.",
+    stock_quantity: 32,
+    category: "Phụ kiện",
+    created_at: "2022-06-15",
+    status: "Còn hàng",
+  },
+  {
+    id: "34726053-51f6-4dc3-8dff-7a44123f74a2",
+    image:
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=1000&auto=format&fit=crop",
+    name: "Cozy Backpack",
+    rating: { stars: 3.8, count: 287 },
+    priceCents: 4422,
+    keywords: ["backpack", "travel", "outdoor"],
+    shop_id: 3,
+    description:
+      "Ba lô thoải mái với nhiều ngăn, chất liệu chống nước, phù hợp cho đi học hoặc đi làm.",
+    stock_quantity: 5,
+    category: "Phụ kiện",
+    created_at: "2023-04-20",
+    status: "Còn hàng",
+  },
+  {
+    id: "fe1bad16-0eb3-473e-a234-0c56600ce4ff",
+    image:
+      "https://images.unsplash.com/photo-1521369909029-2afed882baee?q=80&w=1000&auto=format&fit=crop",
+    name: "Original Hat",
+    rating: { stars: 4.8, count: 220 },
+    priceCents: 4555,
+    keywords: ["hat", "fashion", "outdoor"],
+    shop_id: 1,
+    description:
+      "Mũ chất lượng cao với thiết kế độc đáo, phù hợp cho các hoạt động ngoài trời và thời trang hàng ngày.",
+    stock_quantity: 0,
+    category: "Phụ kiện",
+    created_at: "2022-09-10",
+    status: "Hết hàng",
+  },
+  {
+    id: "3f16a510-2c8a-4f7c-b459-9148302e1b66",
+    image:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop",
+    name: "Soft Shoes",
+    rating: { stars: 3.9, count: 103 },
+    priceCents: 4041,
+    keywords: ["shoes", "footwear", "fashion"],
+    shop_id: 4,
+    description:
+      "Giày mềm mại, thoải mái khi đi, phù hợp cho cả nam và nữ, có nhiều kích cỡ và màu sắc.",
+    stock_quantity: 25,
+    category: "Giày dép",
+    created_at: "2023-03-05",
+    status: "Còn hàng",
+  },
+  {
+    id: "865c7733-4e74-43c9-9cfb-d1c77e8956a5",
+    image:
+      "https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?q=80&w=1000&auto=format&fit=crop",
+    name: "Trendy Backpack",
+    rating: { stars: 3.6, count: 165 },
+    priceCents: 2218,
+    keywords: ["backpack", "travel", "fashion"],
+    shop_id: 5,
+    description:
+      "Ba lô thời trang với thiết kế hiện đại, nhiều ngăn tiện dụng, phù hợp cho các bạn trẻ năng động.",
+    stock_quantity: 50,
+    category: "Phụ kiện",
+    created_at: "2022-12-01",
+    status: "Còn hàng",
+  },
+  {
+    id: "9633b2c9-b4ee-40fc-8085-54ea13bfe1b2",
+    image:
+      "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?q=80&w=1000&auto=format&fit=crop",
+    name: "Casual Socks",
+    rating: { stars: 4.0, count: 279 },
+    priceCents: 4123,
+    keywords: ["socks", "apparel", "fashion"],
+    shop_id: 2,
+    description:
+      "Tất thường ngày thoải mái, chất liệu mềm, thấm hút mồ hôi tốt, phù hợp cho các hoạt động hàng ngày.",
+    stock_quantity: 120,
+    category: "Phụ kiện",
+    created_at: "2023-01-15",
+    status: "Còn hàng",
+  },
+  {
+    id: "5c41f386-0159-46bf-ac42-f88ba82092bc",
+    image:
+      "https://images.unsplash.com/photo-1581655353564-df123a1eb820?q=80&w=1000&auto=format&fit=crop",
+    name: "Classic T-Shirt",
+    rating: { stars: 4.4, count: 15 },
+    priceCents: 1096,
+    keywords: ["t-shirt", "apparel", "fashion"],
+    shop_id: 1,
+    description:
+      "Áo thun cổ điển, chất liệu cotton 100%, thoáng mát và bền màu, phù hợp cho cả nam và nữ.",
+    stock_quantity: 85,
+    category: "Quần áo",
+    created_at: "2022-07-20",
+    status: "Còn hàng",
+  },
+  {
+    id: "0a976ddd-be43-4686-8aa3-940381295007",
+    image:
+      "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?q=80&w=1000&auto=format&fit=crop",
+    name: "Casual Shorts",
+    rating: { stars: 4.7, count: 25 },
+    priceCents: 3974,
+    keywords: ["shorts", "apparel", "summer"],
+    shop_id: 3,
+    description:
+      "Quần đùi thời trang, thoải mái, phù hợp cho mùa hè và các hoạt động thể thao nhẹ.",
+    stock_quantity: 60,
+    category: "Quần áo",
+    created_at: "2022-10-05",
+    status: "Còn hàng",
+  },
+  {
+    id: "1c958520-32b0-4c83-9388-046bcc9b752b",
+    image:
+      "https://images.unsplash.com/photo-1614975059251-992f11792b9f?q=80&w=1000&auto=format&fit=crop",
+    name: "Fitted Sweater",
+    rating: { stars: 4.1, count: 135 },
+    priceCents: 2755,
+    keywords: ["sweater", "winter", "fashion"],
+    shop_id: 3,
+    description:
+      "Áo len ôm dáng, thiết kế hiện đại, giữ ấm tốt trong mùa đông, phù hợp cho cả nam và nữ.",
+    stock_quantity: 40,
+    category: "Quần áo",
+    created_at: "2023-02-10",
+    status: "Còn hàng",
+  },
+  {
+    id: "1390083b-4fe8-4d4a-b625-ac7b9e2690f2",
+    image:
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=1000&auto=format&fit=crop",
+    name: "Fitted Hoodie",
+    rating: { stars: 4.5, count: 271 },
+    priceCents: 1548,
+    keywords: ["hoodie", "apparel", "fashion"],
+    shop_id: 1,
+    description:
+      "Áo hoodie ôm dáng, chất liệu mềm mại, giữ ấm tốt, phù hợp cho các hoạt động ngoài trời và thời trang hàng ngày.",
+    stock_quantity: 75,
+    category: "Quần áo",
+    created_at: "2022-11-15",
+    status: "Còn hàng",
+  },
+  {
+    id: "1095a071-94fe-486a-82cf-a3b3cd05ecfd",
+    image:
+      "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?q=80&w=1000&auto=format&fit=crop",
+    name: "Breathable Shoes",
+    rating: { stars: 3.9, count: 31 },
+    priceCents: 3592,
+    keywords: ["shoes", "footwear", "sports"],
+    shop_id: 4,
+    description:
+      "Giày thoáng khí, nhẹ nhàng, phù hợp cho các hoạt động thể thao và đi bộ hàng ngày.",
+    stock_quantity: 30,
+    category: "Giày dép",
+    created_at: "2023-03-20",
+    status: "Còn hàng",
+  },
+  {
+    id: "428b0038-0fd9-4567-a70c-1dcee5723257",
+    image:
+      "https://images.unsplash.com/photo-1580331451062-99ff652288d7?q=80&w=1000&auto=format&fit=crop",
+    name: "Cool Sweater",
+    rating: { stars: 4.4, count: 44 },
+    priceCents: 2410,
+    keywords: ["sweater", "fashion", "winter"],
+    shop_id: 3,
+    description:
+      "Áo len mát mẻ, thiết kế hiện đại, phù hợp cho thời tiết mát mẻ và các hoạt động ngoài trời.",
+    stock_quantity: 55,
+    category: "Quần áo",
+    created_at: "2022-09-25",
+    status: "Còn hàng",
+  },
+  {
+    id: "5adcfbf5-c3d9-492e-bcf1-4edd940a6920",
+    image:
+      "https://images.unsplash.com/photo-1602143407151-7111542de6e8?q=80&w=1000&auto=format&fit=crop",
+    name: "Durable Bottle",
+    rating: { stars: 3.7, count: 149 },
+    priceCents: 1725,
+    keywords: ["bottle", "outdoor", "sports"],
+    shop_id: 4,
+    description:
+      "Bình nước bền bỉ, chống va đập, giữ nhiệt tốt, phù hợp cho các hoạt động thể thao và ngoài trời.",
+    stock_quantity: 90,
+    category: "Phụ kiện",
+    created_at: "2023-01-05",
+    status: "Còn hàng",
+  },
+];
