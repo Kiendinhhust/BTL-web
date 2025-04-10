@@ -36,7 +36,7 @@ class UserDetail extends Component {
     }
 
     componentDidMount() {
-        
+
         const userId = this.props.userInfo?.userId;
         console.log(userId)
         if (userId) {
@@ -55,7 +55,7 @@ class UserDetail extends Component {
                 const userData = response.data;
                 const userInfo = userData.UserInfo || {};
                 const UserAddress = userData.UserAddresses[0] || {};
-               
+
                 // Cập nhật state với thông tin người dùng
                 this.setState({
                     username: userData.username || '',
@@ -101,7 +101,7 @@ class UserDetail extends Component {
         let file = event.target.files[0];
 
         if (file) {
-            
+
             if (file.size > 5 * 1024 * 1024) {
                 this.setState({
                     errorMessage: 'Kích thước file quá lớn. Vui lòng chọn file nhỏ hơn 5MB.'
@@ -109,7 +109,7 @@ class UserDetail extends Component {
                 return;
             }
 
-          
+
             if (!file.type.match('image.*')) {
                 this.setState({
                     errorMessage: 'Vui lòng chọn file ảnh.'
@@ -117,7 +117,7 @@ class UserDetail extends Component {
                 return;
             }
 
-            
+
             let objectUrl = URL.createObjectURL(file);
             this.setState({
                 previewImgURL: objectUrl,

@@ -16,7 +16,6 @@ const auth = require('./middleware/authMiddleware')
 const userAPI = require('./routes/userRouter')
 const authAPI = require('./routes/authRouter')
 const shopAPI = require('./routes/shopRouter')
-const cors = require('cors');
 const productAPI = require('./routes/productRouter')
 const utilsAPI = require('./routes/utilsRouter')
 
@@ -31,7 +30,7 @@ app.use(cors({
 
 // Xử lý bảo mật và xác thực
 app.use(sanitize.sanitizeBody)
-app.use('/api', auth.authenticateToken)
+
 
 // Middleware xử lý form
 app.use(bodyParser.urlencoded({ extended: false }))

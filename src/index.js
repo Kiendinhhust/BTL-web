@@ -1,12 +1,11 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "react-toastify/dist/ReactToastify.css";
-import "./styles/styles.scss";
-import { ConnectedRouter } from "connected-react-router";
-import App from "./containers/App";
-import * as serviceWorker from "./serviceWorker";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import './styles/styles.scss';
+import { ConnectedRouter } from 'connected-react-router';
+import App from './containers/App';
+import * as serviceWorker from './serviceWorker';
 import IntlProviderWrapper from "./hoc/IntlProviderWrapper";
-import { PersistGate } from "redux-persist/integration/react";
 
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
