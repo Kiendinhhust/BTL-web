@@ -1,6 +1,6 @@
 const db = require("../models")
 
-const { Product, Shop } = db
+const { Product, Shop, Item } = db
 const slugify = require('slugify')
 const Op = db.Sequelize
 
