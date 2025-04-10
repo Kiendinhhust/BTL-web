@@ -31,7 +31,8 @@ const verifyOTP = async (req, res) => {
     try {
         const { otp, email } = req.query;
         const tempUser = getTempUser(email);
-        console.log(allTempUser());
+       
+       
 
         if (!tempUser || tempUser.otp !== otp) {
             return res.status(400).json({ error: 'Mã OTP không hợp lệ!' });
@@ -76,19 +77,29 @@ const generateRefreshToken = (userId) => {
 // Đăng nhập (Login)
 const login = async (req, res) => {
     try {
+        
         const { username, password } = req.body;
         const user = await User.findOne({ where: { username } });
         if (!user) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.hash_password);
+        const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
-
+        console.log(process.env.JWT_REFRESH_SECRET)
+        console.log(user)
         const accessToken = generateAccessToken(user.id);
         const refreshToken = generateRefreshToken(user.id);
+
+        // Lưu Access Token trong HttpOnly Cookie
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict', // Chống CSRF
+            maxAge: 15 * 60 * 1000 // 15m
+        });
 
         // Lưu Refresh Token trong HttpOnly Cookie
         res.cookie('refreshToken', refreshToken, {
@@ -100,6 +111,7 @@ const login = async (req, res) => {
 
         res.json({ message: 'Đăng nhập thành công!', accessToken });
     } catch (error) {
+        console.error('Error during login:', error);
         res.status(500).json({ error: 'Lỗi đăng nhập!' });
     }
 };
@@ -115,6 +127,15 @@ const refreshAccessToken = (req, res) => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         const newAccessToken = generateAccessToken(decoded.userId);
+        
+        // Lưu accesstoken mới
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict', // Chống CSRF
+            maxAge: 15 * 60 * 1000 // 15m
+        });
+
         res.json({ accessToken: newAccessToken });
     } catch (error) {
         res.status(403).json({ error: 'Refresh Token không hợp lệ!' });

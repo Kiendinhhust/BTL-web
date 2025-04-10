@@ -28,7 +28,7 @@ const UserInfo = sequelize.define('UserInfo', {
   },
   img: {
     type: DataTypes.STRING(100)
-  }
+  },
 }, {
   tableName: 'user_info',
   timestamps: false

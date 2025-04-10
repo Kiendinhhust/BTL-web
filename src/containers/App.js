@@ -16,6 +16,8 @@ import Home from "../routes/Home";
 import Login from "../routes/Login";
 import Header from "./Header/Header";
 import System from "../routes/System";
+import Register from "../routes/Register.js";
+import VerifyOTP from "../routes/VerifyOTP.js";
 import HomePage from "./HomePage/HomePage.js";
 import { default as HomePageHeader } from "./HomePage/Header.js";
 import { CustomToastCloseButton } from "../components/CustomToast";
@@ -62,6 +64,10 @@ class App extends Component {
                   path={path.LOGIN}
                   component={userIsNotAuthenticated(Login)}
                 />
+                <Route
+                  path={path.REGISTER}
+                  component={userIsNotAuthenticated(Register)}
+                />
                 <Route path={"/home"} component={HomePage} />
                 <Route
                   path={path.LOGIN}
@@ -70,6 +76,10 @@ class App extends Component {
                 <Route
                   path={path.CART}
                   component={userIsNotAuthenticated(CartPage)}
+                />
+                <Route
+                  path={path.VERIFY_OTP}
+                  component={userIsNotAuthenticated(VerifyOTP)}
                 />
                 <Route path={"/myorders"} component={MyOrders} />
                 <Route
