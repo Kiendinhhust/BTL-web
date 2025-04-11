@@ -9,7 +9,6 @@ import IntlProviderWrapper from "./hoc/IntlProviderWrapper";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import reduxStore, { persistor, history } from "./redux";
 
 const renderApp = () => {

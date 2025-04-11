@@ -6,7 +6,6 @@ import UserDetail from "../containers/System/UserDetail";
 import UserAddress from "../containers/System/UserAddress";
 import ProductManage from "../containers/System/ProductManage";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
-import ProductManage from "../containers/System/ProductManage";
 import ProductAdd from "../containers/System/ProductAdd";
 
 class System extends Component {

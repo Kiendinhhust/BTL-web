@@ -16,7 +16,6 @@ const authAPI = require("./routes/authRouter");
 const productAPI = require("./routes/productRouter");
 const utilsAPI = require("./routes/utilsRouter");
 const shopAPI = require("./routes/shopRouter");
-const cors = require("cors");
 const app = express();
 
 app.use(
