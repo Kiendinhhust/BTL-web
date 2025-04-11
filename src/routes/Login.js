@@ -8,7 +8,7 @@ import passIcon from '../../src/assets/images/pass.svg';
 import './Login.scss';
 import { FormattedMessage } from 'react-intl';
 import { handleLoginApi } from '../services/userService';
-
+import { Link } from 'react-router-dom';
 class Login extends Component {
     constructor(props) {
         super(props);
@@ -40,31 +40,37 @@ class Login extends Component {
     }
 
     redirectToSystemPage = () => {
-        const { navigate } = this.props;
-        const redirectPath = '/system/user-manage';
-        navigate(`${redirectPath}`);
-    }
+        const redirectPath = '/home';
+        this.props.history.push(redirectPath);
+      }
 
     handleLogin = async () => {
         this.setState({ errorMessage: '' });
         
         try {
-            let response = await handleLoginApi(this.state.username, this.state.password);
             
-            if (response && response.accessToken) {
-                // Tạo đối tượng adminInfo từ phản hồi API
-                let adminInfo = {
-                    username: this.state.username,
-                    accessToken: response.accessToken
+            let response = await handleLoginApi(this.state.username, this.state.password);
+            console.log('check',response.data.accessToken)
+            if (response && response.data.accessToken) {
+                // Tạo đối tượng userInfo  từ phản hồi API
+                let userInfo  = {
+                    username: response.data.username,
+                    userId: response.data.userId,
+                    email: response.data.email,
+                    role: response.data.role,
+                    accessToken: response.data.accessToken,
+                    refreshToken: response.data.refreshToken
                 }
+                console.log('check', userInfo)
                 
                 // Lưu thông tin đăng nhập vào Redux
-                this.props.adminLoginSuccess(adminInfo);
+                this.props.adminLoginSuccess(userInfo );
                 
                 // Chuyển hướng đến trang hệ thống
                 this.redirectToSystemPage();
             }
         } catch (error) {
+            console.error('Login failed:', error.response);
             if (error.response && error.response.data) {
                 this.setState({
                     errorMessage: error.response.data.error || 'Đăng nhập thất bại!'
@@ -163,9 +169,9 @@ class Login extends Component {
                         <div className="col-12 text-center mt-3">
                             <span className="register-link">
                                 <FormattedMessage id="login.no-account" defaultMessage="Chưa có tài khoản?" /> 
-                                <a href="/register">
-                                    <FormattedMessage id="login.register" defaultMessage="Đăng ký ngay" />
-                                </a>
+                                <Link to="/register" className="register-link">
+                                         Đăng ký ngay
+                                </Link>
                             </span>
                         </div>
                         <div className="col-12 text-center mt-3">
@@ -193,8 +199,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         navigate: (path) => dispatch(push(path)),
-        adminLoginSuccess: (adminInfo) => dispatch(actions.adminLoginSuccess(adminInfo)),
-        adminLoginFail: () => dispatch(actions.adminLoginFail()),
+        adminLoginSuccess: (userInfo ) => dispatch(actions.adminLoginSuccess(userInfo )),
+        // adminLoginFail: () => dispatch(actions.adminLoginFail()),
     };
 };
 

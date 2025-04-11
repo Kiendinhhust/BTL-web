@@ -19,6 +19,14 @@ const UserInfo = sequelize.define('UserInfo', {
     type: DataTypes.STRING(20),
     unique: true
   },
+  firstname: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
+  lastname: {
+    type: DataTypes.STRING(50),
+    allowNull: true
+  },
   default_address: {
     type: DataTypes.BIGINT,
     references: {
@@ -27,7 +35,7 @@ const UserInfo = sequelize.define('UserInfo', {
     }
   },
   img: {
-    type: DataTypes.STRING(100)
+    type: DataTypes.BLOB('long'),
   },
 }, {
   tableName: 'user_info',

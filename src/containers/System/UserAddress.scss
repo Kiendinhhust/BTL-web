@@ -1,0 +1,192 @@
+@import "../../styles/common.scss";
+
+.user-address-container {
+  margin: 0 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  position: relative;
+  overflow: hidden;
+  
+  // Navy gradient strip at top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #1a3a6c, #2c4272, #3a5998);
+    background-size: 200% 200%;
+    animation: gradientMove 8s ease infinite;
+  }
+  
+  .title {
+    text-align: center;
+    margin: 5px 0 25px;
+    text-transform: uppercase;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a3a6c;
+    position: relative;
+    padding-bottom: 12px;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      width: 70px;
+      background: linear-gradient(135deg, #1a3a6c, #2c4272, #3a5998);
+      border-radius: 3px;
+    }
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    font-style: italic;
+  }
+  
+  .address-actions {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    
+    .btn-add-address {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s;
+      
+      &:hover {
+        background-color: adjust-color(#4caf50, $lightness: -10%);
+      }
+      
+      i {
+        margin-right: 5px;
+      }
+    }
+  }
+  
+  .address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    
+    .address-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      transition: all 0.3s;
+      
+      &:hover {
+        border-color: #3a5998;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      
+      &.default {
+        border-color: #4caf50;
+        background-color: rgba(76, 175, 80, 0.05);
+      }
+      
+      .address-info {
+        flex: 1;
+        
+        .address-type {
+          font-weight: 600;
+          margin-bottom: 5px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          
+          .default-badge {
+            background-color: #4caf50;
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: normal;
+          }
+        }
+        
+        .address-text {
+          color: #555;
+          line-height: 1.5;
+        }
+      }
+      
+      .address-actions {
+        display: flex;
+        gap: 10px;
+        margin: 0;
+        
+        button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s;
+          
+          &.btn-edit {
+            color: #3a5998;
+            
+            &:hover {
+              color: adjust-color(#3a5998, $lightness: -15%);
+            }
+          }
+          
+          &.btn-delete {
+            color: #e53935;
+            
+            &:hover {
+              color: adjust-color(#e53935, $lightness: -15%);
+            }
+          }
+          
+          &.btn-set-default {
+            color: #4caf50;
+            text-decoration: underline;
+            font-size: 14px;
+            
+            &:hover {
+              color: adjust-color(#4caf50, $lightness: -15%);
+            }
+          }
+        }
+      }
+    }
+    
+    .no-address {
+      text-align: center;
+      padding: 40px 0;
+      color: #999;
+      
+      i {
+        font-size: 48px;
+        margin-bottom: 15px;
+        color: #ccc;
+      }
+      
+      p {
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

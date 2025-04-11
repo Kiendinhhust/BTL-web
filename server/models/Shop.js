@@ -22,6 +22,10 @@ const Shop = sequelize.define('Shop', {
   description: {
     type: DataTypes.TEXT
   },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   rating: {
     type: DataTypes.DECIMAL(3, 2),
     defaultValue: 0.0

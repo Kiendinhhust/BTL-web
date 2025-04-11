@@ -9,19 +9,20 @@ import IntlProviderWrapper from "./hoc/IntlProviderWrapper";
 import { PersistGate } from "redux-persist/integration/react";
 
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import reduxStore, { persistor, history } from "./redux";
 
 const renderApp = () => {
   ReactDOM.render(
-    <PersistGate loading={null} persistor={persistor}>
-      <Provider store={reduxStore}>
+    <Provider store={reduxStore}>
+      <PersistGate loading={null} persistor={persistor}>
         <IntlProviderWrapper>
           <ConnectedRouter history={history}>
             <App persistor={persistor} />
           </ConnectedRouter>
         </IntlProviderWrapper>
-      </Provider>
-    </PersistGate>,
+      </PersistGate>
+    </Provider>,
     document.getElementById("root")
   );
 };

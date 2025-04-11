@@ -1,0 +1,405 @@
+@import "../../styles/common.scss";
+
+.user-detail-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+
+    // Navy gradient strip at top
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(135deg, #1a3a6c, #2c4272, #3a5998);
+        background-size: 200% 200%;
+        animation: gradientMove 8s ease infinite;
+    }
+
+    .title {
+        text-align: center;
+        margin: 5px 0 30px;
+        text-transform: uppercase;
+        font-size: 24px;
+        font-weight: 600;
+        color: #1a3a6c;
+        position: relative;
+        padding-bottom: 15px;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 3px;
+            width: 80px;
+            background: linear-gradient(135deg, #1a3a6c, #2c4272, #3a5998);
+            border-radius: 3px;
+        }
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 50px 0;
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(26, 58, 108, 0.1);
+            border-radius: 50%;
+            border-top-color: #1a3a6c;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #666;
+            font-size: 16px;
+        }
+    }
+
+    .user-detail-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+
+        .user-avatar-section {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .user-avatar {
+                width: 220px;
+                height: 220px;
+                border-radius: 50%;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                border: 8px solid rgba(26, 58, 108, 0.1);
+                margin-bottom: 20px;
+                position: relative;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+                &:hover {
+                    border-color: rgba(26, 58, 108, 0.3);
+                    transform: scale(1.03);
+                    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+                }
+
+                // Thêm hiệu ứng glow khi hover
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: -10px;
+                    left: -10px;
+                    right: -10px;
+                    bottom: -10px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle, rgba(26, 58, 108, 0.2) 0%, rgba(26, 58, 108, 0) 70%);
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    z-index: -1;
+                }
+
+                &:hover::after {
+                    opacity: 1;
+                }
+            }
+
+            .avatar-upload {
+                margin-bottom: 25px;
+
+                .upload-button {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: #f5f5f5;
+                    color: #333;
+                    border-radius: 30px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    border: 1px solid #ddd;
+                    font-weight: 500;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+                    &:hover {
+                        background-color: #1a3a6c;
+                        color: white;
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    }
+
+                    i {
+                        margin-right: 8px;
+                    }
+                }
+            }
+
+            .user-name {
+                font-size: 22px;
+                font-weight: 600;
+                margin: 0 0 8px;
+                color: #333;
+            }
+
+            .user-role {
+                font-size: 14px;
+                color: #666;
+                background-color: #f5f5f5;
+                padding: 5px 15px;
+                border-radius: 20px;
+                text-transform: capitalize;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        .user-info-section {
+            flex: 1;
+            min-width: 300px;
+
+            .error-message {
+                background-color: #ffebee;
+                color: #e53935;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                display: flex;
+                align-items: center;
+                box-shadow: 0 2px 5px rgba(229, 57, 53, 0.1);
+
+                i {
+                    margin-right: 12px;
+                    font-size: 20px;
+                }
+            }
+
+            .success-message {
+                background-color: #e8f5e9;
+                color: #4caf50;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                display: flex;
+                align-items: center;
+                box-shadow: 0 2px 5px rgba(76, 175, 80, 0.1);
+
+                i {
+                    margin-right: 12px;
+                    font-size: 20px;
+                }
+            }
+
+            .form-actions {
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: 30px;
+                gap: 15px;
+
+                button {
+                    padding: 12px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    transition: all 0.3s;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+                    &:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                    }
+
+                    i {
+                        font-size: 16px;
+                    }
+
+                    &.btn-edit {
+                        background-color: #1a3a6c;
+                        color: white;
+
+                        &:hover {
+                            background-color: #142c54; /* adjust-color(#1a3a6c, $lightness: -10%) */
+                        }
+                    }
+
+                    &.btn-change-password {
+                        background-color: #ff9800;
+                        color: white;
+
+                        &:hover {
+                            background-color: #cc7a00; /* adjust-color(#ff9800, $lightness: -10%) */
+                        }
+                    }
+
+                    &.btn-save {
+                        background-color: #4caf50;
+                        color: white;
+
+                        &:hover {
+                            background-color: #3d8b40; /* adjust-color(#4caf50, $lightness: -10%) */
+                        }
+
+                        &:disabled {
+                            background-color: #a5d6a7;
+                            cursor: not-allowed;
+                            transform: none;
+                            box-shadow: none;
+                        }
+                    }
+
+                    &.btn-cancel {
+                        background-color: #f5f5f5;
+                        color: #333;
+
+                        &:hover {
+                            background-color: #e0e0e0;
+                        }
+
+                        &:disabled {
+                            color: #999;
+                            cursor: not-allowed;
+                            transform: none;
+                            box-shadow: none;
+                        }
+                    }
+                }
+            }
+
+            .password-change-form {
+                background-color: #f9f9f9;
+                padding: 25px;
+                border-radius: 10px;
+                margin-bottom: 30px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+                h3 {
+                    font-size: 18px;
+                    color: #333;
+                    margin-bottom: 20px;
+                    padding-bottom: 10px;
+                    border-bottom: 1px solid #eee;
+                }
+
+                .form-group {
+                    margin-bottom: 20px;
+
+                    label {
+                        display: block;
+                        margin-bottom: 8px;
+                        font-weight: 500;
+                        color: #333;
+                    }
+
+                    input {
+                        width: 100%;
+                        padding: 12px 15px;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        font-size: 15px;
+                        transition: all 0.3s;
+
+                        &:focus {
+                            border-color: #1a3a6c;
+                            outline: none;
+                            box-shadow: 0 0 0 3px rgba(26, 58, 108, 0.1);
+                        }
+                    }
+                }
+
+                .form-actions {
+                    margin-top: 30px;
+                    margin-bottom: 0;
+                }
+            }
+
+            .info-form {
+                .form-row {
+                    display: flex;
+                    gap: 25px;
+                    margin-bottom: 20px;
+                    flex-wrap: wrap;
+
+                    .form-group {
+                        flex: 1;
+                        min-width: 250px;
+
+                        label {
+                            display: block;
+                            margin-bottom: 8px;
+                            font-weight: 500;
+                            color: #333;
+                        }
+
+                        input {
+                            width: 100%;
+                            padding: 12px 15px;
+                            border: 1px solid #ddd;
+                            border-radius: 8px;
+                            font-size: 15px;
+                            transition: all 0.3s;
+
+                            &:focus {
+                                border-color: #1a3a6c;
+                                outline: none;
+                                box-shadow: 0 0 0 3px rgba(26, 58, 108, 0.1);
+                            }
+
+                            &:disabled {
+                                background-color: #f5f5f5;
+                                cursor: not-allowed;
+                            }
+                        }
+
+                        p {
+                            padding: 12px 0;
+                            color: #333;
+                            font-size: 16px;
+                            border-bottom: 1px dashed #eee;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 60px 0;
+        color: #999;
+
+        i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        p {
+            font-size: 18px;
+        }
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}

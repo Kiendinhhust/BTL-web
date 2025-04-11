@@ -5,32 +5,120 @@
     @media (min-width: 766px) {
       min-width: 650px;
     }
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 32, 0.15);
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 8px;
+  }
+
+  .modal-header {
+    background-color: #1a3a6c;
+    color: white;
+    padding: 16px 20px;
+    border-bottom: 1px solid #2d5296;
+
+    .modal-title {
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .close {
+      color: white;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 20px;
+    background-color: #f8faff;
   }
 
   hr {
     border: none;
-    border-bottom: 1px solid $border;;
-    width: 100%;
-    margin: 10px 15px 5px 15px;
+    border-bottom: 1px solid #e0e7f5;
+    width: calc(100% - 30px);
+    margin: 15px 15px 15px 15px;
   }
 
   .btn-container {
-    margin-top: 10px;
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+    
     .btn {
-      width: 100px;
+      width: 120px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      
       &:first-child {
-        margin-right: 10px;
+        margin-right: 12px;
+      }
+      
+      &.btn-primary {
+        background-color: #1a3a6c;
+        border-color: #1a3a6c;
+        
+        &:hover, &:focus {
+          background-color: #2d5296;
+          border-color: #2d5296;
+        }
+      }
+      
+      &.btn-secondary {
+        background-color: #ffffff;
+        border-color: #dee2e6;
+        color: #495057;
+        
+        &:hover, &:focus {
+          background-color: #f1f3f5;
+          border-color: #ced4da;
+        }
       }
     }
   }
   
   .custom-form-group {
-    margin: 5px 0;
+    margin: 10px 0;
+    
+    label {
+      font-weight: 500;
+      color: #1a3a6c;
+      margin-bottom: 5px;
+    }
 
-    .custom-form-control.readonly {
-      min-height: 28px;
-      height: auto;
+    .custom-form-control {
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      padding: 8px 12px;
+      transition: border-color 0.15s ease-in-out;
+      
+      &:focus {
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 0.2rem rgba(26, 58, 108, 0.25);
+      }
+      
+      &.readonly {
+        min-height: 28px;
+        height: auto;
+        background-color: #f1f3f7;
+        border-color: #e0e7f5;
+      }
     }
   }
-}
 
+  .modal-footer {
+    background-color: #f8faff;
+    border-top: 1px solid #e0e7f5;
+    padding: 15px 20px;
+  }
+}

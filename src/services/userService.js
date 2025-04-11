@@ -1,6 +1,17 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3434'; 
+const API_URL = 'http://localhost:3434';
+
+
+export const getUserById = (userId) => {
+    return axios.get(`${API_URL}/api/user/${userId}`);
+};
+
+
+export const updateUserDetail = (userId, userData) => {
+    return axios.put(`${API_URL}/api/user/detail/${userId}`, userData);
+};
+
 
 
 export const handleLoginApi = (username, password) => {

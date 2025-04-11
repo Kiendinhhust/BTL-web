@@ -8,6 +8,8 @@ export const path = {
   ORDER: "/order",
   LOG_OUT: "/logout",
   SYSTEM: "/system",
+  SELLER: "/seller",
+  BUYER: "/buyer",
 };
 
 export const languages = {

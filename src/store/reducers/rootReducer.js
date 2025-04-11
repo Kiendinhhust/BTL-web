@@ -18,9 +18,9 @@ const persistCommonConfig = {
 };
 
 const adminPersistConfig = {
-  ...persistCommonConfig,
-  key: "admin",
-  whitelist: ["isLoggedIn", "adminInfo"],
+    ...persistCommonConfig,
+    key: 'admin',
+    whitelist: ['isLoggedIn', 'userInfo']
 };
 const orderPersistConfig = {
   ...persistCommonConfig,
@@ -36,10 +36,15 @@ const rootReducer = (history) =>
   combineReducers({
     router: connectRouter(history),
     admin: persistReducer(adminPersistConfig, adminReducer),
+    app: appReducer,
     user: userReducer,
+<<<<<<< HEAD
     app: appReducer,
     navbarCart: persistReducer(navbarCartPersistConfig, navbarCartReducer),
     productR: productReducer,
     order: persistReducer(orderPersistConfig, orderReducer),
   });
 export default rootReducer;
+=======
+})
+>>>>>>> a0abebabfa3bfbef156031d1575caadc63e2e224

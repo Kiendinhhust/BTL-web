@@ -1,72 +1,85 @@
-@import "../styles/common.scss";
-
 .toast-container {
   .toast-item {
     white-space: pre-wrap;
-    box-shadow: 0 0 5px 5px $box-shadow-color;
-    -webkit-box-shadow: 0 0 5px 5px $box-shadow-color;
+    box-shadow: 0 4px 12px rgba(0, 0, 32, 0.15);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
 
     &.Toastify__toast--success {
-      background: $common-green;
+      background: #1a3a6c;
+      border-left: 4px solid #4caf50;
     }
 
     &.Toastify__toast--error {
-      background: $common-red;
+      background: #1a3a6c;
+      border-left: 4px solid #f44336;
     }
 
     &.Toastify__toast--warn {
-      background: $colormain;
+      background: #1a3a6c;
+      border-left: 4px solid #ff9800;
     }
 
     &.Toastify__toast--info {
-      background: $colormain;
+      background: #1a3a6c;
+      border-left: 4px solid #2196f3;
     }
 
     .toast-close {
       position: absolute;
-      right: 10px;
-      top:10px;
-      color: $common-text-color;
-      font-size: $base-size;
+      right: 12px;
+      top: 12px;
+      color: #ffffff;
+      font-size: 16px;
       padding: 0;
       cursor: pointer;
       background: transparent;
       border: 0;
-      -webkit-appearance: none;
+      opacity: 0.7;
       transition: opacity 0.2s ease-out;
+      
+      &:hover {
+        opacity: 1;
+      }
     }
 
     .toast-item-body {
-      color: $common-text-color;
+      color: #ffffff;
       display: block;
       flex: none;
       width: 100%;
 
       .toast-title {
-        font-weight: bold;
-        font-size: $base-size;
-        margin: 0 20px 5px 0;
-
+        font-weight: 600;
+        font-size: 16px;
+        margin: 0 20px 8px 0;
+        
         .fixed-scroll-bar {
           height: 50px;
         }
+        
         .date {
           float: right;
-          font-size: $base-size - 2px;
+          font-size: 14px;
           vertical-align: middle;
           margin-right: 5px;
           margin-bottom: 0;
           padding: 2px 5px;
+          opacity: 0.8;
         }
 
         i {
           position: relative;
-          margin-right: 3px;
+          margin-right: 6px;
         }
       }
 
       .toast-content {
-        font-size: $base-size - 2px;
+        font-size: 14px;
+        line-height: 1.5;
+        opacity: 0.9;
       }
     }
   }
