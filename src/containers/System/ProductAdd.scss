@@ -1,140 +1,347 @@
-.product-add-container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+// Variables - giữ nguyên từ ProductDetail.scss
+$navy-dark: #1a3a6c;
+$navy-medium: #2c4272;
+$navy-light: #3a5998;
+$white: #ffffff;
+$light-gray: #f7f9fc;
+$medium-gray: #e4e8f0;
+$dark-gray: #8492a6;
+$accent-color: #ff5a5a;
+$blue: #007bff;
+$green: #4caf50;
+$transition: all 0.3s ease;
+$border-radius: 8px;
+$box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-  @media (max-width: 480px) {
-    padding: 15px;
-  }
+// Mixins
+@mixin navy-gradient {
+  background: linear-gradient(135deg, $navy-dark, $navy-medium, $navy-light);
+  background-size: 200% 200%;
+  animation: gradientMove 8s ease infinite;
 }
 
-.addproduct-itemfield {
-  margin-bottom: 15px;
-
-  p {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: 0.3s;
-
-    &:focus {
-      border-color: #ff5a5a;
-      outline: none;
-      box-shadow: 0 0 5px rgba(255, 90, 90, 0.5);
-    }
-  }
-}
-
-.addproduct-keywords {
-  margin-bottom: 15px;
-
-  .addproduct-keyword-btn {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-
-    &:hover {
-      background: #0056b3;
-    }
-  }
-
-  .addproduct-keyword-input {
-    display: block;
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-  }
-}
-
-.addproduct-thumbnail-label {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 100%;
-  height: 150px;
-  background: #f8f8f8;
-  border-radius: 10px;
-  overflow: hidden;
-
-  img {
-    max-width: 100%;
-    max-height: 100%;
-  }
-
-  @media (max-width: 480px) {
-    height: 120px;
-  }
-}
-
-.addproduct-btn {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  background: #ff5a5a;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
+@mixin hover-transform {
+  transition: $transition;
 
   &:hover {
-    background: #d94848;
-  }
-
-  @media (max-width: 480px) {
-    padding: 8px;
-    font-size: 14px;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   }
 }
 
-/* Responsive adjustments */
+.productadd-container {
+  height: 90vh;
+  overflow-y: scroll;
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 30px;
+  border: 1px solid $medium-gray;
+  border-radius: $border-radius;
+  background-color: $white;
+  box-shadow: $box-shadow;
+  position: relative;
+
+  // Navy gradient strip at top
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    @include navy-gradient;
+  }
+
+  .productadd-itemfield {
+    margin-bottom: 25px;
+
+    p {
+      font-size: 16px;
+      font-weight: 600;
+      color: $navy-dark;
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: rgba($navy-light, 0.2);
+      }
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid $medium-gray;
+      border-radius: $border-radius;
+      font-size: 15px;
+      color: $dark-gray;
+      transition: $transition;
+
+      &:focus {
+        outline: none;
+        border-color: $navy-light;
+        box-shadow: 0 0 0 3px rgba($navy-light, 0.15);
+        color: $navy-dark;
+      }
+
+      &::placeholder {
+        color: lighten($dark-gray, 15%);
+      }
+    }
+
+    .productadd-description {
+      min-height: 120px;
+      resize: vertical;
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid $medium-gray;
+      border-radius: $border-radius;
+      font-size: 15px;
+      color: $dark-gray;
+      transition: $transition;
+      resize: none;
+      overflow-y: auto;
+
+      &:focus {
+        outline: none;
+        border-color: $navy-light;
+        box-shadow: 0 0 0 3px rgba($navy-light, 0.15);
+        color: $navy-dark;
+      }
+
+      &::placeholder {
+        color: lighten($dark-gray, 15%);
+      }
+    }
+
+    .productadd-category {
+      cursor: pointer;
+      background-color: $white;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238492a6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 15px;
+      padding-right: 40px;
+
+      &:hover {
+        border-color: $navy-medium;
+      }
+
+      option {
+        padding: 10px;
+      }
+    }
+  }
+
+  .productadd-price {
+    display: flex;
+    gap: 20px;
+
+    .productadd-itemfield {
+      flex: 1;
+    }
+  }
+
+  .productadd-keywords {
+    margin-bottom: 25px;
+
+    .productadd-keyword-btn {
+      background-color: $navy-light;
+      color: $white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: $border-radius;
+      cursor: pointer;
+      font-weight: 500;
+      transition: $transition;
+      margin-bottom: 15px;
+
+      &:hover {
+        background-color: $navy-dark;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba($navy-dark, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    .productadd-keyword-input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid $medium-gray;
+      border-radius: $border-radius;
+      margin-bottom: 10px;
+      font-size: 14px;
+      transition: $transition;
+
+      &:focus {
+        outline: none;
+        border-color: $navy-light;
+        box-shadow: 0 0 0 3px rgba($navy-light, 0.15);
+      }
+    }
+  }
+
+  .productadd-thumbnail-label {
+    display: block;
+    cursor: pointer;
+    border: 2px dashed $medium-gray;
+    border-radius: $border-radius;
+    padding: 10px; /* Giảm padding từ 20px xuống 10px */
+    text-align: center;
+    transition: $transition;
+    max-width: 200px;
+    max-height: auto;
+    &:hover {
+      border-color: $navy-light;
+      background-color: rgba($navy-light, 0.03);
+    }
+
+    .productadd-thumbnail-img {
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0; /* Đảm bảo không có margin */
+      display: block; /* Đảm bảo hiển thị dạng block */
+      margin: 0 auto; /* Căn giữa hình ảnh */
+
+      &:not([src$="upload_area.svg"]) {
+        // Khi đã có hình ảnh được tải lên
+        border-radius: $border-radius;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .productadd-btn {
+    background-color: $navy-medium;
+    color: $white;
+    border: none;
+    padding: 14px 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: $border-radius;
+    transition: $transition;
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    text-align: center;
+    min-width: 200px;
+    margin-top: 20px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    &:hover {
+      background-color: $navy-dark;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba($navy-dark, 0.3);
+
+      &::before {
+        transform: translateX(100%);
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .added-to-cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
+    color: $green;
+    font-weight: 600;
+
+    .product-checkmark {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+  }
+}
+
+// Animations
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Media Queries
 @media (max-width: 768px) {
-  .product-add-container {
-    max-width: 90%;
-  }
+  .productadd-container {
+    padding: 20px;
+    margin: 20px;
 
-  .addproduct-itemfield input,
-  .addproduct-keyword-input {
-    font-size: 14px;
-    padding: 8px;
-  }
+    .productadd-price {
+      flex-direction: column;
+      gap: 0;
+    }
 
-  .addproduct-keyword-btn {
-    padding: 6px 10px;
-    font-size: 14px;
+    .productadd-btn {
+      width: 100%;
+    }
   }
 }
 
 @media (max-width: 480px) {
-  .product-add-container {
-    max-width: 100%;
-  }
+  .productadd-container {
+    padding: 15px;
+    margin: 15px;
 
-  .addproduct-thumbnail-label {
-    height: 100px;
-  }
+    .productadd-itemfield {
+      p {
+        font-size: 14px;
+      }
 
-  .addproduct-btn {
-    font-size: 14px;
-    padding: 8px;
+      input,
+      textarea,
+      select {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
+
+    .productadd-thumbnail-label {
+      padding: 15px;
+
+      .productadd-thumbnail-img {
+        max-height: 150px;
+      }
+    }
+
+    .productadd-btn {
+      padding: 12px 20px;
+      font-size: 15px;
+    }
   }
 }

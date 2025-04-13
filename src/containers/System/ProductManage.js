@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import ProductAdmin from "../../components/Product/ProductAdmin";
+import "./ProductManage.scss";
 class ProductManage extends Component {
   render() {
     return (
-      <div className="products-container">
+      <div className="productmanage-container">
         {this.props.products.map((product) => (
           <ProductAdmin
             key={product.id}

@@ -1,19 +1,24 @@
-import axios from '../axios';
-import * as queryString from 'query-string';
 
-const adminService = {
+import axios from 'axios';
 
-    /**
-     * Đăng nhập hệ thống
-     * {
-     *  "username": "string",
-     *  "password": "string"
-     * }
-     */
-    login(loginBody) {
-        return axios.post(`/admin/login`, loginBody)
-    },
+const API_URL = 'http://localhost:3434';
 
+
+export const fetchAllUsersApi = () => {
+  return axios.get(`${API_URL}/api/user`);
 };
 
-export default adminService;
+
+export const createUserApi = (userData) => {
+  return axios.post(`${API_URL}/api/user`, userData);
+};
+
+
+export const updateUserApi = (userId, userData) => {
+  return axios.put(`${API_URL}/api/user/${userId}`, userData);
+};
+
+
+export const deleteUserApi = (userId) => {
+  return axios.delete(`${API_URL}/api/user/${userId}`);
+};

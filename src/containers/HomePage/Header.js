@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import "./Header.scss"; // Bạn cần tạo file CSS/SCSS tương ứng
@@ -7,9 +7,10 @@ import homeImage from "../../assets/images/icons/home.png";
 import searchImage from "../../assets/images/icons/search.png";
 import { searchAction } from "../../store/actions/navbarCartActions";
 const Header = (props) => {
+  const [searching, setSearching] = useState("");
   const handleSearchChange = (e) => {
     props.searchAction({
-      search: e.target.value,
+      search: searching,
     });
   };
   return (
@@ -32,16 +33,32 @@ const Header = (props) => {
               ></img>
               <div className="nav-cart-count">{props.cartQuantity}</div>
             </Link>
-            <img className="searchImage-header" src={searchImage} alt="" />
-            <input
-              value={props.search}
-              onChange={handleSearchChange}
-              className="searchBar"
-              type="text"
-              name=""
-              id=""
-            />
+            <div className="search-container">
+              <input
+                value={searching}
+                className="searchBar"
+                type="text"
+                placeholder="Tìm kiếm..."
+                name="search"
+                id="search"
+                onChange={(e) => {
+                  setSearching(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchChange();
+                  }
+                }}
+              />
+              <img
+                onClick={handleSearchChange}
+                className="searchImage-header"
+                src={searchImage}
+                alt="Search"
+              />
+            </div>
             <Link to="/login">Login</Link>
+            <Link to="/myorders">My Orders</Link>
           </li>
           {/* Bạn có thể thêm các link khác vào đây nếu cần */}
         </ul>

@@ -1,5 +1,10 @@
 export const adminMenu = [
   {
+    // Trang chủ
+    name: "Trang chủ",
+    link: "/home",
+  },
+  {
     //hệ thống
     name: "menu.system.header",
     menus: [
@@ -24,7 +29,28 @@ export const adminMenu = [
           },
         ],
       },
-      // { name: 'menu.system.system-parameter.header', link: '/system/system-parameter' },
     ],
+  },
+];
+export const sellerMenu = [
+  {
+    name: "Trang chủ",
+    link: "/home",
+  },
+
+  {
+    name: "Quản lý cửa hàng",
+    link: "/seller/shop-manage",
+  },
+];
+
+export const buyerMenu = [
+  {
+    name: "Trang chủ",
+    link: "/home",
+  },
+  {
+    name: "Đăng ký người bán",
+    link: "/buyer/register-seller",
   },
 ];

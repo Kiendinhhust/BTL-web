@@ -4,17 +4,161 @@
     z-index: 99;
     display: flex;
     justify-content: space-between;
-    background-color: $colormain;
-    color: $common-text-color;
-    height: 40px;
+    background-color: #1a3a6c; ;
+    color:#ffffff;;
+    height: 50px;
     position: relative;
+
+    .header-tabs-container {
+        flex-grow: 1;
+    }
+
+    .header-right-content {
+        display: flex;
+        align-items: center;
+        gap: 15px; // Space between user info and logout
+        padding-right: 15px; // Padding on the right edge
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 8px; // Space between name and avatar
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+        position: relative;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        // Thêm biểu tượng mũi tên xuống
+        &::after {
+            content: '\f107'; // Unicode cho icon mũi tên xuống của FontAwesome
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-left: 5px;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+
+        &.active::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            margin-top: 10px;
+            overflow: hidden;
+            transform-origin: top right;
+            animation: dropdownFadeIn 0.25s ease;
+            display: block; /* Đảm bảo dropdown luôn hiển thị khi được render */
+
+            // Thêm mũi tên nhỏ ở phía trên dropdown
+            &::before {
+                content: '';
+                position: absolute;
+                top: -6px;
+                right: 20px;
+                width: 12px;
+                height: 12px;
+                background-color: #fff;
+                transform: rotate(45deg);
+                border-top: 1px solid rgba(0, 0, 0, 0.05);
+                border-left: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .dropdown-item {
+                display: flex;
+                align-items: center;
+                padding: 12px 15px;
+                color: #333;
+                text-decoration: none;
+                transition: all 0.2s;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+                &:hover {
+                    background-color: #f5f5f5;
+                    padding-left: 18px;
+                }
+
+                // Thêm icon cho các mục trong dropdown
+                &::before {
+                    font-family: 'Font Awesome 5 Free';
+                    font-weight: 900;
+                    margin-right: 10px;
+                    font-size: 14px;
+                    width: 20px;
+                    text-align: center;
+                }
+
+                &:nth-child(1)::before {
+                    content: '\f007'; // Icon user
+                    color: #3a5998;
+                }
+
+                &:nth-child(2)::before {
+                    content: '\f3c5'; // Icon location/address
+                    color: #4caf50;
+                }
+            }
+        }
+
+        .user-name {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%; // Make it circular
+            border: 1px solid #ccc; // Optional border
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: all 0.3s ease;
+
+            &:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            }
+        }
+    }
+
     .btn-logout {
-        color: $common-text-color;
-        line-height: 40px;
-        height: 40px;
+        color: #ffffff;
+        background-color: #2d5296;
+        line-height: 50px;
+        height: 50px;
         padding: 0 10px;
         &:hover {
-            background-color: darken($colormain, 5);
+            background-color: adjust-color($colormain, $lightness: -5);
+            transition: background-color 0.3s ease;
         }
         i {
             font-size: $base-size + 1px;

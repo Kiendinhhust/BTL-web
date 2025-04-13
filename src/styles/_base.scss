@@ -34,7 +34,7 @@
   color: $common-text-color;
   &:hover {
     color: $common-text-color;
-    background-color: darken($colormain, 5);
+    background-color: adjust-color($colormain, $lightness: -5);
   }
 }
 

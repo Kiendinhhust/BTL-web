@@ -11,6 +11,7 @@ import createRootReducer from "./store/reducers/rootReducer";
 import actionTypes from "./store/actions/actionTypes";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { fetchProduct } from "./store/actions/productActions";
+import { fetchCart } from "./store/actions/navbarCartActions";
 const environment = process.env.NODE_ENV || "development";
 let isDevelopment = environment === "development";
 
@@ -50,5 +51,6 @@ export const persistor = persistStore(reduxStore);
 
 //Fetch Product
 reduxStore.dispatch(fetchProduct());
-
+//Fetch Cart
+// reduxStore.dispatch(fetchCart());
 export default reduxStore;

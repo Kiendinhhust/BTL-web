@@ -7,7 +7,20 @@ export const removeFromCart = (payload) => ({
   type: actionTypes.REMOVE_FROM_CART,
   payload,
 });
+export const removeAllCart = () => ({
+  type: actionTypes.REMOVE_ALL_CART,
+});
 export const searchAction = (payload) => ({
   type: actionTypes.SEARCH_ACTION,
   payload,
+});
+export const updateCart = (payload) => ({
+  type: actionTypes.UPDATE_CART,
+  payload,
+});
+export const updateQuantity = () => ({
+  type: actionTypes.UPDATE_QUANTITY,
+});
+export const fetchCart = () => ({
+  type: actionTypes.FETCH_CART,
 });

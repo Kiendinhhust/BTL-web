@@ -10,6 +10,7 @@ import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
 import navbarCartReducer from "./navbarCartReducer";
 import productReducer from "./productReducer";
+import orderReducer from "./orderReducer";
 
 const persistCommonConfig = {
   storage: storage,
@@ -19,16 +20,26 @@ const persistCommonConfig = {
 const adminPersistConfig = {
   ...persistCommonConfig,
   key: "admin",
-  whitelist: ["isLoggedIn", "adminInfo"],
+  whitelist: ["isLoggedIn", "userInfo"],
 };
-
+const orderPersistConfig = {
+  ...persistCommonConfig,
+  key: "orders",
+  whitelist: ["orders"],
+};
+const navbarCartPersistConfig = {
+  ...persistCommonConfig,
+  key: "navbarCart",
+  whitelist: ["quantity", "carts"],
+};
 const rootReducer = (history) =>
   combineReducers({
     router: connectRouter(history),
     admin: persistReducer(adminPersistConfig, adminReducer),
-    user: userReducer,
     app: appReducer,
-    navbarCart: navbarCartReducer,
+    user: userReducer,
+    navbarCart: persistReducer(navbarCartPersistConfig, navbarCartReducer),
     productR: productReducer,
+    order: persistReducer(orderPersistConfig, orderReducer),
   });
 export default rootReducer;
