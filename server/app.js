@@ -11,11 +11,10 @@ const { sequelize } = require('./models')
 const sanitize = require('./middleware/sanitize')
 const auth = require('./middleware/authMiddleware')
 
-
-
 const userAPI = require('./routes/userRouter')
 const authAPI = require('./routes/authRouter')
 const productAPI = require('./routes/productRouter')
+const cardAPI = require('./routes/cartRouter')
 const utilsAPI = require('./routes/utilsRouter')
 
 const app = express();
@@ -29,7 +28,7 @@ app.use(cors({
 
 // Xử lý bảo mật và xác thực
 app.use(sanitize.sanitizeBody)
-app.use('/api', auth.authenticateToken)
+//app.use('/api', auth.authenticateToken)
 
 // Middleware xử lý form
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -41,11 +40,15 @@ sequelize.authenticate()
     .then(() => console.log('Kết nối PostgreSQL thành công!'))
     .catch(err => console.error('Lỗi kết nối PostgreSQL:', err))
 
+app.get('/', (req, res) => {
+    res.send("server api")
+})   
 // Cấu hình router, api
 app.use('/api/user', userAPI);
 app.use('/auth', authAPI)
 app.use('/api/products', productAPI)
 app.use('/api/utils', utilsAPI)
+app.use('/api/card', cardAPI)
 //app.use('/api/order', )
 
 

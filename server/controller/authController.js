@@ -104,8 +104,8 @@ const login = async (req, res) => {
         // Lưu Refresh Token trong HttpOnly Cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Chỉ bật secure khi chạy production
-            sameSite: 'Strict', // Chống CSRF
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'Strict',
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày
         });
 
@@ -132,7 +132,7 @@ const refreshAccessToken = (req, res) => {
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict', // Chống CSRF
+            sameSite: 'Strict',
             maxAge: 15 * 60 * 1000 // 15m
         });
 
