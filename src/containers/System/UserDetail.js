@@ -3,23 +3,16 @@ import { connect } from "react-redux";
 import { FormattedMessage } from 'react-intl';
 import { toast } from 'react-toastify';
 import './UserDetail.scss';
-import { getUserById, updateUserDetail } from '../../services/userService';
+import { fetchUserDetail, updateUserDetail } from '../../store/actions/userDetailAction';
 import CommonUtils from '../../utils/CommonUtils';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
 
 class UserDetail extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
-            userId: '',
-            username: '',
-            firstname: '',
-            lastname: '',
-            email: '',
-            phone_number: '',
-            address_infor: '',
+            
             password: '',
             newPassword: '',
             confirmPassword: '',
@@ -30,62 +23,39 @@ class UserDetail extends Component {
             isSubmitting: false,
             errorMessage: '',
             successMessage: '',
-            loading: true,
             isOpen: false
         }
     }
 
     componentDidMount() {
-        
         const userId = this.props.userInfo?.userId;
-        console.log(userId)
+        console.log(userId);
         if (userId) {
-            this.setState({ userId });
-            this.fetchUserData(userId);
+            // Dispatch action để lấy thông tin user
+            this.props.fetchUserDetail(userId);
         } else {
-            this.setState({ loading: false, errorMessage: 'Không tìm thấy thông tin người dùng' });
+            this.setState({ errorMessage: 'Không tìm thấy thông tin người dùng' });
         }
     }
 
-    // Hàm lấy thông tin người dùng
-    fetchUserData = async (userId) => {
-        try {
-            const response = await getUserById(userId);
-            if (response && response.data) {
-                const userData = response.data;
-                const userInfo = userData.UserInfo || {};
-                const UserAddress = userData.UserAddresses[0] || {};
-               
-                // Cập nhật state với thông tin người dùng
-                this.setState({
-                    username: userData.username || '',
-                    firstname: userInfo.firstname || '',
-                    lastname: userInfo.lastname || '',
-                    email: userInfo.email || '',
-                    phone_number: userInfo.phone_number || '',
-                    address_infor: UserAddress.address_infor || '',
-                    loading: false
-                });
+    componentDidUpdate(prevProps) {
+        // Xử lý khi có lỗi từ Redux store
+        if (prevProps.userDetail.error !== this.props.userDetail.error && this.props.userDetail.error) {
+            this.setState({ errorMessage: this.props.userDetail.error });
+        }
 
-                // Xử lý ảnh đại diện nếu có
-                if (userInfo.img && userInfo.img.data.length > 0) {
-                    try {
-                        // Chuyển đổi buffer thành binary
-                        const imageUrl = new Buffer(userInfo.img, 'base64').toString('binary');
-                        this.setState({ previewImgURL: imageUrl });
-                    } catch (error) {
-                        console.error('Lỗi khi chuyển đổi ảnh:', error);
-                    }
+        // Xử lý ảnh đại diện khi dữ liệu user được cập nhật
+        if (prevProps.userDetail.userInfo !== this.props.userDetail.userInfo) {
+            const userInfo = this.props.userDetail.userInfo;
+            if (userInfo && userInfo.UserInfo && userInfo.UserInfo.img && userInfo.UserInfo.img.data && userInfo.UserInfo.img.data.length > 0) {
+                try {
+                    // Chuyển đổi buffer thành binary
+                    const imageUrl = new Buffer(userInfo.UserInfo.img, 'base64').toString('binary');
+                    this.setState({ previewImgURL: imageUrl });
+                } catch (error) {
+                    console.error('Lỗi khi chuyển đổi ảnh:', error);
                 }
-            } else {
-                this.setState({ loading: false, errorMessage: 'Không tìm thấy thông tin người dùng' });
             }
-        } catch (error) {
-            console.error('Lỗi khi lấy thông tin người dùng:', error);
-            this.setState({
-                loading: false,
-                errorMessage: error.response?.data?.message || 'Lỗi khi lấy thông tin người dùng'
-            });
         }
     }
 
@@ -101,7 +71,6 @@ class UserDetail extends Component {
         let file = event.target.files[0];
 
         if (file) {
-            
             if (file.size > 5 * 1024 * 1024) {
                 this.setState({
                     errorMessage: 'Kích thước file quá lớn. Vui lòng chọn file nhỏ hơn 5MB.'
@@ -109,7 +78,6 @@ class UserDetail extends Component {
                 return;
             }
 
-          
             if (!file.type.match('image.*')) {
                 this.setState({
                     errorMessage: 'Vui lòng chọn file ảnh.'
@@ -117,7 +85,6 @@ class UserDetail extends Component {
                 return;
             }
 
-            
             let objectUrl = URL.createObjectURL(file);
             this.setState({
                 previewImgURL: objectUrl,
@@ -158,7 +125,9 @@ class UserDetail extends Component {
     };
 
     handleSaveChanges = async () => {
-        const { userId, firstname, lastname, phone_number, address_infor, avatar } = this.state;
+        const { avatar } = this.state;
+        const { userInfo, userDetail } = this.props;
+        const userId = userInfo?.userId;
 
         if (!userId) {
             this.setState({
@@ -171,27 +140,24 @@ class UserDetail extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            // Cập nhật thông tin người dùng
+            // Lấy các giá trị từ form (có thể lấy từ Redux store hoặc DOM)
+            const firstname = document.querySelector('input[name="firstname"]').value;
+            const lastname = document.querySelector('input[name="lastname"]').value;
+            const phone_number = document.querySelector('input[name="phone_number"]').value;
+            const address_infor = document.querySelector('input[name="address_infor"]').value;
+
+            // Cập nhật thông tin người dùng qua Redux
             const userData = {
                 firstname,
                 lastname,
                 phone_number,
                 address_infor,
-                img:avatar
+                img: avatar
             };
 
-            const response = await updateUserDetail(userId, userData);
+            const result = await this.props.updateUserDetail(userId, userData);
 
-            if (response && response.data && response.data.success) {
-                // Nếu có ảnh mới, cập nhật ảnh
-                if (avatar) {
-                    try {
-
-                    } catch (imageError) {
-                        console.error('Lỗi khi cập nhật ảnh:', imageError);
-                    }
-                }
-
+            if (result && result.success) {
                 // Hiển thị thông báo thành công với Toast
                 toast.success('Cập nhật thông tin thành công', {
                     position: "top-right",
@@ -209,22 +175,18 @@ class UserDetail extends Component {
                     errorMessage: ''
                 });
 
-                // Lấy lại thông tin người dùng để hiển thị cập nhật
-                this.fetchUserData(userId);
+                // Tải lại thông tin người dùng
+                this.props.fetchUserDetail(userId);
             } else {
                 // Hiển thị thông báo lỗi với Toast
-                toast.error(response.data?.message || 'Cập nhật thông tin thất bại', {
+                toast.error(result.message || 'Cập nhật thông tin thất bại', {
                     position: "top-right",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
                 });
 
                 this.setState({
                     isSubmitting: false,
-                    errorMessage: response.data?.message || 'Cập nhật thông tin thất bại',
+                    errorMessage: result.message || 'Cập nhật thông tin thất bại',
                     successMessage: ''
                 });
             }
@@ -234,10 +196,6 @@ class UserDetail extends Component {
             toast.error(error.response?.data?.message || 'Lỗi khi cập nhật thông tin', {
                 position: "top-right",
                 autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
             });
 
             this.setState({
@@ -249,7 +207,8 @@ class UserDetail extends Component {
     }
 
     handleChangePassword = async () => {
-        const { userId, password, newPassword, confirmPassword } = this.state;
+        const { password, newPassword, confirmPassword } = this.state;
+        const { userInfo } = this.props;
 
         // Kiểm tra các trường dữ liệu
         if (!password) {
@@ -270,21 +229,17 @@ class UserDetail extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            // Gọi API để đổi mật khẩu
-            const response = await updateUserDetail(userId, {
+            // Gọi API để đổi mật khẩu qua Redux
+            const result = await this.props.updateUserDetail(userInfo.userId, {
                 currentPassword: password,
                 newPassword: newPassword
             });
 
-            if (response && response.data && response.data.success) {
+            if (result && result.success) {
                 // Hiển thị thông báo thành công với Toast
                 toast.success('Đổi mật khẩu thành công', {
                     position: "top-right",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
                 });
 
                 this.setState({
@@ -298,18 +253,14 @@ class UserDetail extends Component {
                 });
             } else {
                 // Hiển thị thông báo lỗi với Toast
-                toast.error(response.data?.message || 'Đổi mật khẩu thất bại', {
+                toast.error(result.message || 'Đổi mật khẩu thất bại', {
                     position: "top-right",
                     autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
                 });
 
                 this.setState({
                     isSubmitting: false,
-                    errorMessage: response.data?.message || 'Đổi mật khẩu thất bại',
+                    errorMessage: result.message || 'Đổi mật khẩu thất bại',
                     successMessage: ''
                 });
             }
@@ -319,10 +270,6 @@ class UserDetail extends Component {
             toast.error(error.response?.data?.message || 'Lỗi khi đổi mật khẩu', {
                 position: "top-right",
                 autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
             });
 
             this.setState({
@@ -335,11 +282,17 @@ class UserDetail extends Component {
 
     render() {
         const {
-            username, firstname, lastname, email, phone_number, address_infor,
             password, newPassword, confirmPassword,
             previewImgURL, isEditing, isChangingPassword, isSubmitting,
-            errorMessage, successMessage, loading, isOpen
+            errorMessage, successMessage, isOpen
         } = this.state;
+
+        const { userDetail, userInfo } = this.props;
+        const userData = userDetail.userInfo || {};
+        const userDetailInfo = userData.UserInfo || {};
+        const userAddress = userData.UserAddresses && userData.UserAddresses.length > 0 
+            ? userData.UserAddresses[0] 
+            : {};
 
         return (
             <div className="user-detail-container">
@@ -351,7 +304,7 @@ class UserDetail extends Component {
                 )}
                 <div className="title">Thông tin cá nhân</div>
 
-                {loading ? (
+                {userDetail.isLoading ? (
                     <div className="loading-container">
                         <div className="loading-spinner"></div>
                         <p>Đang tải thông tin...</p>
@@ -379,8 +332,8 @@ class UserDetail extends Component {
                                 </div>
                             )}
 
-                            <h3 className="user-name">{username}</h3>
-                            <p className="user-role">{this.props.userInfo?.role || 'User'}</p>
+                            <h3 className="user-name">{userData.username}</h3>
+                            <p className="user-role">{userInfo?.role || 'User'}</p>
                         </div>
 
                         <div className="user-info-section">
@@ -498,11 +451,12 @@ class UserDetail extends Component {
                                             {isEditing ? (
                                                 <input
                                                     type="text"
-                                                    value={username}
+                                                    name="username"
+                                                    value={userData.username || ''}
                                                     disabled={true} // Không cho phép thay đổi username
                                                 />
                                             ) : (
-                                                <p>{username}</p>
+                                                <p>{userData.username || ''}</p>
                                             )}
                                         </div>
 
@@ -511,11 +465,12 @@ class UserDetail extends Component {
                                             {isEditing ? (
                                                 <input
                                                     type="email"
-                                                    value={email}
+                                                    name="email"
+                                                    value={userDetailInfo.email || ''}
                                                     disabled={true} // Không cho phép thay đổi email
                                                 />
                                             ) : (
-                                                <p>{email}</p>
+                                                <p>{userDetailInfo.email || ''}</p>
                                             )}
                                         </div>
                                     </div>
@@ -526,11 +481,12 @@ class UserDetail extends Component {
                                             {isEditing ? (
                                                 <input
                                                     type="text"
-                                                    value={lastname}
+                                                    name="lastname"
+                                                    value={userDetailInfo.lastname || ''}
                                                     onChange={(event) => this.handleOnChangeInput(event, 'lastname')}
                                                 />
                                             ) : (
-                                                <p>{lastname}</p>
+                                                <p>{userDetailInfo.lastname || ''}</p>
                                             )}
                                         </div>
 
@@ -539,11 +495,12 @@ class UserDetail extends Component {
                                             {isEditing ? (
                                                 <input
                                                     type="text"
-                                                    value={firstname}
+                                                    name="firstname"
+                                                    value={userDetailInfo.firstname || ''}
                                                     onChange={(event) => this.handleOnChangeInput(event, 'firstname')}
                                                 />
                                             ) : (
-                                                <p>{firstname}</p>
+                                                <p>{userDetailInfo.firstname || ''}</p>
                                             )}
                                         </div>
                                     </div>
@@ -554,11 +511,12 @@ class UserDetail extends Component {
                                             {isEditing ? (
                                                 <input
                                                     type="text"
-                                                    value={phone_number}
+                                                    name="phone_number"
+                                                    value={userDetailInfo.phone_number || ''}
                                                     onChange={(event) => this.handleOnChangeInput(event, 'phone_number')}
                                                 />
                                             ) : (
-                                                <p>{phone_number}</p>
+                                                <p>{userDetailInfo.phone_number || ''}</p>
                                             )}
                                         </div>
 
@@ -567,11 +525,12 @@ class UserDetail extends Component {
                                             {isEditing ? (
                                                 <input
                                                     type="text"
-                                                    value={address_infor}
+                                                    name="address_infor"
+                                                    value={userAddress.address_infor || ''}
                                                     onChange={(event) => this.handleOnChangeInput(event, 'address_infor')}
                                                 />
                                             ) : (
-                                                <p>{address_infor}</p>
+                                                <p>{userAddress.address_infor || ''}</p>
                                             )}
                                         </div>
                                     </div>
@@ -588,13 +547,15 @@ class UserDetail extends Component {
 const mapStateToProps = state => {
     return {
         language: state.app.language,
-        userInfo: state.admin.userInfo
+        userInfo: state.admin.userInfo,
+        userDetail: state.userDetail
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        // Add dispatch actions if needed
+        fetchUserDetail: (userId) => dispatch(fetchUserDetail(userId)),
+        updateUserDetail: (userId, userData) => dispatch(updateUserDetail(userId, userData))
     };
 };
 

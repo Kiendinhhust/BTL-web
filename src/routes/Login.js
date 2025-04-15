@@ -39,10 +39,10 @@ class Login extends Component {
         });
     }
 
-    redirectToSystemPage = () => {
-        const redirectPath = '/home';
-        this.props.history.push(redirectPath);
-      }
+    // redirectToSystemPage = () => {
+    //     const redirectPath = '/home';
+    //     this.props.history.push(redirectPath);
+    //   }
 
     handleLogin = async () => {
         this.setState({ errorMessage: '' });
@@ -67,7 +67,7 @@ class Login extends Component {
                 this.props.adminLoginSuccess(userInfo );
                 
                 // Chuyển hướng đến trang hệ thống
-                this.redirectToSystemPage();
+                // this.redirectToSystemPage();
             }
         } catch (error) {
             console.error('Login failed:', error.response);

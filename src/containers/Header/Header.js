@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
@@ -10,7 +9,7 @@ import Navigator from '../../components/Navigator';
 import { adminMenu ,sellerMenu,buyerMenu } from './menuApp';
 import './Header.scss';
 import defaultAvatar from '../../assets/images/user.svg';
-import { getUserById} from '../../services/userService';
+import { fetchUserDetail  } from '../../store/actions/userDetailAction';
 
 class Header extends Component {
 
@@ -19,8 +18,6 @@ class Header extends Component {
         this.state = {
             isDropdownOpen: false,
             menuApp: [],
-            userAvatar: null,
-            loading: false
         };
         this.wrapperRef = React.createRef();
     }
@@ -52,45 +49,12 @@ class Header extends Component {
            }else if(role === 'buyer'){
                menu = buyerMenu;
            }
-
-           // Lấy thông tin người dùng và ảnh đại diện
-           this.fetchUserData(userInfo.userId);
+           console.log("UserInfo", userInfo);
+           this.props.fetchUserDetail (userInfo.userId);
         }
         this.setState({
             menuApp: menu
         });
-    }
-
-    // Hàm lấy thông tin người dùng và ảnh đại diện
-    fetchUserData = async (userId) => {
-        if (!userId) return;
-
-        this.setState({ loading: true });
-
-        try {
-            // Lấy thông tin người dùng
-            const userResponse = await getUserById(userId);
-                
-            if (userResponse && userResponse.data) {
-                const userData = userResponse.data;
-                
-                // Kiểm tra xem có ảnh không
-                if (userData.UserInfo && userData.UserInfo.img) {
-                    try {
-                        console.log('userData.UserInfo.img', userData.UserInfo.img);
-                        // Chuyển đổi buffer thành binary
-                        const imageUrl = new Buffer(userData.UserInfo.img, 'base64').toString('binary');
-                        this.setState({ userAvatar: imageUrl });
-                    } catch (error) {
-                        console.error('Lỗi khi chuyển đổi ảnh:', error);
-                    }
-                } 
-            }
-        } catch (error) {
-            console.error('Lỗi khi lấy thông tin người dùng:', error);
-        } finally {
-            this.setState({ loading: false });
-        }
     }
 
     componentWillUnmount() {
@@ -98,8 +62,13 @@ class Header extends Component {
     }
 
     render() {
-        const { processLogout, userInfo, location } = this.props; // Get userInfo and location from props
+        const { processLogout, userInfo, location, userDetail } = this.props; // Get userInfo and location from props
         const { isDropdownOpen } = this.state;
+        console.log('userDetail', userDetail);
+        let imageBase64 = '';
+        if(userDetail && userDetail.userInfo && userDetail.userInfo.UserInfo && userDetail.userInfo.UserInfo.img){
+            imageBase64 = new Buffer(userDetail.userInfo.UserInfo.img, 'base64').toString('binary');
+        }
 
         return (
             <div className="header-container">
@@ -115,7 +84,7 @@ class Header extends Component {
                         <div
                             className="user-avatar"
                             style={{
-                                backgroundImage: `url(${this.state.userAvatar || defaultAvatar})`,
+                                backgroundImage: `url(${imageBase64 || defaultAvatar})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center'
                             }}
@@ -143,6 +112,7 @@ const mapStateToProps = state => {
     return {
         isLoggedIn: state.admin.isLoggedIn,
         userInfo: state.admin.userInfo,
+        userDetail: state.userDetail
     };
 };
 
@@ -150,6 +120,7 @@ const mapDispatchToProps = dispatch => {
     return {
         processLogout: () => dispatch(actions.processLogout()),
         adminLoginSuccess: (userInfo) => dispatch(adminLoginSuccess(userInfo)),
+        fetchUserDetail : (userId) => dispatch(fetchUserDetail (userId))
     };
 };
 
