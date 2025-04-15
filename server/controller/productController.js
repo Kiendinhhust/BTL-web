@@ -2,7 +2,7 @@ const db = require("../models")
 
 const { Product, Shop, Item } = db
 const slugify = require('slugify')
-const Op = db.Sequelize
+const { Op } = require('sequelize')
 
 // Hàm helper lấy thông tin phân trang
 const getPagination = (page, size) => {
