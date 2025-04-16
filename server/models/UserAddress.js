@@ -18,6 +18,12 @@ const UserAddress = sequelize.define('UserAddress', {
   address_infor: {
     type: DataTypes.TEXT
   },
+  type: {
+    type: DataTypes.STRING, 
+    allowNull: true,
+    defaultValue: 'home', 
+  },
+  
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW

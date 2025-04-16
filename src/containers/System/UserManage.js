@@ -35,7 +35,7 @@ class UserManage extends Component {
     // Simulate loading for 1.5 seconds
     setTimeout(() => {
       this.setState({ isLoading: false });
-    }, 1500);
+    }, 600);
   }
 
   handleAddNewUser = () => {
@@ -112,7 +112,7 @@ class UserManage extends Component {
           draggable: true,
         });
       }
-    }, 1500);
+    }, 600);
   }
 
   openLightbox = (imageUrl) => {
@@ -128,7 +128,7 @@ class UserManage extends Component {
     let { users } = this.props;
     let { isOpenModalUser, isOpenModalEditUser, userEdit, isOpenLightbox, currentImageUrl, isLoading, isShowConfirmModal,userToDelete } = this.state;
     
-
+    console.log('userAddressusermanage', this.props.userAddress);
     return (
       <div className="users-container">
         {isLoading ? (
@@ -319,6 +319,7 @@ class UserManage extends Component {
 
 const mapStateToProps = state => {
   return {
+    userAddress: state.userAddress,
     users: state.user.users
   };
 };

@@ -7,7 +7,9 @@ import { fetchUserDetail, updateUserDetail } from '../../store/actions/userDetai
 import CommonUtils from '../../utils/CommonUtils';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
-
+import {
+    getUserAddresses,
+  } from '../../store/actions/userAddressAction';
 class UserDetail extends Component {
     constructor(props) {
         super(props);
@@ -33,9 +35,11 @@ class UserDetail extends Component {
         if (userId) {
             // Dispatch action để lấy thông tin user
             this.props.fetchUserDetail(userId);
+            this.props.getUserAddresses(userId);
         } else {
             this.setState({ errorMessage: 'Không tìm thấy thông tin người dùng' });
         }
+        
     }
 
     componentDidUpdate(prevProps) {
@@ -43,6 +47,13 @@ class UserDetail extends Component {
         if (prevProps.userDetail.error !== this.props.userDetail.error && this.props.userDetail.error) {
             this.setState({ errorMessage: this.props.userDetail.error });
         }
+        if (prevProps.userAddress.addresses !== this.props.userAddress.addresses) {
+            const { addresses } = this.props.userAddress;
+            if (addresses && addresses.length > 0) {
+              // Cập nhật state hoặc thực hiện logic cần thiết
+              console.log('Danh sách địa chỉ đã được cập nhật:', addresses);
+            }
+          }
 
         // Xử lý ảnh đại diện khi dữ liệu user được cập nhật
         if (prevProps.userDetail.userInfo !== this.props.userDetail.userInfo) {
@@ -58,7 +69,7 @@ class UserDetail extends Component {
             }
         }
     }
-
+   
     handleOnChangeInput = (event, id) => {
         let copyState = { ...this.state };
         copyState[id] = event.target.value;
@@ -286,14 +297,16 @@ class UserDetail extends Component {
             previewImgURL, isEditing, isChangingPassword, isSubmitting,
             errorMessage, successMessage, isOpen
         } = this.state;
-
-        const { userDetail, userInfo } = this.props;
+        
+        const { userDetail, userInfo,userAddress } = this.props;
+        console.log('userAddressd', userAddress);
+        console.log('userDetail', userDetail);
         const userData = userDetail.userInfo || {};
         const userDetailInfo = userData.UserInfo || {};
-        const userAddress = userData.UserAddresses && userData.UserAddresses.length > 0 
-            ? userData.UserAddresses[0] 
+        const userAddressDetail =  userAddress.addresses &&  userAddress.addresses.length > 0 
+            ?  userAddress.addresses[0] 
             : {};
-
+        
         return (
             <div className="user-detail-container">
                 {isOpen && (
@@ -526,11 +539,11 @@ class UserDetail extends Component {
                                                 <input
                                                     type="text"
                                                     name="address_infor"
-                                                    value={userAddress.address_infor || ''}
+                                                    value={userAddressDetail.address_infor || ''}
                                                     onChange={(event) => this.handleOnChangeInput(event, 'address_infor')}
                                                 />
                                             ) : (
-                                                <p>{userAddress.address_infor || ''}</p>
+                                                <p>{userAddressDetail.address_infor || ''}</p>
                                             )}
                                         </div>
                                     </div>
@@ -548,12 +561,14 @@ const mapStateToProps = state => {
     return {
         language: state.app.language,
         userInfo: state.admin.userInfo,
-        userDetail: state.userDetail
+        userDetail: state.userDetail,
+        userAddress: state.userAddress
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
+        getUserAddresses: (userId) => dispatch(getUserAddresses(userId)),
         fetchUserDetail: (userId) => dispatch(fetchUserDetail(userId)),
         updateUserDetail: (userId, userData) => dispatch(updateUserDetail(userId, userData))
     };

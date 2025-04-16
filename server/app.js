@@ -7,6 +7,7 @@ const { sequelize } = require('./models')
 const userAPI = require('./routes/userRouter')
 const authAPI = require('./routes/authRouter')
 const shopAPI = require('./routes/shopRouter')
+const userAddressAPI = require('./routes/userAddressRouter')
 const cors = require('cors');
 const app = express();
 
@@ -32,6 +33,7 @@ sequelize.authenticate()
 app.use('/api/user', userAPI);
 app.use('/auth', authAPI);
 app.use('/api/shop', shopAPI);
+app.use('/api/address', userAddressAPI);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

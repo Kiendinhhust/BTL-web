@@ -38,33 +38,43 @@ class Header extends Component {
 
     componentDidMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
-        let menu = [];
         let userInfo = this.props.userInfo;
+        
         if(userInfo && !_.isEmpty(userInfo)){
-           let role = userInfo.role;
-           if(role === 'admin'){
-               menu = adminMenu;
-           }else if(role === 'seller'){
-                menu = sellerMenu;
-           }else if(role === 'buyer'){
-               menu = buyerMenu;
-           }
-           console.log("UserInfo", userInfo);
-           this.props.fetchUserDetail (userInfo.userId);
+          this.props.fetchUserDetail(userInfo.userId);
         }
-        this.setState({
-            menuApp: menu
-        });
-    }
+      }
+      
 
-    componentWillUnmount() {
+      componentDidUpdate(prevProps) {
+        if (prevProps.userDetail !== this.props.userDetail) {
+          if (this.props.userDetail && this.props.userDetail.userInfo) {
+            let userRole = this.props.userDetail.userInfo.role;
+            let menu = [];
+            
+            if (userRole === 'admin') {
+              menu = adminMenu;
+            } else if (userRole === 'seller') {
+              menu = sellerMenu;
+            } else if (userRole === 'buyer') {
+              menu = buyerMenu;
+            }
+            
+            this.setState({ menuApp: menu });
+          }
+        }
+      }
+      
+    
+      
+      // Giữ nguyên componentWillUnmount
+      componentWillUnmount() {
         document.removeEventListener('mousedown', this.handleClickOutside);
-    }
+      }
 
     render() {
         const { processLogout, userInfo, location, userDetail } = this.props; // Get userInfo and location from props
         const { isDropdownOpen } = this.state;
-        console.log('userDetail', userDetail);
         let imageBase64 = '';
         if(userDetail && userDetail.userInfo && userDetail.userInfo.UserInfo && userDetail.userInfo.UserInfo.img){
             imageBase64 = new Buffer(userDetail.userInfo.UserInfo.img, 'base64').toString('binary');
