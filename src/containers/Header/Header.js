@@ -9,8 +9,12 @@ import Navigator from "../../components/Navigator";
 import { adminMenu, sellerMenu, buyerMenu } from "./menuApp";
 import "./Header.scss";
 import defaultAvatar from "../../assets/images/user.svg";
+import { fetchUserDetail } from "../../store/actions/userDetailAction";
+import "./Header.scss";
+import cartImage from "../../assets/images/icons/cart.png";
+import homeImage from "../../assets/images/icons/home.png";
+import searchImage from "../../assets/images/icons/search.png";
 import { getUserById } from "../../services/userService";
-
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -19,10 +23,24 @@ class Header extends Component {
       menuApp: [],
       userAvatar: null,
       loading: false,
+      searching: "",
     };
     this.wrapperRef = React.createRef();
   }
 
+  handleDropdownToggle = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    this.setState((prevState) => ({
+      isDropdownOpen: !prevState.isDropdownOpen,
+    }));
+  };
+
+  handleSearchChange = (e) => {
+    this.props.searchAction({
+      search: e.target.value,
+    });
+  };
   handleDropdownToggle = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -39,24 +57,35 @@ class Header extends Component {
 
   componentDidMount() {
     document.addEventListener("mousedown", this.handleClickOutside);
-    let menu = [];
     let userInfo = this.props.userInfo;
-    if (userInfo && !_.isEmpty(userInfo)) {
-      let role = userInfo.role;
-      if (role === "admin") {
-        menu = adminMenu;
-      } else if (role === "seller") {
-        menu = sellerMenu;
-      } else if (role === "buyer") {
-        menu = buyerMenu;
-      }
 
-      // Lấy thông tin người dùng và ảnh đại diện
-      this.fetchUserData(userInfo.userId);
+    if (userInfo && !_.isEmpty(userInfo)) {
+      this.props.fetchUserDetail(userInfo.userId);
     }
-    this.setState({
-      menuApp: menu,
-    });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.userDetail !== this.props.userDetail) {
+      if (this.props.userDetail && this.props.userDetail.userInfo) {
+        let userRole = this.props.userDetail.userInfo.role;
+        let menu = [];
+
+        if (userRole === "admin") {
+          menu = adminMenu;
+        } else if (userRole === "seller") {
+          menu = sellerMenu;
+        } else if (userRole === "buyer") {
+          menu = buyerMenu;
+        }
+
+        this.setState({ menuApp: menu });
+      }
+    }
+  }
+
+  // Giữ nguyên componentWillUnmount
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleClickOutside);
   }
 
   // Hàm lấy thông tin người dùng và ảnh đại diện
@@ -94,13 +123,21 @@ class Header extends Component {
     }
   };
 
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
-  }
-
   render() {
-    const { processLogout, userInfo, location } = this.props; // Get userInfo and location from props
+    const { processLogout, userInfo, location, userDetail } = this.props; // Get userInfo and location from props
     const { isDropdownOpen } = this.state;
+    let imageBase64 = "";
+    if (
+      userDetail &&
+      userDetail.userInfo &&
+      userDetail.userInfo.UserInfo &&
+      userDetail.userInfo.UserInfo.img
+    ) {
+      imageBase64 = new Buffer(
+        userDetail.userInfo.UserInfo.img,
+        "base64"
+      ).toString("binary");
+    }
 
     return (
       <div className="header-container">
@@ -110,7 +147,30 @@ class Header extends Component {
             currentPath={location.pathname}
           />
         </div>
-
+        <Link to="/home">
+          <img className="header-home" src={homeImage} alt="Header Cart"></img>
+        </Link>
+        <Link to="/cart">
+          <img className="header2-cart" src={cartImage} alt="Header Cart"></img>
+          <div className="header2-nav-cart-count">
+            {this.props.cartQuantity}
+          </div>
+        </Link>
+        <div className="header-search-container">
+          <input
+            value={this.props.search || ""}
+            className="searchBar"
+            type="text"
+            placeholder="Tìm kiếm..."
+            name="search"
+            id="search"
+            onChange={this.handleSearchChange}
+          />
+          <img className="header-searchImage" src={searchImage} alt="Search" />
+        </div>
+        <Link to="/myorders" className="header-myorders">
+          My Orders
+        </Link>
         <div className="header-right-content">
           <div
             className={`user-info ${isDropdownOpen ? "active" : ""}`}
@@ -121,9 +181,7 @@ class Header extends Component {
             <div
               className="user-avatar"
               style={{
-                backgroundImage: `url(${
-                  this.state.userAvatar || defaultAvatar
-                })`,
+                backgroundImage: `url(${imageBase64 || defaultAvatar})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -158,6 +216,9 @@ const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.admin.isLoggedIn,
     userInfo: state.admin.userInfo,
+    cartQuantity: state.navbarCart.quantity,
+    search: state.navbarCart.search,
+    userDetail: state.userDetail,
   };
 };
 
@@ -165,6 +226,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     processLogout: () => dispatch(actions.processLogout()),
     adminLoginSuccess: (userInfo) => dispatch(adminLoginSuccess(userInfo)),
+    searchAction: (payload) => dispatch(actions.searchAction(payload)),
+    fetchUserDetail: (userId) => dispatch(fetchUserDetail(userId)),
   };
 };
 

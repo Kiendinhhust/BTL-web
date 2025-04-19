@@ -17,19 +17,18 @@ const User = sequelize.define('User', {
     allowNull: false
   },
   role: {
-    type: DataTypes.ENUM('buyer', 'seller','admin'),
+    type: DataTypes.ENUM('buyer', 'seller', 'admin'),
     allowNull: false,
     defaultValue: 'admin'
   },
-  
-
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
   }
 }, {
   tableName: 'users',
-  timestamps: false
+  timestamps: true,
+  underscored: true // Sử dụng snake_case
 });
 
 module.exports = User;

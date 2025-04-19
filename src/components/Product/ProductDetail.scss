@@ -32,9 +32,11 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-wrap: wrap;
   max-width: 1200px;
+  max-height: 80vh;
+  min-height: 80vh;
   margin: 30px auto;
   padding: 0 20px;
-
+  overflow-y: scroll;
   // Phần hình ảnh sản phẩm (bên trái)
   .productdetail-image-container {
     flex: 1;

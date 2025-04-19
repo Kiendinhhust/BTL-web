@@ -9,7 +9,6 @@ import {
   userIsNotAuthenticated,
 } from "../hoc/authentication";
 import { path } from "../utils";
-import Home from "../routes/Home";
 import Login from "../routes/Login";
 import Header from "./Header/Header";
 import System from "../routes/System";
@@ -80,19 +79,13 @@ class App extends Component {
                     path={path.SYSTEM}
                     component={userIsAuthenticated(System)}
                   />
-                  <Route
-                    path={path.CART}
-                    component={userIsNotAuthenticated(CartPage)}
-                  />
+                  <Route path={path.CART} component={CartPage} />
                   <Route path={"/myorders"} component={MyOrders} />
                   <Route
                     path={"/order/:id"}
                     component={userIsNotAuthenticated(Order)}
                   />
-                  <Route
-                    path={"/productdetail/:id"}
-                    component={ProductDetail}
-                  />
+                  <Route path={"/productdetail"} component={ProductDetail} />
                   <Route
                     path={path.SELLER}
                     component={userIsAuthenticated(SellerSystem)}

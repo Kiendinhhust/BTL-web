@@ -4,27 +4,43 @@ import { connect } from "react-redux";
 import { addToCart } from "../../store/actions/navbarCartActions";
 import "./Product.scss";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import axios from "axios";
 
 const Product = (props) => {
   const history = useHistory();
+  const [items, setItems] = useState([]);
+  const [info, setInfo] = useState(null);
   const [state, setState] = useState({
     checkCheckMark: false,
     timeOut: null,
   });
   const [cartQuantity, setCartQuantity] = useState(1);
-
-  const handleAddToCart = (id) => {
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: `${process.env.REACT_APP_BACKEND_URL}/api/products/item/${props.product.product_id}`,
+    }).then((response) => {
+      setItems(response.data);
+      setInfo(response.data[0]);
+      console.log(response.data[0]);
+    });
+  }, [props.product.product_id]);
+  const handleAddToCart = () => {
     setState((prevState) => {
       prevState.timeOut && clearTimeout(prevState.timeOut);
       const timeOut = setTimeout(() => {
-        setState((prevState) => ({ checkCheckMark: "" }));
+        setState((prevState) => ({ checkCheckMark: false }));
       }, 1000);
       return {
-        checkCheckMark: id,
+        checkCheckMark: true,
         timeOut,
       };
     });
-    props.addToCart({ quantity: cartQuantity, id });
+    props.addToCart({
+      quantity: cartQuantity,
+      info,
+      title: props.product.title,
+    });
   };
   useEffect(() => {
     return () => {
@@ -38,31 +54,35 @@ const Product = (props) => {
         <img
           className="product-image"
           loading="lazy"
-          src={props.image}
-          alt={props.name}
-          onClick={() => history.push(`/productdetail/${props.id}`)}
+          src={info?.image_url || null}
+          alt={`${info?.sku || ""} ${info?.attributes["Màu"] || ""} ${
+            info?.attributes.Size || ""
+          }`}
+          onClick={() =>
+            history.push(
+              `/productdetail?product=${encodeURIComponent(
+                JSON.stringify(props.product)
+              )}&items=${encodeURIComponent(JSON.stringify(items))}`
+            )
+          }
         />
       </div>
-      <div className="product-name limit-text-to-2-lines">{props.name}</div>
+      <div className="product-name limit-text-to-2-lines">
+        {props.product.title}
+      </div>
       <div className="product-rating-container">
-        <img
-          loading="lazy"
-          className="product-rating-stars"
-          src={`images/ratings/rating-${props.rating.stars * 10}.png`}
-          alt=""
-        />
         <div className="product-rating-count link-primary">
-          Product rating count: {props.rating.count}
+          Product rating count: {props.product.rating}
         </div>
       </div>
-      <div className="product-price">
-        {props.priceCents.toLocaleString("vi-VN")} VNĐ
-      </div>
+      {/* <div className="product-price">
+        {info?.priceCents.toLocaleString("vi-VN")} VNĐ
+      </div> */}
       <div className="product-quantity-container">
         <select
           value={cartQuantity}
           onChange={(e) => setCartQuantity(e.target.value)}
-          className={`select-container js-quantity-selector-${props.id}`}
+          className={`select-container js-quantity-selector-${info?.id}`}
         >
           {[...Array(10).keys()].map((i) => (
             <option key={i} value={i + 1}>
@@ -71,18 +91,45 @@ const Product = (props) => {
           ))}
         </select>
       </div>
-      {props.id === state.checkCheckMark ? (
-        <div className={`added-to-cart js-added-to-cart-${props.id}`}>
+      <div className="product-attributes-container">
+        {items.slice(0, 2).map((item, index) => {
+          const key = Object.keys(item?.attributes);
+          const isSelected = info?.item_id === item?.item_id; // Kiểm tra xem item này có đang được chọn không
+
+          return (
+            <button
+              key={index}
+              className={`product-attributes-button ${
+                isSelected ? "selected" : ""
+              }`}
+              onClick={() => setInfo(item)}
+            >
+              {key.length > 0 && item?.attributes[key[0]]
+                ? item?.attributes[key[0]]
+                : ""}
+              {key.length > 1 && item?.attributes[key[1]]
+                ? ` - ${item?.attributes[key[1]]}`
+                : ""}
+            </button>
+          );
+        })}
+        {items.length > 2 ? <button className="product-etc">...</button> : null}
+      </div>
+      {state.checkCheckMark === true ? (
+        <div
+          className={`added-to-cart js-added-to-cart-${props.product.product_id}`}
+        >
           <img className="product-checkmark" src={checkmark} alt="checkmark" />{" "}
           <span className="product-added">Added</span>
         </div>
       ) : (
-        <br className={`added-to-cart js-added-to-cart-${props.id}`} />
+        <br
+          className={`added-to-cart js-added-to-cart-${props.product.product_id}`}
+        />
       )}
       <button
         className={`addToCart-button button-primary js-add-to-cart`}
-        data-products-id={props.id}
-        onClick={() => handleAddToCart(props.id)}
+        onClick={() => handleAddToCart()}
       >
         Add to Cart
       </button>

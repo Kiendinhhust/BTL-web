@@ -11,6 +11,8 @@ import { persistReducer } from "redux-persist";
 import navbarCartReducer from "./navbarCartReducer";
 import productReducer from "./productReducer";
 import orderReducer from "./orderReducer";
+import userDetailReducer from "./userDetailReducer";
+import userAddressReducer from "./userAddressReducer";
 
 const persistCommonConfig = {
   storage: storage,
@@ -41,5 +43,7 @@ const rootReducer = (history) =>
     navbarCart: persistReducer(navbarCartPersistConfig, navbarCartReducer),
     productR: productReducer,
     order: persistReducer(orderPersistConfig, orderReducer),
+    userDetail: userDetailReducer,
+    userAddress: userAddressReducer,
   });
 export default rootReducer;

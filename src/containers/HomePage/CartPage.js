@@ -15,18 +15,14 @@ const CartPage = (props) => {
   const getTotalCartAmount = () => {
     let totalAmount = 0;
 
-    for (const id in props.carts) {
-      if (props.carts[id] > 0) {
-        console.log(props.carts[id]);
-        let itemInfo = props.products.find((product) => product.id === id);
-        totalAmount += itemInfo.priceCents * props.carts[id];
+    for (const item in props.carts) {
+      if (item.quantity > 0) {
+        totalAmount += item.price * item.quantity;
       }
     }
     return totalAmount;
   };
   const handleUpdate = (e, id) => {
-    console.log("handleUpdate ID:", id);
-    console.log("handleUpdate Quantity:", e.target.value);
     props.updateCart({
       quantity: e.target.value,
       id,
@@ -55,41 +51,38 @@ const CartPage = (props) => {
       </div>
       <hr />
       <div>
-        {props.products.map((item, i) => {
-          if (props.carts[item.id] > 0) {
-            return (
-              <React.Fragment key={i}>
-                <div className="cartpage-format cartpage-format-main">
-                  <img
-                    className="cartpage-product-icon"
-                    src={item.image}
-                    alt=""
-                  />
-                  <p>{item.name}</p>
-                  <p>{item.priceCents} VNĐ</p>
-                  <input
-                    value={props.carts[item.id]}
-                    onChange={(e) => handleUpdate(e, item.id)}
-                    className="cartpage-quantity"
-                  />
-                  <p>{item.priceCents * props.carts[item.id]} VNĐ</p>
-                  <img
-                    className="cartpage-remove-icon"
-                    src={remove_icon}
-                    onClick={() => {
-                      props.removeFromCart({
-                        id: item.id,
-                        quantity: props.carts[item.id],
-                      });
-                    }}
-                    alt=""
-                  />
-                </div>
-                <hr />
-              </React.Fragment>
-            );
-          }
-          return null;
+        {props.carts.map((item, i) => {
+          return (
+            <React.Fragment key={i}>
+              <div className="cartpage-format cartpage-format-main">
+                <img
+                  className="cartpage-product-icon"
+                  src={item.info.image_url}
+                  alt=""
+                />
+                <p>{item.title}</p>
+                <p>{item.info.price} VNĐ</p>
+                <input
+                  value={item.quantity}
+                  onChange={(e) => handleUpdate(e, item.info.item_id)}
+                  className="cartpage-quantity"
+                />
+                <p>{item.info.price * item.quantity} VNĐ</p>
+                <img
+                  className="cartpage-remove-icon"
+                  src={remove_icon}
+                  onClick={() => {
+                    props.removeFromCart({
+                      id: item.info.item_id,
+                    });
+                    props.updateQuantity();
+                  }}
+                  alt=""
+                />
+              </div>
+              <hr />
+            </React.Fragment>
+          );
         })}
         <div className="cartpage-down">
           <div className="cartpage-total">

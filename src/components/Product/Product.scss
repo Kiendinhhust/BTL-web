@@ -210,7 +210,76 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transform: translateY(0);
   }
 }
+// Styling cho nút thuộc tính sản phẩm
+.product-attributes-button {
+  background-color: $light-gray;
+  color: $navy-dark;
+  border: 1px solid $medium-gray;
+  border-radius: $border-radius;
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12ch;
+  cursor: pointer;
+  transition: $transition;
 
+  &:hover {
+    background-color: $navy-light !important;
+    color: $white !important;
+    border-color: $navy-light !important  ;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba($navy-dark, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // Thêm style cho nút được chọn
+  &.selected {
+    background-color: $white;
+    color: $navy-medium;
+    border-color: $navy-medium;
+    box-shadow: 0 2px 5px rgba($navy-dark, 0.3);
+  }
+}
+.product-etc {
+  background-color: $light-gray;
+  color: $navy-dark;
+  border: 1px solid $medium-gray;
+  border-radius: $border-radius;
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $navy-light !important;
+    color: $white !important;
+    border-color: $navy-light !important  ;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba($navy-dark, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Container cho các nút thuộc tính
+.product-attributes-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 10px 0;
+  gap: 5px;
+}
 .product-checkmark {
   width: 16px;
   height: 16px;
