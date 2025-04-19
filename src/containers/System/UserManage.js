@@ -8,9 +8,6 @@ import ModalUser from './ModalUser.js';
 import ModalEditUser from './ModalEditUser.js';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
-import CommonUtils from '../../utils/CommonUtils';
-import ConfirmModal from '../../components/ConfirmModal';
-import styles from "./UserManage.scss";
 
 class UserManage extends Component {
   constructor(props) {
@@ -29,12 +26,16 @@ class UserManage extends Component {
   }
 
   componentDidMount() {
+    // Set loading state to true before fetching data
+    this.setState({ isLoading: true });
+
+    // Fetch users data
     this.props.fetchAllUsers();
-    this.setState({ isLoading: true }); 
-    
+
+    // Simulate loading for 1.5 seconds
     setTimeout(() => {
       this.setState({ isLoading: false });
-    }, 700);
+    }, 600);
   }
 
   handleAddNewUser = () => {
@@ -79,28 +80,39 @@ class UserManage extends Component {
   handleDeleteUser = async () => {
     let user = this.state.userToDelete;
     this.toggleConfirmModal();
+
+    // Hiển thị loading spinner
+    this.setState({ isLoading: true });
+
+    // Gọi API xóa người dùng
     let res = await this.props.deleteUser(user.user_id);
-    if (res && res.success) {
-      // Hiển thị thông báo thành công với Toast
-      toast.success(res.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    } else {
-      // Hiển thị thông báo lỗi với Toast
-      toast.error(res.message, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    }
+
+    // Giữ loading spinner trong 1.5 giây
+    setTimeout(() => {
+      this.setState({ isLoading: false });
+
+      if (res && res.success) {
+        // Hiển thị thông báo thành công với Toast
+        toast.success(res.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        // Hiển thị thông báo lỗi với Toast
+        toast.error(res.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    }, 600);
   }
 
   openLightbox = (imageUrl) => {
@@ -115,16 +127,8 @@ class UserManage extends Component {
   render() {
     let { users } = this.props;
     let { isOpenModalUser, isOpenModalEditUser, userEdit, isOpenLightbox, currentImageUrl, isLoading, isShowConfirmModal,userToDelete } = this.state;
-    {isShowConfirmModal && 
-      <ConfirmModal
-        show={isShowConfirmModal}
-        onHide={this.toggleConfirmModal}
-        title="Xác nhận xóa người dùng"
-        message={`Bạn có chắc chắn muốn xóa người dùng "${userToDelete.username}" không?`}
-        onConfirm={this.handleDeleteUser}
-      />
-    }
     
+    console.log('userAddressusermanage', this.props.userAddress);
     return (
       <div className="users-container">
         {isLoading ? (
@@ -175,9 +179,9 @@ class UserManage extends Component {
                       try {
                         if (userInfo && userInfo.img && userInfo.img.data.length > 0) {
 
-                          imageUrl = new Buffer(userInfo.img, 'base64').toString('binary');
+                          imageUrl = Buffer.from(userInfo.img, 'base64').toString('binary');
                         } else {
-                          
+
                         }
                       } catch (error) {
                         console.error('Lỗi xử lý ảnh:', error);
@@ -256,13 +260,55 @@ class UserManage extends Component {
               />
             )}
 
-            <ConfirmModal
-              isOpen={isShowConfirmModal}
-              toggle={this.toggleConfirmModal}
-              onConfirm={this.handleDeleteUser}
-              data={userToDelete}
-              className="user-manage-confirm-modal"
-            />
+{isShowConfirmModal && (
+  <>
+    <div className="confirm-modal" tabIndex="-1" role="dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">
+            <i className="fas fa-exclamation-triangle"></i>
+            Xác nhận xóa người dùng
+          </h5>
+          <button type="button" className="close" onClick={this.toggleConfirmModal}>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div className="modal-body">
+          <p>Bạn có chắc chắn muốn xóa người dùng <strong>{userToDelete.username}</strong>?</p>
+          <p>Hành động này không thể hoàn tác.</p>
+
+          <div className="user-info-preview">
+            {userToDelete.UserInfo && userToDelete.UserInfo.img ? (
+              <img
+                src={Buffer.from(userToDelete.UserInfo.img, 'base64').toString('binary')}
+                alt={userToDelete.username}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://avatar.iran.liara.run/public';
+                }}
+              />
+            ) : (
+              <img src="https://avatar.iran.liara.run/public" alt="Default avatar" />
+            )}
+            <div className="user-info-text">
+              <p><strong>Email:</strong> {userToDelete.UserInfo?.email || 'N/A'}</p>
+              <p><strong>Vai trò:</strong> {userToDelete.role || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button type="button" className="btn btn-secondary" onClick={this.toggleConfirmModal}>
+            <i className="fas fa-times"></i> Hủy
+          </button>
+          <button type="button" className="btn btn-danger" onClick={this.handleDeleteUser}>
+            <i className="fas fa-trash"></i> Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+    <div className="modal-backdrop fade show"></div>
+  </>
+)}
           </>
         )}
       </div>
@@ -273,6 +319,7 @@ class UserManage extends Component {
 
 const mapStateToProps = state => {
   return {
+    userAddress: state.userAddress,
     users: state.user.users
   };
 };

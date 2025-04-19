@@ -16,6 +16,7 @@ const authAPI = require("./routes/authRouter");
 const productAPI = require("./routes/productRouter");
 const utilsAPI = require("./routes/utilsRouter");
 const shopAPI = require("./routes/shopRouter");
+const userAddressAPI = require("./routes/userAddressRouter");
 const app = express();
 
 app.use(
@@ -47,9 +48,9 @@ app.use("/api/user", userAPI);
 app.use("/auth", authAPI);
 app.use("/api/products", productAPI);
 app.use("/api/utils", utilsAPI);
-//app.use('/api/order', )
-app.use("/auth", authAPI);
 app.use("/api/shop", shopAPI);
+app.use("/api/address", userAddressAPI);
+//app.use('/api/order', )
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
