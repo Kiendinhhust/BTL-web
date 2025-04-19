@@ -22,7 +22,7 @@ export const userIsNotAuthenticated = connectedRouterRedirect({
         // Trả về đường dẫn phù hợp với vai trò
         if (role === 'admin') return '/system/user-manage';
         if (role === 'seller') return '/seller/shop-manage';
-        if (role === 'buyer') return '/buyer/register-seller';
+        if (role === 'buyer') return '/home';
 
         // Mặc định trả về trang chủ
         return '/';
