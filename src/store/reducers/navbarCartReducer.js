@@ -1,56 +1,82 @@
 import actionTypes from "../actions/actionTypes";
-
+import { createBrowserHistory } from "history";
+const history = createBrowserHistory();
+const location = history.location;
+const query = new URLSearchParams(location.search);
 const initialState = {
   quantity: Number(0),
-  search: "",
+  search: query.get("title"),
   carts: [],
 };
 
 const navbarCartReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.ADD_TO_CART:
-      const newState1 = {
+      let indexAdd = state.carts.findIndex(
+        (item) => action.payload.info.item_id === item.info.item_id
+      );
+      let newState1 = {
         ...state,
-        quantity: state.quantity + Number(action.payload.quantity),
-        carts: {
-          ...state.carts,
-          [action.payload.id]:
-            (state.carts[action.payload.id] || 0) +
-            Number(action.payload.quantity),
-        },
+        quantity: Number(state.quantity) + Number(action.payload.quantity),
       };
+      if (indexAdd !== -1) {
+        newState1.carts[indexAdd] = {
+          info: action.payload.info,
+          quantity:
+            Number(state.carts[indexAdd].quantity) +
+            Number(action.payload.quantity),
+          title: action.payload.title,
+        };
+      } else
+        newState1 = {
+          ...state,
+          quantity: state.quantity + Number(action.payload.quantity),
+          carts: [
+            ...state.carts,
+            {
+              info: action.payload.info,
+              quantity: Number(action.payload.quantity) || 1,
+              title: action.payload.title,
+            },
+          ],
+        };
       // localStorage.setItem("navbarCart", JSON.stringify(newState1));
       return {
         ...newState1,
       };
     case actionTypes.REMOVE_FROM_CART:
+      let indexRemove = state.carts.findIndex(
+        (item) => action.payload.id === item.info.item_id
+      );
       const newState2 = {
         ...state,
-        quantity: state.quantity - Number(action.payload.quantity),
-        carts: {
-          ...state.carts,
-          [action.payload.id]: 0,
-        },
       };
+      newState2.carts.splice(indexRemove, 1);
+
       // localStorage.setItem("navbarCart", JSON.stringify(newState2));
       return {
         ...newState2,
       };
     case actionTypes.UPDATE_CART:
+      let indexUpdate = state.carts.findIndex(
+        (item) => action.payload.id === item.info.item_id
+      );
       const newState3 = {
         ...state,
-        carts: {
-          ...state.carts,
-          [action.payload.id]: Number(action.payload.quantity || 1),
-        },
       };
+      if (indexUpdate !== -1) {
+        newState3.carts[indexUpdate] = {
+          ...newState3.carts[indexUpdate],
+          quantity: Number(action.payload.quantity) || 1,
+        };
+      }
       // localStorage.setItem("navbarCart", JSON.stringify(newState3));
       return {
         ...newState3,
       };
     case actionTypes.UPDATE_QUANTITY:
-      const totalQuantity = Object.values(state.carts).reduce(
-        (sum, quantity) => sum + quantity, // `quantity` là giá trị của mỗi sản phẩm
+      const totalQuantity = state.carts.reduce(
+        (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
         0
       );
       const newState4 = {

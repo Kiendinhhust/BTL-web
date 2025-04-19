@@ -1,12 +1,21 @@
 import actionTypes from "../actions/actionTypes";
-import { products } from "../../assets/data/products";
+import axios from "axios";
 const initialState = {
   products: [],
 };
 
-const productReducer = (state = initialState, action) => {
+const productReducer = async (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.FETCH_PRODUCT:
+      let products;
+      await axios({
+        method: "get",
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/products?page=1`,
+        responseType: "stream",
+      }).then(function (response) {
+        console.log(response.data);
+        products = response.data.products;
+      });
       return {
         ...state,
         products,

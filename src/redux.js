@@ -50,7 +50,6 @@ export const dispatch = reduxStore.dispatch;
 export const persistor = persistStore(reduxStore);
 
 //Fetch Product
-reduxStore.dispatch(fetchProduct());
 //Fetch Cart
 // reduxStore.dispatch(fetchCart());
 export default reduxStore;

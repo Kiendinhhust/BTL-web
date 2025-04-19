@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import "./HomePage.scss";
 import Product from "../../components/Product/Product";
@@ -6,10 +6,9 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
+import axios from "axios";
 const HomePage = (props) => {
-  const filteredProducts = props.products.filter((product) =>
-    product.name.toLowerCase().includes(props.search.toLowerCase())
-  );
+  const [products, setProducts] = useState([]);
   const location = useLocation();
   const history = useHistory();
   const query = new URLSearchParams(location.search);
@@ -17,45 +16,110 @@ const HomePage = (props) => {
   if (page === null || page <= 0) {
     page = 1;
   }
-  console.log(page);
+  let title = props.search;
+  if (title === null) {
+    title = "";
+  }
+  useEffect(() => {
+    axios({
+      method: "get",
+      url:
+        title !== null
+          ? `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}&title=${title}`
+          : `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}`,
+    }).then((response) => {
+      setProducts(response.data.products);
+    });
+  }, [page, title]);
+  const renderProductList = () => {
+    return products.map((product) => (
+      <Product
+        key={product.product_id}
+        product={product}
+        // id={product.product_id}
+        // rating={product.rating}
+        // name={product.title}
+      />
+    ));
+  };
+
   return (
     <div className="homepage-container">
-      <div className="homepage-productscontainer">
-        {filteredProducts.map((product) => (
-          <Product
-            key={product.id}
-            id={product.id}
-            rating={product.rating}
-            name={product.name}
-            image={product.image}
-            priceCents={product.priceCents}
-            keywords={product.keywords}
-          />
-        ))}
-      </div>
+      <div className="homepage-productscontainer">{renderProductList()}</div>
       <hr className="homepage-dash" />
       <span className="homepage-pagination">
+        {page > 3 ? (
+          <button
+            onClick={() =>
+              history.push(
+                title !== null && title !== ""
+                  ? `/home?page=${1}&title=${title}`
+                  : `/home?page=${1}`
+              )
+            }
+          >
+            {1}
+          </button>
+        ) : null}
         {page - 2 > 0 && (
           <button
-            onClick={() => history.push(`/home?page=${Number(page) - 2}`)}
+            onClick={() =>
+              history.push(
+                title !== null && title !== ""
+                  ? `/home?page=${Number(page) - 2}&title=${title}`
+                  : `/home?page=${Number(page) - 2}`
+              )
+            }
           >
             {Number(page) - 2}
           </button>
         )}
         {page - 1 > 0 && (
           <button
-            onClick={() => history.push(`/home?page=${Number(page) - 1}`)}
+            onClick={() =>
+              history.push(
+                title !== null && title !== ""
+                  ? `/home?page=${Number(page) - 1}&title=${title}`
+                  : `/home?page=${Number(page) - 1}`
+              )
+            }
           >
             {Number(page) - 1}
           </button>
         )}
-        <button onClick={() => history.push(`/home?page=${Number(page)}`)}>
+
+        <button
+          className="homepage-pagination-now"
+          onClick={() =>
+            history.push(
+              title !== null && title !== ""
+                ? `/home?page=${Number(page)}&title=${title}`
+                : `/home?page=${Number(page)}`
+            )
+          }
+        >
           {Number(page)}
         </button>
-        <button onClick={() => history.push(`/home?page=${Number(page) + 1}`)}>
+        <button
+          onClick={() =>
+            history.push(
+              title !== null && title !== ""
+                ? `/home?page=${Number(page) + 1}&title=${title}`
+                : `/home?page=${Number(page) + 1}`
+            )
+          }
+        >
           {Number(page) + 1}
         </button>
-        <button onClick={() => history.push(`/home?page=${Number(page) + 2}`)}>
+        <button
+          onClick={() =>
+            history.push(
+              title !== null && title !== ""
+                ? `/home?page=${Number(page) + 2}&title=${title}`
+                : `/home?page=${Number(page) + 2}`
+            )
+          }
+        >
           {Number(page) + 2}
         </button>
       </span>
@@ -67,7 +131,6 @@ const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.admin.isLoggedIn,
     search: state.navbarCart.search,
-    products: state.productR.products,
   };
 };
 

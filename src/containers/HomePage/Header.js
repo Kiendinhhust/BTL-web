@@ -7,12 +7,13 @@ import homeImage from "../../assets/images/icons/home.png";
 import searchImage from "../../assets/images/icons/search.png";
 import { searchAction } from "../../store/actions/navbarCartActions";
 const Header = (props) => {
-  const [searching, setSearching] = useState("");
+  // const [searching, setSearching] = useState("");
   const handleSearchChange = (e) => {
     props.searchAction({
-      search: searching,
+      search: e.target.value,
     });
   };
+  console.log(props.cartQuantity);
   return (
     <header className="header">
       <nav className="nav-bar">
@@ -35,30 +36,22 @@ const Header = (props) => {
             </Link>
             <div className="search-container">
               <input
-                value={searching}
+                value={props.search || ""}
                 className="searchBar"
                 type="text"
                 placeholder="Tìm kiếm..."
                 name="search"
                 id="search"
-                onChange={(e) => {
-                  setSearching(e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSearchChange();
-                  }
-                }}
+                onChange={handleSearchChange}
               />
               <img
-                onClick={handleSearchChange}
                 className="searchImage-header"
                 src={searchImage}
                 alt="Search"
               />
             </div>
-            <Link to="/login">Login</Link>
             <Link to="/myorders">My Orders</Link>
+            <Link to="/login">Login</Link>
           </li>
           {/* Bạn có thể thêm các link khác vào đây nếu cần */}
         </ul>

@@ -8,6 +8,9 @@ import { adminLoginSuccess } from "../../store/actions/adminActions";
 import Navigator from "../../components/Navigator";
 import { adminMenu, sellerMenu, buyerMenu } from "./menuApp";
 import "./Header.scss";
+import cartImage from "../../assets/images/icons/cart.png";
+import homeImage from "../../assets/images/icons/home.png";
+import searchImage from "../../assets/images/icons/search.png";
 import defaultAvatar from "../../assets/images/user.svg";
 import { getUserById } from "../../services/userService";
 
@@ -19,10 +22,15 @@ class Header extends Component {
       menuApp: [],
       userAvatar: null,
       loading: false,
+      searching: "",
     };
     this.wrapperRef = React.createRef();
   }
-
+  handleSearchChange = (e) => {
+    this.props.searchAction({
+      search: e.target.value,
+    });
+  };
   handleDropdownToggle = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -110,7 +118,30 @@ class Header extends Component {
             currentPath={location.pathname}
           />
         </div>
-
+        <Link to="/home">
+          <img className="header-home" src={homeImage} alt="Header Cart"></img>
+        </Link>
+        <Link to="/cart">
+          <img className="header2-cart" src={cartImage} alt="Header Cart"></img>
+          <div className="header2-nav-cart-count">
+            {this.props.cartQuantity}
+          </div>
+        </Link>
+        <div className="header-search-container">
+          <input
+            value={this.props.search || ""}
+            className="searchBar"
+            type="text"
+            placeholder="Tìm kiếm..."
+            name="search"
+            id="search"
+            onChange={this.handleSearchChange}
+          />
+          <img className="header-searchImage" src={searchImage} alt="Search" />
+        </div>
+        <Link to="/myorders" className="header-myorders">
+          My Orders
+        </Link>
         <div className="header-right-content">
           <div
             className={`user-info ${isDropdownOpen ? "active" : ""}`}
@@ -158,6 +189,8 @@ const mapStateToProps = (state) => {
   return {
     isLoggedIn: state.admin.isLoggedIn,
     userInfo: state.admin.userInfo,
+    cartQuantity: state.navbarCart.quantity,
+    search: state.navbarCart.search,
   };
 };
 
@@ -165,6 +198,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     processLogout: () => dispatch(actions.processLogout()),
     adminLoginSuccess: (userInfo) => dispatch(adminLoginSuccess(userInfo)),
+    searchAction: (payload) => dispatch(actions.searchAction(payload)),
   };
 };
 
