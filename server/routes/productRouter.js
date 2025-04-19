@@ -3,6 +3,10 @@ const productController = require('../controller/productController')
 
 const router = express.Router()
 
+    router.get('/status', (req, res) => {
+        res.send('Product Route 200 OK')
+    })
+
     // Tạo sản phẩm mớimới
     router.post('/create', productController.createProduct);
 

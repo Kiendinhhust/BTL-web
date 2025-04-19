@@ -153,7 +153,7 @@ const refreshAccessToken = (req, res) => {
     const newAccessToken = generateAccessToken(decoded.userId);
 
     // Lưu accesstoken mới
-    res.cookie("accessToken", accessToken, {
+    res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict", // Chống CSRF
