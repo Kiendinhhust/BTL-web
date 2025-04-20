@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User, UserInfo, sequelize } = require("../models");
 const { sendOTP } = require("../utils/mailer");
+
 const {
   saveTempUser,
   getTempUser,
@@ -86,11 +87,7 @@ const generateRefreshToken = (userId) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({
-      where: { username },
-      include: [{ model: UserInfo }],
-    });
-
+    const user = await User.findOne({ where: { username } });
     if (!user) {
       return res
         .status(400)
@@ -119,21 +116,12 @@ const login = async (req, res) => {
     // Lưu Refresh Token trong HttpOnly Cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Chỉ bật secure khi chạy production
-      sameSite: "Strict", // Chống CSRF
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
     });
-    console.log("check", res.cookies);
 
-    res.json({
-      message: "Đăng nhập thành công!",
-      accessToken,
-      refreshToken,
-      userId: user.user_id,
-      username: user.username,
-      email: user.UserInfo ? user.UserInfo.email : null,
-      role: user.role,
-    });
+    res.json({ message: "Đăng nhập thành công!", accessToken });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Lỗi đăng nhập!" });
@@ -156,7 +144,7 @@ const refreshAccessToken = (req, res) => {
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict", // Chống CSRF
+      sameSite: "Strict",
       maxAge: 15 * 60 * 1000, // 15m
     });
 
