@@ -100,7 +100,7 @@ const getProductById = async (req, res) => {
 
   try {
     const product = await Product.findByPk(id
-       // , { include: [...] } // Join các bảng liên quan nếu cần
+       // , { include: [...] }
        );
 
     if (product) {
