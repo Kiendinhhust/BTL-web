@@ -1,4 +1,4 @@
-name: Sync selected folders to another repository
+name: Sync to another repository
 
 on:
   push:
@@ -33,4 +33,4 @@ jobs:
         cd target-repo
         git add .
         git commit -m "Sync selected folders from server" || echo "No changes to commit"
-        git push https://Daviseraaa:{{ secrets.TARGET_REPO_TOKEN  }}@https://github.com/Daviseraaa/eCommerce-server main
+        git push https://Daviseraaa:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Daviseraaa/eCommerce-server.git main
