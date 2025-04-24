@@ -5,7 +5,7 @@ import UserManage from '../containers/System/UserManage';
 import UserDetail from '../containers/System/UserDetail';
 import UserAddress from '../containers/System/UserAddress';
 import ProductManage from '../containers/System/ProductManage';
-import RegisterPackageGroupOrAcc from '../containers/System/RegisterPackageGroupOrAcc';
+import ShopAdmin from '../containers/System/ShopAdmin';
 
 class System extends Component {
     render() {
@@ -18,7 +18,7 @@ class System extends Component {
                         <Route path="/system/user-detail" component={UserDetail} />
                         <Route path="/system/user-address" component={UserAddress} />
                         <Route path="/system/product-manage" component={ProductManage} />
-                        <Route path="/system/register-package-group-or-account" component={RegisterPackageGroupOrAcc} />
+                        <Route path="/system/shop-admin" component={ShopAdmin} />
                         <Route component={() => { return (<Redirect to={systemMenuPath} />) }} />
                     </Switch>
                 </div>

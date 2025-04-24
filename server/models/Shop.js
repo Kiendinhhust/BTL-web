@@ -33,7 +33,9 @@ const Shop = sequelize.define('Shop', {
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
-  }
+  },  img: {
+    type: DataTypes.BLOB('long'),
+  },
 }, {
   tableName: 'shops',
   timestamps: false
