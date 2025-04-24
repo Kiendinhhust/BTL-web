@@ -1,5 +1,23 @@
 const express = require('express')
 const productController = require('../controller/productController')
+const multer = require('multer');
+
+const storage = multer.memoryStorage();
+
+// Chỉ cho phép file ảnh (jpg, jpeg, png, gif, webp)
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/jpeg' ||
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/gif' ||
+    file.mimetype === 'image/webp'
+  ) {
+    cb(null, true); // Accept file
+  } else {
+    cb(new Error('Chỉ chấp nhận các định dạng ảnh!'), false); // Reject file
+  }
+};
+const upload = multer({ storage, fileFilter });
 
 const router = express.Router()
 
@@ -23,7 +41,7 @@ const router = express.Router()
     router.delete('/:id', productController.deleteProduct);
 
     // Thêm mặt hàng vào sản phẩmphẩm
-    router.post('add-item/:productId', productController.createItem);
+    router.post('add-item/:productId', upload.single('image'),productController.createItem);
     // Tìm các mặt hàng của sản phẩm
     router.get('item/:productId', productController.getItemsByProduct);
     

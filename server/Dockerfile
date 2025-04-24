@@ -1,38 +1,36 @@
-# syntax=docker/dockerfile:1
+# Sử dụng Node.js base image - chọn version LTS ổn định và Alpine cho nhẹ
+FROM node:18-alpine AS builder
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
+# Đặt thư mục làm việc
+WORKDIR /usr/src/app
 
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
+# Copy package.json và package-lock.json (nếu có)
+COPY package*.json ./
 
-ARG NODE_VERSION=22.11.0
+# Cài đặt dependencies production (quan trọng: --only=production)
+# Sử dụng npm ci để cài đặt chính xác từ package-lock.json, nhanh hơn và an toàn hơn cho build
+RUN npm ci --only=production
 
-FROM node:${NODE_VERSION}-alpine
+# Copy toàn bộ source code ứng dụng vào thư mục làm việc
+# Sử dụng AS builder ở trên để không copy devDependencies vào image cuối
+COPY . .
 
-# Use production node environment by default.
-ENV NODE_ENV production
-
+# ------- Image cuối cùng cho Production -------
+FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+# Copy dependencies đã cài đặt từ stage builder
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 
-# Run the application as a non-root user.
-USER node
+# Copy source code ứng dụng từ stage builder
+COPY --from=builder /usr/src/app .
 
-# Copy the rest of the source files into the image.
-COPY . .
+# Expose cổng mà ứng dụng Node.js lắng nghe (bạn cần đặt giá trị này trong .env)
+# Giá trị mặc định là 3000 nếu PORT không được đặt trong .env
+# ENV PORT=3000 # Không cần nếu bạn set trong docker-compose
+EXPOSE ${PORT:-3000}
 
-# Expose the port that the application listens on.
-EXPOSE 3434
-
-# Run the application.
-CMD npm start
+# Lệnh chạy ứng dụng khi container khởi động
+# Sử dụng 'node app.js' trực tiếp, KHÔNG dùng 'npm start' vì nó gọi nodemon
+CMD [ "node", "app.js" ]

@@ -4,6 +4,9 @@ const { Product, Shop, Item } = db
 const slugify = require('slugify')
 const { Op } = require('sequelize')
 
+const { uploadImage, deleteImage } = require('../utils/cloudinaryHelper');
+
+
 // Hàm helper lấy thông tin phân trang
 const getPagination = (page, size) => {
   const limit = (size > 30 || size < 0) ? +size : 30; // Mặc định 30 sản phẩm/trang
@@ -187,7 +190,18 @@ const checkProductOwnership = async (productId, userId) => {
 const createItem = async (req, res) => {
     const productId = req.params.productId;
     const loggedInUserId = req.user.user_id; // từ auth middleware
+ 
+    // Up ảnh và lấy url, nếu không có ảnh url là mặc định
+    if (req.file) {
+      const folder = req.body.folder || 'items';
 
+      const result = await uploadImage(folder, req.file.buffer);
+      req.body.image_url = result.secure_url
+    } else {
+      req.body.image_url = process.env.DEFAULT_PRODUCT_URL
+    }
+    delete req.file.buffer; 
+    
     const { sku, price, stock, image_url, sale_price, attributes } = req.body;
     if (!price || stock === undefined || stock === null) {
         return res.status(400).send({ message: "Giá và số lượng tồn kho là bắt buộc." });
@@ -208,11 +222,11 @@ const createItem = async (req, res) => {
         const { product, isOwner, error: ownerError } = await checkProductOwnership(productId, loggedInUserId);
 
         if (ownerError) {
-            return res.status(404).send({ message: ownerError });
+          return res.status(404).send({ message: ownerError });
         }
 
         if (!isOwner && req.user.role !== 'admin') {
-             return res.status(403).send({ message: "Bạn không có quyền thêm mặt hàng cho sản phẩm này." });
+          return res.status(403).send({ message: "Bạn không có quyền thêm mặt hàng cho sản phẩm này." });
         }
 
 
