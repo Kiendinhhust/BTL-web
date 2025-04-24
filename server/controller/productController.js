@@ -41,13 +41,13 @@ const generateUniqueSlug = async (baseSlug) => {
 // Thêm mới sản phẩm
 const createProduct = async (req, res) => {
   try {
-    // Validate request (Nên dùng thư viện như Joi hoặc express-validator)
+
     if (!req.body.title || !req.body.shop_id) {
       return res.status(400).send({ message: "Tiêu đề và shop_id không được để trống!" });
     }
 
     // Tạo slug từ title
-    const productSlug = generateUniqueSlug(slugify(req.body.title, { lower: true, strict: true }));
+    const productSlug = await generateUniqueSlug(slugify(req.body.title, { lower: true, strict: true }));
 
     // Dữ liệu sản phẩm mới
     const productData = {

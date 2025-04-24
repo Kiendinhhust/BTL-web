@@ -4,7 +4,7 @@ const {
   User, Order, OrderItem, Item, Product, Shop, UserAddress,
   OrderShipping, Payment, ShippingMethod, sequelize
 } = db;
-const { Op } = db.Sequelize;
+const { Op } = require('sequelize');
 
 // TẠO ĐƠN HÀNG
 const createOrder = async (req, res) => {
@@ -27,18 +27,18 @@ const createOrder = async (req, res) => {
 
   let transaction;
   try {
-      // --- Check Shipping Address (keep as before) ---
+      // Kiểm tra địa chỉ giao hàng ( có thuộc chủ sở hữu không )
       const shippingAddress = await UserAddress.findOne({ where: { address_id: shipping_address_id, user_id: userId } });
       if (!shippingAddress) return res.status(403).json({ message: "Địa chỉ giao hàng không hợp lệ hoặc không thuộc về bạn." });
 
       transaction = await sequelize.transaction();
 
-      // --- Fetch Items, Check Stock, Group by Shop (keep as before) ---
+      // ---  ---
       let fetchedItemsDetails = [];
       let totalSubtotal = 0;
       let shopId = null;
       const itemIds = orderItemsInput.map(i => i.item_id);
-      const itemsFromDb = await Item.findAll(/* ... (same include and lock) ... */ {
+      const itemsFromDb = await Item.findAll({
            where: { item_id: { [Op.in]: itemIds } },
           include: [{
               model: Product, as: 'product', attributes: ['product_id', 'shop_id', 'title'],
@@ -50,20 +50,19 @@ const createOrder = async (req, res) => {
       for (const inputItem of orderItemsInput) {
           const dbItem = itemsMap.get(inputItem.item_id);
           if (!dbItem) { await transaction.rollback(); return res.status(404).json({ message: `Mặt hàng với ID ${inputItem.item_id} không tìm thấy.` }); }
-           if (!dbItem.product?.shop?.shop_id) { await transaction.rollback(); return res.status(500).json({ message: `Lỗi xác định shop cho mặt hàng ${dbItem.item_id}.`}); }
+          if (!dbItem.product?.shop?.shop_id) { await transaction.rollback(); return res.status(500).json({ message: `Lỗi xác định shop cho mặt hàng ${dbItem.item_id}.`}); }
           const currentShopId = dbItem.product.shop.shop_id;
           if (shopId === null) shopId = currentShopId;
           else if (shopId !== currentShopId) { await transaction.rollback(); return res.status(400).json({ message: "Chỉ hỗ trợ đặt hàng từ một cửa hàng." }); }
           if (dbItem.stock < inputItem.quantity) { await transaction.rollback(); return res.status(400).json({ message: `Không đủ tồn kho cho ${dbItem.product.title} (ID: ${dbItem.item_id}). Còn ${dbItem.stock}.` }); }
           const itemPrice = dbItem.sale_price || dbItem.price;
           totalSubtotal += parseFloat(itemPrice) * inputItem.quantity;
-          fetchedItemsDetails.push({ /* ... (same properties) ... */
+          fetchedItemsDetails.push({
                dbItem, quantity: inputItem.quantity, priceAtOrder: itemPrice, productTitle: dbItem.product.title, product_id: dbItem.product.product_id, item_attributes: dbItem.attributes, item_image_url: dbItem.image_url
           });
       }
 
-      // --- Calculate Fees (keep as before) ---
-       let shippingFee = 0;
+      let shippingFee = 0;
       if (shipping_method_id) { /* ... fetch method cost ... */
            const method = await ShippingMethod.findByPk(shipping_method_id, { transaction });
            if (method) shippingFee = parseFloat(method.cost); else console.warn(`Shipping method ID ${shipping_method_id} not found.`);
