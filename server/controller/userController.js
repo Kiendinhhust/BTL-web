@@ -1,4 +1,4 @@
-const { User, UserInfo, UserAddress } = require('../models');
+const { User, UserInfo, UserAddress,Shop,ShopRevenue } = require('../models');
 const bcrypt = require('bcrypt');
 
 const getAllUsers = async (req, res) => {

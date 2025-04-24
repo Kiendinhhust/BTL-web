@@ -13,41 +13,61 @@ const shopReducer = (state = initialState, action) => {
         ...state,
         isLoading: true
       };
-      
+
     case actionTypes.FETCH_SHOPS_SUCCESS:
       return {
         ...state,
         shops: action.shops,
         isLoading: false
       };
-      
+
     case actionTypes.FETCH_SHOPS_FAILED:
       return {
         ...state,
         isLoading: false,
         error: 'Failed to fetch shops'
       };
-      
+
     case actionTypes.CREATE_SHOP_SUCCESS:
       return {
         ...state,
         shops: [...state.shops, action.shop]
       };
-      
+
     case actionTypes.UPDATE_SHOP_SUCCESS:
       return {
         ...state,
-        shops: state.shops.map(shop => 
+        shops: state.shops.map(shop =>
           shop.shop_id === action.shop.shop_id ? action.shop : shop
         )
       };
-      
+
     case actionTypes.DELETE_SHOP_SUCCESS:
       return {
         ...state,
         shops: state.shops.filter(shop => shop.shop_id !== action.shopId)
       };
-      
+
+    case actionTypes.APPROVE_SHOP_SUCCESS:
+      return {
+        ...state,
+        shops: state.shops.map(shop =>
+          shop.shop_id === action.shopId
+            ? { ...shop, status: 'accepted' }
+            : shop
+        )
+      };
+
+    case actionTypes.REJECT_SHOP_SUCCESS:
+      return {
+        ...state,
+        shops: state.shops.map(shop =>
+          shop.shop_id === action.shopId
+            ? { ...shop, status: 'rejected' }
+            : shop
+        )
+      };
+
     default:
       return state;
   }

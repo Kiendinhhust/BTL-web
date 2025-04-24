@@ -30,10 +30,23 @@ const Shop = sequelize.define('Shop', {
     type: DataTypes.DECIMAL(3, 2),
     defaultValue: 0.0
   },
+  status: {
+    type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
+    defaultValue: 'pending'
+  },
+  rejection_reason: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  phone: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
-  },  img: {
+  },
+  img: {
     type: DataTypes.BLOB('long'),
   },
 }, {

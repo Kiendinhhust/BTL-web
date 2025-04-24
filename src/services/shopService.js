@@ -21,3 +21,18 @@ export const updateShop = (shopId, shopData) => {
 export const deleteShop = (shopId) => {
   return axios.delete(`${API_URL}/api/shop/${shopId}`);
 };
+
+// Duyệt shop
+export const approveShop = (shopId) => {
+  return axios.put(`${API_URL}/api/shop/${shopId}/approve`);
+};
+
+// Từ chối shop
+export const rejectShop = (shopId, data) => {
+  return axios.put(`${API_URL}/api/shop/${shopId}/reject`, data);
+};
+
+// Lấy danh sách shop đang chờ duyệt
+export const getPendingShops = () => {
+  return axios.get(`${API_URL}/api/shop/admin/pending`);
+};

@@ -100,7 +100,7 @@ class UserAddress extends Component {
       }
       this.closeModal();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Lỗi hệ thống');
+      toast.error(error.response?.data?.message || 'Lỗi hệ thống',{ autoClose: 500 });
     }
   };
 
@@ -154,7 +154,7 @@ class UserAddress extends Component {
        toast.success('Xóa địa chỉ thành công', { autoClose: 500 });
     } catch (error) {
       this.closeDeleteModal();
-       toast.error(error.response?.data?.message || 'Lỗi hệ thống');
+       toast.error(error.response?.data?.message || 'Lỗi hệ thống',{ autoClose: 500 });
     }
   };
   render() {
