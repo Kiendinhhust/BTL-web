@@ -1,9 +1,9 @@
-name: Sync selected folders to another repository
+name: Sync to another repository
 
 on:
   push:
     branches:
-      - tdoan
+    - tdoan
 
 jobs:
   sync:
