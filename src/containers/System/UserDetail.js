@@ -55,7 +55,7 @@ class UserDetail extends Component {
             }
           }
 
-        // Xử lý ảnh đại diện khi dữ liệu user được cập nhật
+        
         if (prevProps.userDetail.userInfo !== this.props.userDetail.userInfo) {
             const userInfo = this.props.userDetail.userInfo;
             if (userInfo && userInfo.UserInfo && userInfo.UserInfo.img && userInfo.UserInfo.img.data && userInfo.UserInfo.img.data.length > 0) {

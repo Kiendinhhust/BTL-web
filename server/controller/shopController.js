@@ -7,18 +7,32 @@ const { Op } = require('sequelize');
 // Create a new shop
 const createShop = async (req, res) => {
   try {
-    // Lấy role từ request (được thêm bởi middleware xác thực)
-    const { role } = req.user || {};
 
-    // Tạo shop với trạng thái dựa trên role
+    const { shop_name, address, phone, description, owner_id, img } = req.body;
+
+    // Tạo đối tượng dữ liệu shop
     const shopData = {
-      ...req.body,
-      status: role === 'admin' ? 'accepted' : 'pending'
+      shop_name,
+      address,
+      phone,
+      description,
+      owner_id: owner_id || (req.user ? req.user.userId : null),
+      img,
+      status: 'pending'
     };
+
+    // Kiểm tra owner_id
+    if (!shopData.owner_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Owner ID is required'
+      });
+    }
 
     const shop = await Shop.create(shopData);
     const { shop_id } = shop;
 
+    // Tạo bản ghi doanh thu ban đầu
     await ShopRevenue.create({
       shop_id: shop_id,
       date: new Date(),
@@ -28,7 +42,7 @@ const createShop = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: role === 'admin' ? 'Shop đã được tạo và chấp nhận' : 'Shop đã được tạo và đang chờ duyệt',
+      message: 'Shop đã được tạo và đang chờ duyệt',
       shop
     });
   } catch (error) {
@@ -52,9 +66,7 @@ const getAllShops = async (req, res) => {
 // Get a shop by ID
 const getShopById = async (req, res) => {
   try {
-    // Lấy role và userId từ request (được thêm bởi middleware xác thực)
-    const { role, userId } = req.user || {};
-
+    
     const shop = await Shop.findByPk(req.params.id);
 
     if (!shop) {
@@ -63,17 +75,6 @@ const getShopById = async (req, res) => {
         message: 'Shop not found'
       });
     }
-
-    // Kiểm tra quyền truy cập
-    // Admin có thể xem tất cả shop
-    // User chỉ có thể xem shop của họ hoặc shop đã được chấp nhận
-    if (role !== 'admin' && shop.owner_id !== userId && shop.status !== 'accepted') {
-      return res.status(403).json({
-        success: false,
-        message: 'Bạn không có quyền xem thông tin shop này'
-      });
-    }
-
     const shopRevenue = await ShopRevenue.findOne({
       where: { shop_id: req.params.id },
       order: [['date', 'DESC']]
@@ -83,7 +84,13 @@ const getShopById = async (req, res) => {
       ...shop.dataValues,
       total_orders: shopRevenue ? shopRevenue.total_orders : 0,
       total_revenue: shopRevenue ? shopRevenue.total_revenue : 0,
-      date: shopRevenue ? shopRevenue.date : null
+      date: shopRevenue ? shopRevenue.date : null,
+      // Đảm bảo các trường được trả về đầy đủ
+      rating: shop.rating || 0,
+      status: shop.status || 'pending',
+      description: shop.description || '',
+      rejection_reason: shop.rejection_reason || '',
+      phone: shop.phone || ''
     };
 
     res.json({
@@ -101,9 +108,43 @@ const getShopById = async (req, res) => {
 // Update a shop
 const updateShop = async (req, res) => {
   try {
-    await Shop.update(req.body, {
-      where: { shop_id: req.params.id }
-    });
+    const shop = await Shop.findByPk(req.params.id);
+
+    const { shop_name, address, phone, description, img } = req.body;
+    if (!shop) {
+      return res.status(404).json({ error: 'Không tìm thấy cửa hàng' });
+    }
+
+    if (shop) {
+      const updateData = {};
+      
+      if (phone) {
+        updateData.phone = phone;
+      }
+      
+      if (description !== undefined) {
+        updateData.description = description;
+      }
+    
+      if (shop_name !== undefined) {
+        updateData.shop_name = shop_name;
+      }
+      
+      if (address !== undefined) {
+        updateData.address = address;
+      }
+      
+     
+      if (img !== undefined) {
+        updateData.img = img;
+      }
+      
+      if (Object.keys(updateData).length > 0) {
+        await shop.update(updateData);
+      }
+    }
+
+
     res.json({
       success: true,
       message: 'Shop updated successfully'
@@ -143,14 +184,14 @@ const deleteShop = async (req, res) => {
     // Kiểm tra xem người dùng có phải là admin không
     const { role } = req.user || {};
 
-   
+
     if (role !== 'admin' && owner && owner.role === 'seller') {
-      
+
         await User.update(
           { role: 'buyer' },
           { where: { user_id: shop.owner_id } }
         );
-      
+
     }
 
     res.json({

@@ -7,7 +7,6 @@ import {
   approveShop,
   rejectShop
 } from '../../services/shopService';
-import { toast } from 'react-toastify';
 
 export const fetchAllShopsStart = () => {
   return async (dispatch) => {

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { updateShopInfo, fetchAllShopsStart } from '../../store/actions/shopAction';
+
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
 import CommonUtils from '../../utils/CommonUtils';
@@ -103,15 +104,16 @@ class ModalEditShop extends Component {
 
   handleUpdateShop = async () => {
     if (!this.validateForm()) return;
-
+    const { shopData } = this.props;
     // Create shop object
     let shop = {
       shop_name: this.state.name,
       address: this.state.address,
       phone: this.state.phone,
-      img: this.state.avatar
     };
-
+    if (this.state.avatar && this.state.avatar !== shopData.img) {
+      shop.img = this.state.avatar;
+    }
     try {
       let res = await this.props.updateShop(this.state.shopId, shop);
 

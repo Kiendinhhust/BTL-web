@@ -65,6 +65,9 @@ class ModalEditUser extends Component {
   handleOnChangeImage = async (event) => {
     let data = event.target.files;
     let file = data[0];
+    
+    console.log("File selected:", file);
+
     if (file) {
       
       let objectUrl = URL.createObjectURL(file);
@@ -91,13 +94,19 @@ class ModalEditUser extends Component {
   }
 
   handleSaveUser = async () => {
-    // Tạo đối tượng userData chỉ với các trường cần cập nhật
+    let { currentUser } = this.props;
+    const userInfo = currentUser.UserInfo || {};
     let userData = {
       phone_number: this.state.phone_number,
       role: this.state.role,
       address_infor: this.state.address_infor,
-      img: this.state.avatar
+      
     };
+
+    // Chỉ thêm ảnh nếu người dùng đã nhập khác với ảnh cũ
+    if (this.state.avatar && this.state.avatar !== userInfo.img) {
+      userData.img = this.state.avatar;
+    }
 
     // Chỉ thêm password nếu người dùng đã nhập
     if (this.state.password) {
