@@ -297,6 +297,52 @@ const getPendingShops = async (req, res) => {
   }
 };
 
+const getShopByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID is required'
+      });
+    }
+
+    // Tìm shop mới nhất (shop_id cao nhất) của user
+    const latestShop = await Shop.findOne({
+      where: { owner_id: userId },
+      order: [['shop_id', 'DESC']]
+    });
+
+    if (!latestShop) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy shop nào của người dùng này'
+      });
+    }
+
+
+    const response = {
+      ...latestShop.dataValues,
+      rating: latestShop.rating || 0,
+      status: latestShop.status || 'pending',
+      description: latestShop.description || '',
+      rejection_reason: latestShop.rejection_reason || '',
+      phone: latestShop.phone || ''
+    };
+
+    res.json({
+      success: true,
+      data: response
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   createShop,
   getAllShops,
@@ -305,5 +351,6 @@ module.exports = {
   deleteShop,
   approveShop,
   rejectShop,
-  getPendingShops
+  getPendingShops,
+  getShopByUserId
 };

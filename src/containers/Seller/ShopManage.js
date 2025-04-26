@@ -19,7 +19,7 @@ class ShopManage extends Component {
         try {
             // Lấy thông tin shop từ API
             if (this.props.userInfo && this.props.userInfo.userId) {
-                const res = await getShopById(this.props.userInfo.ShopId);
+                const res = await getShopById(this.props.userInfo.shop);
 
                 if (res && res.data && res.data.success) {
                     const shopData = res.data.data;

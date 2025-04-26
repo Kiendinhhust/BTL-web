@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './RegisterSeller.scss';
 import CommonUtils from '../../utils/CommonUtils';
-import { createNewShop ,fetchAllShopsStart } from '../../store/actions/shopAction';
-import { getShopById } from '../../services/shopService';
+import { createNewShop, fetchAllShopsStart } from '../../store/actions/shopAction';
+import { getShopByUserId } from '../../services/shopService';
 import { toast } from 'react-toastify';
 
 class RegisterSeller extends Component {
@@ -27,11 +27,10 @@ class RegisterSeller extends Component {
     }
 
     async componentDidMount() {
-        // Kiểm tra xem người dùng đã đăng ký shop chưa
         if (this.props.userInfo && this.props.userInfo.userId) {
             try {
-                // Giả sử rằng chúng ta có API để lấy shop của người dùng hiện tại
-                const res = await getShopById(this.props.userInfo.ShopId);
+                // Lấy shop mới nhất của người dùng theo userId
+                const res = await getShopByUserId(this.props.userInfo.userId);
                 if (res && res.data && res.data.success) {
                     const shopData = res.data.data;
                     this.setState({
@@ -125,7 +124,6 @@ class RegisterSeller extends Component {
         this.setState({ isSubmitting: true, errorMessage: '' });
 
         try {
-            
             const shopData = {
                 shop_name: shopName,
                 description,
@@ -139,23 +137,65 @@ class RegisterSeller extends Component {
             const res = await this.props.createShop(shopData);
 
             if (res && res.success) {
-                toast.success('Đăng ký thành công! Chúng tôi sẽ xem xét và phản hồi trong vòng 24 giờ.',{ autoClose: 2000 });
+                toast.success('Đăng ký thành công! Chúng tôi sẽ xem xét và phản hồi trong vòng 24 giờ.', { autoClose: 2000 });
                 this.props.fetchAllShops();
-                // Cập nhật trạng thái
-                this.setState({
-                    isRegistered: true,
-                    shopId: res.shop.shop_id,
-                    shopStatus: 'pending',
-                    shopName: '',
-                    description: '',
-                    address: '',
-                    phone: '',
-                    email: '',
-                    avatar: '',
-                    previewImgURL: '',
-                    errorMessage: '',
-                    isSubmitting: false
-                });
+
+                // Lấy thông tin shop mới nhất sau khi tạo
+                try {
+                    const shopRes = await getShopByUserId(this.props.userInfo.userId);
+                    if (shopRes && shopRes.data && shopRes.data.success) {
+                        const shopData = shopRes.data.data;
+                        // Cập nhật trạng thái
+                        this.setState({
+                            isRegistered: true,
+                            shopId: shopData.shop_id,
+                            shopStatus: shopData.status,
+                            rejectionReason: shopData.rejection_reason || '',
+                            shopName: '',
+                            description: '',
+                            address: '',
+                            phone: '',
+                            email: '',
+                            avatar: '',
+                            previewImgURL: '',
+                            errorMessage: '',
+                            isSubmitting: false
+                        });
+                    } else {
+                        // Nếu không lấy được thông tin shop, sử dụng thông tin từ response tạo shop
+                        this.setState({
+                            isRegistered: true,
+                            shopId: res.shop.shop_id,
+                            shopStatus: 'pending',
+                            shopName: '',
+                            description: '',
+                            address: '',
+                            phone: '',
+                            email: '',
+                            avatar: '',
+                            previewImgURL: '',
+                            errorMessage: '',
+                            isSubmitting: false
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching shop data after creation:', error);
+                    // Nếu có lỗi, sử dụng thông tin từ response tạo shop
+                    this.setState({
+                        isRegistered: true,
+                        shopId: res.shop.shop_id,
+                        shopStatus: 'pending',
+                        shopName: '',
+                        description: '',
+                        address: '',
+                        phone: '',
+                        email: '',
+                        avatar: '',
+                        previewImgURL: '',
+                        errorMessage: '',
+                        isSubmitting: false
+                    });
+                }
             } else {
                 this.setState({
                     errorMessage: res.message || 'Có lỗi xảy ra khi đăng ký shop',

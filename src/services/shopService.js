@@ -17,7 +17,9 @@ export const createShop = (shopData) => {
 export const updateShop = (shopId, shopData) => {
   return axios.put(`${API_URL}/api/shop/${shopId}`, shopData);
 };
-
+export const getShopByUserId = (userId) => {
+  return axios.get(`${API_URL}/api/shop/user/${userId}`);
+}
 export const deleteShop = (shopId) => {
   return axios.delete(`${API_URL}/api/shop/${shopId}`);
 };

@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, UserInfo , sequelize } = require('../models');
+const { User, UserInfo,Shop , sequelize } = require('../models');
 const { sendOTP } = require('../utils/mailer');
 const { saveTempUser, getTempUser, deleteTempUser, allTempUser } = require('../utils/tempUser');
 
@@ -92,7 +92,10 @@ const login = async (req, res) => {
         console.log("check",process.env.JWT_SECRET,user)
         const accessToken = generateAccessToken(user.user_id);
         const refreshToken = generateRefreshToken(user.user_id);
-        
+        const shop = await Shop.findOne({
+            where: { owner_id: user.user_id },
+            order: [['shop_id', 'DESC']]
+        });
         // Lưu Refresh Token trong HttpOnly Cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -109,6 +112,7 @@ const login = async (req, res) => {
             userId: user.user_id,  
             username: user.username,
             email: user.UserInfo ? user.UserInfo.email : null,
+            shop: shop? shop.shop_id : null,
             role: user.role
           });
     } catch (error) {
