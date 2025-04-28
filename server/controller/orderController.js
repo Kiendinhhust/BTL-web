@@ -70,23 +70,23 @@ const createOrder = async (req, res) => {
       const discountAmount = 0; // Placeholder
       const totalPrice = totalSubtotal + shippingFee - discountAmount;
 
-      // --- Create Order (keep as before) ---
+      // --- Create Order ---
       const newOrder = await Order.create({ /* ... */ }, { transaction });
 
-      // --- Create OrderItems & Decrement Stock (keep as before) ---
+      // --- Create OrderItems & Decrement Stock ---
        const orderItemPromises = fetchedItemsDetails.map(detail => OrderItem.create({/*...*/}, { transaction }));
        const stockDecrementPromises = fetchedItemsDetails.map(detail => Item.decrement({ stock: detail.quantity }, { where: { item_id: detail.dbItem.item_id }, transaction }));
       await Promise.all(orderItemPromises);
       await Promise.all(stockDecrementPromises);
 
-      // --- Create OrderShipping (keep as before) ---
+      // --- Create OrderShipping ---
       if (shipping_method_id) await OrderShipping.create({/*...*/}, { transaction });
 
-      // --- Create Payment (keep as before) ---
+      // --- Create Payment ---
        const initialPaymentStatus = (payment_method === 'cod') ? 'pending' : 'pending';
        await Payment.create({/*...*/}, { transaction });
 
-      // --- TODO: Xóa giỏ hàng nếu cần (Thực hiện) ---
+      // --- Xóa giỏ hàng nếu cần (Thực hiện) ---
       let cartClearedCount = 0;
       if (clear_cart === true) {
           // Xóa các item trong đơn hàng này khỏi giỏ hàng của người dùng

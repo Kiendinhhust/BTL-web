@@ -7,4 +7,6 @@ const router = express.Router()
 
 router.use(auth.authenticateToken)
 
+router.get('/get-user-infor', userController)
+
 module.exports = router
