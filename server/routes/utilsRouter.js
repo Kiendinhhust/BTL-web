@@ -2,6 +2,8 @@ const express = require('express')
 const multer = require('multer');
 
 const storeController = require('../controller/storeController')
+const auth = require('../middleware/authMiddleware')
+
 const router = express.Router()
 
 // Cấu hình multer để lưu file tạm thời trong RAM
@@ -22,8 +24,10 @@ const fileFilter = (req, file, cb) => {
 };
 const upload = multer({ storage, fileFilter });
 
+
+router.use(auth.authenticateToken)
 //router.get('/store/image/upload')
 router.post('/store/image/upload', upload.single('image'), storeController.uploadSingleImage)
-router.post('/store/image/delete',storeController.deleteImageByUrl)
+router.post('/store/image/delete', storeController.deleteImageByUrl)
 
 module.exports = router

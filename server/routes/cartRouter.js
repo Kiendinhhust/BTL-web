@@ -1,7 +1,10 @@
 const express = require('express')
 const cardController = require('../controller/cardController')
+const auth = require('../middleware/authMiddleware')
 
 const router = express.Router()
+
+router.use(auth.authenticateToken)
 
 router.get('/', cardController.getCart)
 router.post('/add', cardController.addItemToCart)

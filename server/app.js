@@ -28,7 +28,7 @@ app.use(cors({
 
 // Xử lý bảo mật và xác thực
 app.use(sanitize.sanitizeBody)
-app.use('/api', auth.authenticateToken)
+//app.use('/api', auth.authenticateToken)
 
 // Middleware xử lý form
 app.use(bodyParser.urlencoded({ extended: false }))
