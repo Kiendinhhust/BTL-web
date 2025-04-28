@@ -8,6 +8,10 @@ const authenticateToken = async (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1]; // Lấy phần token sau 'Bearer '
     //Authorization: "Bearer + TOKEN"
     if (token == null) {
+        token = req.cookies.accessToken
+    }
+    
+    if (token == null) {
         // Không có token -> Chưa đăng nhập
         return res.status(401).json({ error: 'Yêu cầu chưa được xác thực (Không tìm thấy token).' });
     }
