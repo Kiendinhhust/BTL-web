@@ -20,7 +20,7 @@ const utilsAPI = require('./routes/utilsRouter')
 const app = express();
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', "http://localhost:5500"],  // Cho phép frontend của bạn
+    origin: '*',  // Cho phép frontend của bạn
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true  // Cho phép gửi cookies
