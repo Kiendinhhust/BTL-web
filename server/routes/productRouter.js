@@ -43,9 +43,9 @@ const router = express.Router()
     router.delete('/:id', auth.authenticateToken, productController.deleteProduct);
 
     // Thêm mặt hàng vào sản phẩmphẩm
-    router.post('add-item/:productId', auth.authenticateToken, upload.single('image'),productController.createItem);
+    router.post('/add-item/:productId', auth.authenticateToken, upload.single('image'),productController.createItem);
     // Tìm các mặt hàng của sản phẩm
-    router.get('item/:productId', productController.getItemsByProduct);
+    router.get('/item/:productId', productController.getItemsByProduct);
     
 
 module.exports = router
