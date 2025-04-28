@@ -25,8 +25,8 @@ const UserActivityLog = require("./UserActivityLog");
 
 // --- Định nghĩa Associations ---
 // --- User ---
-User.hasOne(UserInfo, { foreignKey: "user_id", as: "info", onDelete: "CASCADE" });
-User.hasMany(UserAddress, { foreignKey: "user_id", as: "addresses", onDelete: "CASCADE" });
+User.hasOne(UserInfo, { foreignKey: "user_id", as: "user_info", onDelete: "CASCADE" });
+User.hasMany(UserAddress, { foreignKey: "user_id", as: "user_addresses", onDelete: "CASCADE" });
 User.hasMany(Shop, { foreignKey: "owner_id", as: "ownedShops", onDelete: "CASCADE" });
 User.hasMany(Order, { foreignKey: "user_id", as: "orders", onDelete: "RESTRICT" });
 User.hasMany(Payment, { foreignKey: "user_id", as: "payments", onDelete: "RESTRICT" });

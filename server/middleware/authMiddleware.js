@@ -6,7 +6,7 @@ const authenticateToken = async (req, res, next) => {
     // Lấy token từ header Authorization: Bearer TOKEN
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Lấy phần token sau 'Bearer '
-
+    //Authorization: "Bearer + TOKEN"
     if (token == null) {
         // Không có token -> Chưa đăng nhập
         return res.status(401).json({ error: 'Yêu cầu chưa được xác thực (Không tìm thấy token).' });
@@ -21,7 +21,7 @@ const authenticateToken = async (req, res, next) => {
             // Loại bỏ password_hash
              attributes: { exclude: ['password_hash'] }
         });
-
+        console.log(decoded)
         if (!user) {
             // User không tồn tại (có thể đã bị xóa sau khi token được tạo)
             return res.status(403).json({ error: 'Token hợp lệ nhưng không tìm thấy người dùng.' });

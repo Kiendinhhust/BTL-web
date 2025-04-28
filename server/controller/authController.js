@@ -55,7 +55,7 @@ const verifyOTP = async (req, res) => {
         await transaction.commit();
 
         // Tạo token JWT
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user.user_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({ message: 'Tài khoản đã được tạo!', token });
     } catch (error) {
@@ -90,8 +90,8 @@ const login = async (req, res) => {
         }
         console.log(process.env.JWT_REFRESH_SECRET)
         console.log(user)
-        const accessToken = generateAccessToken(user.id);
-        const refreshToken = generateRefreshToken(user.id);
+        const accessToken = generateAccessToken(user.user_id);
+        const refreshToken = generateRefreshToken(user.user_id);
 
         // Lưu Access Token trong HttpOnly Cookie
         res.cookie('accessToken', accessToken, {
