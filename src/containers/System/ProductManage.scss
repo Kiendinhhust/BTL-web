@@ -1,9 +1,194 @@
-.productmanage-container {
+// Variables
+$navy-dark: #1a3a6c;
+$navy-medium: #2c4272;
+$navy-light: #3a5998;
+$white: #ffffff;
+$light-gray: #f7f9fc;
+$medium-gray: #e4e8f0;
+$dark-gray: #8492a6;
+$accent-color: #ff5a5a;
+$transition: all 0.3s ease;
+$border-radius: 8px;
+$box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.productmanage-productscontainer {
   margin: 0;
   padding: 30px 0px 0px 0px;
-  max-height: 90vh;
+  max-height: 80vh;
+  min-height: 80vh;
   flex-wrap: wrap;
   overflow-y: scroll;
   display: flex;
   gap: 30px;
+}
+.productmanage-container {
+  display: flex;
+  flex-direction: column;
+}
+.productmanage-addproduct {
+  background-color: #001f3f; /* Màu navy */
+  color: white; /* Màu chữ trắng */
+  width: 200px;
+  height: 40px;
+  border: none; /* Không có viền */
+  border-radius: 10px; /* Bo góc nhẹ */
+  padding: 10px 20px; /* Padding trong button */
+  font-size: 14px; /* Kích thước chữ */
+  font-weight: 600; /* Độ đậm của chữ */
+  cursor: pointer; /* Con trỏ khi hover */
+  transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà */
+  margin: 10px 10px; /* Margin trên dưới */
+  display: inline-flex; /* Hiển thị inline và có thể căn chỉnh nội dung */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+
+  &:hover {
+    background-color: #4caf50; /* Màu xanh lá khi hover */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Đổ bóng khi hover */
+    transform: translateY(-1px); /* Hiệu ứng nâng lên khi hover */
+  }
+
+  &:active {
+    background-color: #45a049; /* Màu xanh lá đậm hơn khi click */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Đổ bóng khi click */
+    transform: translateY(0); /* Trở về vị trí ban đầu khi click */
+  }
+
+  &:focus {
+    outline: none; /* Loại bỏ viền focus mặc định */
+    box-shadow: 0 0 0 2px rgba(0, 31, 63, 0.4); /* Viền focus tùy chỉnh màu navy */
+  }
+}
+.productmanage-modal .modal-header {
+  background-color: $navy-dark !important; // Màu navy
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  .modal-title {
+    font-weight: 600;
+    color: white;
+  }
+
+  .close {
+    color: white !important;
+    background-color: $navy-light;
+    opacity: 0.8;
+    text-shadow: none;
+    border-radius: 50%;
+    border-width: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: $box-shadow;
+
+    &:hover,
+    &:focus {
+      color: white !important;
+      opacity: 1;
+    }
+  }
+}
+.productmanage-dash {
+  display: block;
+  margin-top: 20px;
+  max-height: 2vh;
+  height: 100%;
+  width: 50%;
+  margin: 0px auto;
+  background: $navy-medium;
+  border: 0;
+  z-index: 1;
+}
+.productmanage-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2vh 0;
+  gap: 10px;
+
+  button {
+    max-width: 5vh;
+    width: 100%;
+    height: 100%;
+    max-height: 5vh;
+    border-radius: 8px;
+    border: 1px solid #e4e8f0;
+    background-color: #ffffff;
+    color: #1a3a6c;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #f7f9fc;
+      border-color: #3a5998;
+      transform: translateY(-2px);
+      box-shadow: $box-shadow;
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #1a3a6c, #2c4272, #3a5998);
+      background-size: 200% 200%;
+      animation: gradientMove 8s ease infinite;
+      color: #ffffff;
+      border: none;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(26, 58, 108, 0.3);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &:hover {
+        transform: none;
+        box-shadow: none;
+        background-color: #ffffff;
+        border-color: #e4e8f0;
+      }
+    }
+  }
+}
+.productmanage-pagination-now {
+  border: 2px solid $navy-dark !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .productmanage-pagination {
+    gap: 8px;
+
+    button {
+      width: 35px;
+      height: 35px;
+      font-size: 13px;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .productmanage-pagination {
+    gap: 6px;
+    button {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+    }
+  }
 }

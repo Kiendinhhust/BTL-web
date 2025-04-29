@@ -19,6 +19,7 @@ const Product = (props) => {
     axios({
       method: "get",
       url: `${process.env.REACT_APP_BACKEND_URL}/api/products/item/${props.product.product_id}`,
+      withCredentials: true,
     }).then((response) => {
       setItems(response.data);
       setInfo(response.data[0]);

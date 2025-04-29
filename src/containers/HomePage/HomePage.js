@@ -27,6 +27,7 @@ const HomePage = (props) => {
         title !== null
           ? `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}&title=${title}`
           : `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}`,
+      headers: {},
     }).then((response) => {
       setProducts(response.data.products);
     });

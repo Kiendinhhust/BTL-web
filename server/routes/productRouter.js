@@ -1,30 +1,49 @@
-const express = require("express");
-const productController = require("../controller/productController");
+const express = require('express')
+const productController = require('../controller/productController')
+const multer = require('multer');
 
-const router = express.Router();
+const storage = multer.memoryStorage();
 
-router.get("/status", (req, res) => {
-  res.send("Product Route 200 OK");
-});
+// Chỉ cho phép file ảnh (jpg, jpeg, png, gif, webp)
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === 'image/jpeg' ||
+    file.mimetype === 'image/png' ||
+    file.mimetype === 'image/gif' ||
+    file.mimetype === 'image/webp'
+  ) {
+    cb(null, true); // Accept file
+  } else {
+    cb(new Error('Chỉ chấp nhận các định dạng ảnh!'), false); // Reject file
+  }
+};
+const upload = multer({ storage, fileFilter });
 
-// Tạo sản phẩm mớimới
-router.post("/create", productController.createProduct);
+const router = express.Router()
 
-// Hiển thị sản phẩm theo trang (có tìm kiếm theo title)
-router.get("/", productController.getAllProducts);
+    router.get('/status', (req, res) => {
+        res.send('Product Route 200 OK')
+    })
 
-// Tìm sản phẩm theo id
-router.get("/:id", productController.getProductById);
+    // Tạo sản phẩm mớimới
+    router.post('/create', productController.createProduct);
 
-// Cập nhật sản phẩm theo id
-router.put("/:id", productController.updateProduct);
+    // Hiển thị sản phẩm theo trang (có tìm kiếm theo title)
+    router.get('/', productController.getAllProducts);
 
-// Xóa sản phẩm theo id
-router.delete("/:id", productController.deleteProduct);
+    // Tìm sản phẩm theo id
+    router.get('/:id', productController.getProductById);
 
-// Thêm mặt hàng vào sản phẩmphẩm
-router.post("/add-item/:productId", productController.createItem);
-// Tìm các mặt hàng của sản phẩm
-router.get("/item/:productId", productController.getItemsByProduct);
+    // Cập nhật sản phẩm theo id
+    router.put('/:id', productController.updateProduct);
 
-module.exports = router;
+    // Xóa sản phẩm theo id
+    router.delete('/:id', productController.deleteProduct);
+
+    // Thêm mặt hàng vào sản phẩmphẩm
+    router.post('add-item/:productId', upload.single('image'),productController.createItem);
+    // Tìm các mặt hàng của sản phẩm
+    router.get('item/:productId', productController.getItemsByProduct);
+    
+
+module.exports = router

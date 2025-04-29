@@ -6,7 +6,7 @@ import {
   updateUserApi,
   deleteUserApi,
 } from "../../services/adminService";
-const API_URL = "http://localhost:3434";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Fetch all users
 export const fetchAllUsersSuccess = (users) => ({

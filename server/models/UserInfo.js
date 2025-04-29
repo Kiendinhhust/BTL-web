@@ -6,7 +6,7 @@ const UserInfo = sequelize.define('UserInfo', {
   email: { type: DataTypes.STRING(100), allowNull: false, unique: true },
   phone_number: { type: DataTypes.STRING(20), unique: true },
   full_name: { type: DataTypes.STRING(100) },
-  avatar_url: { type: DataTypes.STRING(255) },
+  avatar_url: { type: DataTypes.STRING(255), defaultValue: process.env.DEFAULT_AVATAR_URL},
   default_address_id: { type: DataTypes.BIGINT }
 }, {
   tableName: 'user_info',

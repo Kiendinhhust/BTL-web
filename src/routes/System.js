@@ -7,6 +7,7 @@ import UserAddress from "../containers/System/UserAddress";
 import ProductManage from "../containers/System/ProductManage";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
 import ProductAdd from "../containers/System/ProductAdd";
+import ItemManage from "../containers/System/ItemManage";
 
 class System extends Component {
   render() {
@@ -19,6 +20,7 @@ class System extends Component {
             <Route path="/system/user-detail" component={UserDetail} />
             <Route path="/system/user-address" component={UserAddress} />
             <Route path="/system/product-manage" component={ProductManage} />
+            <Route path="/system/item-manage" component={ItemManage} />
             <Route path="/system/add-product" component={ProductAdd} />
             <Route
               path="/system/register-package-group-or-account"

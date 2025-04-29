@@ -1,0 +1,552 @@
+// Variables
+$navy-dark: #1a3a6c;
+$navy-medium: #2c4272;
+$navy-light: #3a5998;
+$white: #ffffff;
+$light-gray: #f7f9fc;
+$medium-gray: #e4e8f0;
+$dark-gray: #8492a6;
+$accent-color: #ff5a5a;
+$green: #4caf50;
+$yellow: #ff9800;
+$blue: #007bff;
+$transition: all 0.3s ease;
+$border-radius: 8px;
+$box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+// Mixins
+@mixin navy-gradient {
+  background: linear-gradient(135deg, $navy-dark, $navy-medium, $navy-light);
+  background-size: 200% 200%;
+  animation: gradientMove 8s ease infinite;
+}
+
+@mixin hover-transform {
+  transition: $transition;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.productshop-container {
+  border: 1px solid $medium-gray;
+  padding: 20px;
+  border-radius: $border-radius;
+  background-color: $white;
+  text-align: center;
+  height: 650px;
+  width: 310px;
+  max-width: 100%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: $box-shadow;
+  @include hover-transform;
+
+  // Navy gradient strip at top
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    @include navy-gradient;
+  }
+}
+
+.productshop-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  overflow: hidden;
+  border-radius: $border-radius;
+
+  .productshop-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: $transition;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.productshop-name {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 600;
+  color: $navy-dark;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 2px;
+    width: 40px;
+    @include navy-gradient;
+    border-radius: 2px;
+  }
+}
+
+.productshop-rating-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 10px 0;
+
+  .star-icon {
+    color: #ffc107;
+    transition: $transition;
+
+    &:hover {
+      transform: scale(1.2) rotate(5deg);
+    }
+  }
+}
+
+.productshop-rating-count {
+  color: $navy-light;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.productshop-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: $accent-color;
+  margin: 10px 0;
+  position: relative;
+  display: inline-block;
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: rgba($accent-color, 0.3);
+  }
+}
+
+.productshop-quantity-container {
+  margin: 15px 0;
+}
+
+.select-container {
+  padding: 8px 12px;
+  border: 1px solid $navy-light;
+  border-radius: $border-radius;
+  background-color: $white;
+  color: $navy-dark;
+  font-weight: 500;
+  transition: $transition;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: $navy-dark;
+    box-shadow: 0 0 0 3px rgba($navy-light, 0.15);
+  }
+
+  &:hover {
+    border-color: $navy-dark;
+  }
+}
+
+.addToCart-button {
+  background-color: $navy-medium;
+  color: $white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: $border-radius;
+  transition: $transition;
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden; /* Thêm overflow: hidden để hiệu ứng không tràn ra ngoài */
+  display: inline-block; /* Đảm bảo nút hiển thị đúng kích thước */
+  text-align: center; /* Căn giữa text */
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  &:hover {
+    background-color: $navy-dark;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba($navy-dark, 0.3);
+
+    &::before {
+      transform: translateX(100%);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+// Styling cho nút thuộc tính sản phẩm
+.productshop-attributes-button {
+  background-color: $light-gray;
+  color: $navy-dark;
+  border: 1px solid $medium-gray;
+  border-radius: $border-radius;
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 12ch;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $navy-light !important;
+    color: $white !important;
+    border-color: $navy-light !important  ;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba($navy-dark, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // Thêm style cho nút được chọn
+  &.selected {
+    background-color: $white;
+    color: $navy-medium;
+    border-color: $navy-medium;
+    box-shadow: 0 2px 5px rgba($navy-dark, 0.3);
+  }
+}
+.productshop-etc {
+  background-color: $light-gray;
+  color: $navy-dark;
+  border: 1px solid $medium-gray;
+  border-radius: $border-radius;
+  padding: 8px 12px;
+  margin: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background-color: $navy-light !important;
+    color: $white !important;
+    border-color: $navy-light !important  ;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba($navy-dark, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Container cho các nút thuộc tính
+.productshop-attributes-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 10px 0;
+  gap: 5px;
+}
+.productshop-checkmark {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  transition: $transition;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+.productshop-added {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+// Animations
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Add a badge for new or featured productshops
+.productshop-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  z-index: 1;
+
+  &.new {
+    background-color: $accent-color;
+    color: $white;
+  }
+
+  &.sale {
+    background-color: #4caf50;
+    color: $white;
+  }
+
+  &.featured {
+    @include navy-gradient;
+    color: $white;
+  }
+}
+
+// Add a quick view button that appears on hover
+.quick-view-button {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba($white, 0.9);
+  color: $navy-dark;
+  border: none;
+  padding: 8px 15px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: $transition;
+  opacity: 0;
+
+  .productshop-container:hover & {
+    bottom: 20px;
+    opacity: 1;
+  }
+
+  &:hover {
+    background-color: $navy-dark;
+    color: $white;
+  }
+}
+
+.productshop-manageitem-container {
+  display: flex;
+  gap: 15px;
+}
+.productshop-manageitem {
+  background-color: $navy-medium;
+  color: $white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: $border-radius;
+  transition: $transition;
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden; /* Thêm overflow: hidden để hiệu ứng không tràn ra ngoài */
+  display: inline-block; /* Đảm bảo nút hiển thị đúng kích thước */
+  text-align: center; /* Căn giữa text */
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  &:hover {
+    background-color: $navy-dark;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba($navy-dark, 0.3);
+
+    &::before {
+      transform: translateX(100%);
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+.productshop-name {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 600;
+  color: $navy-dark;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 2px;
+    width: 40px;
+    @include navy-gradient;
+    border-radius: 2px;
+  }
+}
+
+.productshop-rating-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 10px 0;
+
+  .productshop-rating-stars {
+    height: 20px;
+    margin-bottom: 5px;
+  }
+
+  .productshop-rating-count {
+    color: $navy-light;
+    font-weight: 500;
+    font-size: 13px;
+
+    &.link-primary {
+      cursor: pointer;
+      transition: $transition;
+
+      &:hover {
+        color: $accent-color;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.productshop-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: $accent-color;
+  margin: 10px 0;
+  position: relative;
+  display: inline-block;
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: rgba($accent-color, 0.3);
+  }
+}
+
+.productshop-remove-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: $transition;
+  padding: 4px;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 0 10px rgba($accent-color, 0.5);
+  }
+}
+
+// Animations
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Media Queries
+@media (max-width: 768px) {
+  .productshop-container {
+    width: 230px;
+    height: 350px;
+    padding: 15px;
+  }
+
+  .productshop-image-container {
+    height: 150px;
+  }
+
+  .productshop-name {
+    font-size: 14px;
+  }
+
+  .productshop-price {
+    font-size: 16px;
+  }
+
+  .productshop-rating-container {
+    .productshop-rating-count {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .productshop-container {
+    width: 100%;
+    max-width: 280px;
+    margin: 10px auto;
+  }
+}
