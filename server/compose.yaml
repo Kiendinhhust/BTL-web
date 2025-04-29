@@ -6,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: daviseraaa/ecommerce-server-backend:latest
     container_name: e_commerce_backend # Đổi tên cho phù hợp project
     restart: unless-stopped
     env_file:
@@ -48,7 +49,7 @@ services:
       # - "${DB_PORT}:5432" # Dùng cổng từ .env cho host, 5432 là cổng nội bộ Postgres
       - "${DB_PORT}:5432"
     healthcheck:
-        # Sử dụng DB_USER và DB_NAME từ .env để kiểm tra sức khỏe DB
+        # Sử dụng DB_USER và DB_NAME từ .env để kiểm tra DB
         test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
         interval: 10s
         timeout: 5s
@@ -60,6 +61,7 @@ services:
     build:
       context: ./nginx # Context là thư mục nginx
       dockerfile: Dockerfile # Giả định có file Dockerfile trong nginx/
+    image: daviseraaa/ecommerce-server-ngix:latest
     container_name: e_commerce_nginx
     restart: unless-stopped
     ports:
