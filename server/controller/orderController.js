@@ -2,7 +2,7 @@ const db = require("../models");
 
 const {
   User, Order, OrderItem, Item, Product, Shop, UserAddress,
-  OrderShipping, Payment, ShippingMethod, sequelize
+  OrderShipping, Payment, ShippingMethod, Cart , sequelize
 } = db;
 const { Op } = require('sequelize');
 
