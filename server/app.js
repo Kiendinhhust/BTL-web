@@ -50,7 +50,7 @@ app.use('/auth', authAPI)
 app.use('/api/products', productAPI)
 app.use('/api/utils', utilsAPI)
 app.use('/api/card', cardAPI)
-app.use('/api/order', )
+app.use('/api/order', orderAPI)
 
 
 const PORT = process.env.PORT || 3000;
