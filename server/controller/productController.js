@@ -124,7 +124,7 @@ const updateProduct = async (req, res) => {
   try {
      // Tạo slug mới nếu title thay đổi
     if (req.body.title) {
-       req.body.slug = generateUniqueSlug(slugify(req.body.title, { lower: true, strict: true }));
+       req.body.slug = await generateUniqueSlug(slugify(req.body.title, { lower: true, strict: true }));
     }
 
     const num = await Product.update(req.body, {

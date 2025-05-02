@@ -16,6 +16,7 @@ const authAPI = require('./routes/authRouter')
 const productAPI = require('./routes/productRouter')
 const cardAPI = require('./routes/cartRouter')
 const utilsAPI = require('./routes/utilsRouter')
+const orderAPI = require('./routes/orderRouter')
 
 const app = express();
 
@@ -49,7 +50,7 @@ app.use('/auth', authAPI)
 app.use('/api/products', productAPI)
 app.use('/api/utils', utilsAPI)
 app.use('/api/card', cardAPI)
-//app.use('/api/order', )
+app.use('/api/order', )
 
 
 const PORT = process.env.PORT || 3000;
