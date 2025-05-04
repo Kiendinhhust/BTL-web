@@ -5,28 +5,28 @@ import { addProduct } from "../../store/actions/productActions";
 import "./ItemAdd.scss";
 import checkmark from "../../assets/images/icons/checkmark.png";
 import axios from "axios";
-import {
-  useHistory,
-  useLocation,
-} from "react-router-dom/cjs/react-router-dom.min";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { accessToken, LoginHack } from "./LoginHack";
 const ItemAdd = (props) => {
   const history = useHistory();
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
-  const [image_url, setImageUrl] = useState(null);
   const [sale_price, setSalePrice] = useState("");
   const [attributes, setAttributes] = useState({});
+  const [file, setFile] = useState(null);
   const [added, setAdded] = useState({
     checkCheckMark: false,
     timeOut: null,
   });
-  const [image, setImage] = useState(upload_area);
-  const imageHandler = async (e) => {
-    const file = e.target.files[0];
-    setImage(file);
+  const imageHandler = (e) => {
+    setFile(e.target.files[0]);
+  };
+  const handleItemAdd = async () => {
+    await LoginHack;
     const formData = new FormData();
+    let image_url;
     formData.append("image", file);
+    console.log(file);
     await LoginHack;
     await axios
       .post(
@@ -39,15 +39,12 @@ const ItemAdd = (props) => {
         }
       )
       .then(function (response) {
-        setImageUrl(response.data.url);
+        image_url = response.data.url;
       })
       .catch(function (error) {
         console.log(error);
       });
-  };
-  const handleItemAdd = async () => {
-    await LoginHack;
-
+    console.log(image_url);
     await axios
       .post(
         `${process.env.REACT_APP_BACKEND_URL}/api/products/add-item/${props.product_id}`,
@@ -168,7 +165,7 @@ const ItemAdd = (props) => {
         <label htmlFor="file-input" className="itemadd-thumbnail-label">
           <img
             className="itemadd-thumbnail-img"
-            src={image_url || upload_area}
+            src={(file && URL.createObjectURL(file)) || upload_area}
             alt="Upload Thumbnail"
           />
         </label>

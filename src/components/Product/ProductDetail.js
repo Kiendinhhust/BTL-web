@@ -66,7 +66,7 @@ const ProductDetail = (props) => {
         </div>
 
         <div className="productdetail-price">
-          {info?.price.toLocaleString("vi-VN")} VNĐ
+          {Number(info?.price).toLocaleString("vi-VN")} VNĐ
         </div>
 
         <div className="productdetail-quantity-container">

@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import "./ItemManage.scss";
 import { Modal, ModalHeader, ModalBody } from "reactstrap";
-import {
-  useHistory,
-  useLocation,
-} from "react-router-dom/cjs/react-router-dom.min";
-import productImageNull from "../../assets/images/icons/product.png";
+import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
 import ItemShop from "./ItemShop.js";
 import ItemAdd from "./ItemAdd.js";
@@ -21,14 +17,19 @@ const ItemManage = (props) => {
   const shop_id = query.get("shop_id") || "";
   const product_id = query.get("product_id") || "";
   const [modal, setModal] = useState(false);
-  //
+  const isMountedRef = useRef(true);
   useEffect(() => {
     axios({
       method: "get",
       url: `${process.env.REACT_APP_BACKEND_URL}/api/products/item/${product_id}`,
     }).then((response) => {
-      setItems(response.data);
+      if (isMountedRef.current) {
+        response && setItems(response.data);
+      }
     });
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [product_id]);
   const renderItemList = () => {
     return items?.map((item) => (

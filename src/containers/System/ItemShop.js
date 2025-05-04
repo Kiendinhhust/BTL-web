@@ -12,7 +12,7 @@ const ItemShop = (props) => {
     timeOut: null,
   });
   console.log(props.item);
-  const handleAddToCart = () => {
+  const handleUpdate = () => {
     setState((prevState) => {
       prevState.timeOut && clearTimeout(prevState.timeOut);
       const timeOut = setTimeout(() => {
@@ -45,7 +45,7 @@ const ItemShop = (props) => {
       <div className="itemshop-name">{info?.sku}</div>
 
       <div className="itemshop-price">
-        {info?.price.toLocaleString("vi-VN")} VNĐ
+        {Number(info?.price).toLocaleString("vi-VN")} VNĐ
       </div>
       {state.checkCheckMark === true ? (
         <div className={`added-to-cart js-added-to-cart-${props.product_id}`}>
@@ -58,7 +58,7 @@ const ItemShop = (props) => {
 
       <button
         className={`addToCart-button button-primary js-add-to-cart`}
-        onClick={() => handleAddToCart()}
+        onClick={() => handleUpdate()}
       >
         Update
       </button>

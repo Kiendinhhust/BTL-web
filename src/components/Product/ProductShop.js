@@ -111,7 +111,7 @@ const ProductShop = (props) => {
         onChange={handleProductDescription}
       />
       {/* <div className="productshop-price">
-        {info?.price.toLocaleString("vi-VN")} VNĐ
+        {Number(info?.price).toLocaleString("vi-VN")} VNĐ
       </div> */}
 
       <div className="productshop-attributes-container">

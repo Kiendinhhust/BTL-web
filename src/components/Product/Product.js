@@ -77,9 +77,9 @@ const Product = (props) => {
           Product rating count: {props.product.rating}
         </div>
       </div>
-      {/* <div className="product-price">
-        {info?.priceCents.toLocaleString("vi-VN")} VNĐ
-      </div> */}
+      <div className="product-price">
+        {Number(info?.price).toLocaleString("vi-VN")} VNĐ
+      </div>
       <div className="product-quantity-container">
         <select
           value={cartQuantity}
