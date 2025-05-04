@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Service Backend Node.js
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: daviseraaa/ecommerce-server-backend:latest
+    container_name: e_commerce_backend # Đổi tên cho phù hợp project
+    restart: unless-stopped
+    env_file:
+      - .env # Tự động load toàn bộ file .env vào môi trường container này
+    environment:
+      # Quan trọng: Override DB_HOST để trỏ đến tên service 'db' thay vì 'localhost'
+      DB_HOST: db
+      # Đảm bảo DB_PORT đúng là cổng nội bộ của Postgres (luôn là 5432)
+      DB_PORT: 5432
+      # Các biến khác sẽ được lấy từ .env thông qua env_file ở trên
+      # PORT: ${PORT} # Sẽ lấy từ .env
+      # NODE_ENV: ${NODE_ENV} # Sẽ lấy từ .env
+      # ... và tất cả các biến khác trong .env
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      # Expose cổng nội bộ mà app Node lắng nghe (từ PORT trong .env)
+      - "${PORT}"
+
+  # Service Database PostgreSQL
+  db:
+    image: postgres:15-alpine # Bạn có thể chọn version khác nếu muốn
+    container_name: e_commerce_db
+    restart: unless-stopped
+    environment:
+      # Map các biến từ .env của bạn sang tên biến mà Postgres image hiểu
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Lưu dữ liệu database
+    networks:
+      - app-network
+    ports:
+      # KHÔNG nên mở cổng này ra host trong production
+      # Chỉ mở khi debug từ máy host: ví dụ "- '5432:5432'" hoặc "${DB_PORT}:5432"
+      # - "${DB_PORT}:5432" # Dùng cổng từ .env cho host, 5432 là cổng nội bộ Postgres
+      - "${DB_PORT}:5432"
+    healthcheck:
+        # Sử dụng DB_USER và DB_NAME từ .env để kiểm tra DB
+        test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+        start_period: 10s
+
+  # Service Nginx Reverse Proxy
+  nginx:
+    build:
+      context: ./nginx # Context là thư mục nginx
+      dockerfile: Dockerfile # Giả định có file Dockerfile trong nginx/
+    image: daviseraaa/ecommerce-server-ngix:latest
+    container_name: e_commerce_nginx
+    restart: unless-stopped
+    ports:
+      # Map cổng 80 của host tới cổng 80 của container Nginx
+      # Bạn có thể đổi cổng host nếu 80 đã bị dùng, ví dụ "8080:80"
+      - "80:80"
+    networks:
+      - app-network
+    depends_on:
+      - backend
+    # Không cần env_file cho nginx trừ khi bạn có cấu hình Nginx động
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
