@@ -3,6 +3,7 @@ import checkmark from "../../assets/images/icons/checkmark.png";
 import { connect } from "react-redux";
 import { addToCart } from "../../store/actions/navbarCartActions";
 import "./Product.scss";
+import productImageNull from "../../assets/images/icons/product.png";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
 
@@ -55,7 +56,7 @@ const Product = (props) => {
         <img
           className="product-image"
           loading="lazy"
-          src={info?.image_url || null}
+          src={info?.image_url || productImageNull}
           alt={`${info?.sku || ""} ${info?.attributes["Màu"] || ""} ${
             info?.attributes.Size || ""
           }`}

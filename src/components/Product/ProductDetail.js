@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { addToCart } from "../../store/actions/navbarCartActions";
 import "./ProductDetail.scss";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
+import productImageNull from "../../assets/images/icons/product.png";
 const ProductDetail = (props) => {
   const location = useLocation();
 
@@ -48,7 +49,7 @@ const ProductDetail = (props) => {
         <img
           className="productdetail-image"
           loading="lazy"
-          src={info?.image_url}
+          src={info?.image_url || productImageNull}
           alt={product.title}
         />
       </div>

@@ -1,15 +1,15 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import ProductAdmin from "../../components/Product/ProductShop";
-import "./ProductManage.scss";
+import "./ItemManage.scss";
 import { Modal, ModalHeader, ModalBody } from "reactstrap";
 import {
   useHistory,
   useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
+import productImageNull from "../../assets/images/icons/product.png";
 import axios from "axios";
-import ProductAdd from "./ProductAdd";
-import ItemShop from "./ItemShop";
+import ItemShop from "./ItemShop.js";
+import ItemAdd from "./ItemAdd.js";
 const ItemManage = (props) => {
   const location = useLocation();
   const [items, setItems] = useState([]);
@@ -43,18 +43,18 @@ const ItemManage = (props) => {
 
   const toggle = () => setModal(!modal);
   return (
-    <div className="productmanage-container">
-      <button className="productmanage-addproduct" onClick={toggle}>
+    <div className="itemmanage-container">
+      <button className="itemmanage-additem" onClick={toggle}>
         Add Item
       </button>
-      <Modal isOpen={modal} toggle={toggle}>
+      <Modal isOpen={modal} toggle={toggle} className="itemmanage-modal">
         <ModalHeader toggle={toggle}>Add Item</ModalHeader>
         <ModalBody>
-          {/* <ProductAdd toggle={toggle} shop_id={shop_id} /> */}
+          <ItemAdd toggle={toggle} shop_id={shop_id} product_id={product_id} />
         </ModalBody>
       </Modal>
-      <div className="productmanage-productscontainer">{renderItemList()}</div>
-      <hr className="productmanage-dash" />
+      <div className="itemmanage-itemscontainer">{renderItemList()}</div>
+      <hr className="itemmanage-dash" />
     </div>
   );
 };

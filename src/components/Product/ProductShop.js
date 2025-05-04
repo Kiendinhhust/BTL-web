@@ -4,15 +4,63 @@ import cross_icon from "../../assets/images/icons/cross_icon.png";
 import { removeProduct } from "../../store/actions/productActions";
 import "./ProductShop.scss";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import productImageNull from "../../assets/images/icons/product.png";
 import axios from "axios";
+import { accessToken, LoginHack } from "../../containers/System/LoginHack";
 const ProductShop = (props) => {
   const history = useHistory();
   const [items, setItems] = useState([]);
   const [info, setInfo] = useState(null);
-  const [inputValue, setInputValue] = useState(props.product.title);
-  const handleInput = (content) => {
-    setInputValue(content);
+  const [productTitle, setProductTitle] = useState(props.product.title);
+  const [productDescription, setProductDescription] = useState(
+    props.product.description
+  );
+  const handleProductTitle = (e) => {
+    setProductTitle(e.target.value);
     // Thực hiện các xử lý khác nếu cần
+  };
+  const handleProductDescription = (e) => {
+    setProductDescription(e.target.value);
+    // Thực hiện các xử lý khác nếu cần
+  };
+  const handleProductRemove = async (id) => {
+    await LoginHack;
+    await axios
+      .delete(`${process.env.REACT_APP_BACKEND_URL}/api/products/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+        },
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    history.push(window.location.pathname + window.location.search);
+  };
+  const handleProductUpdate = async (id) => {
+    await LoginHack;
+    await axios
+      .put(
+        `${process.env.REACT_APP_BACKEND_URL}/api/products/${id}`,
+        {
+          title: productTitle,
+          description: productDescription,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+          },
+        }
+      )
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    // history.push(window.location.pathname + window.location.search);
   };
   useEffect(() => {
     axios({
@@ -21,7 +69,6 @@ const ProductShop = (props) => {
     }).then((response) => {
       setItems(response.data);
       setInfo(response.data[0]);
-      console.log(response.data[0]);
     });
   }, [props.product.product_id]);
   return (
@@ -42,17 +89,27 @@ const ProductShop = (props) => {
         /> */}
         <img
           className="productshop-image"
-          src={info?.image_url}
+          src={info?.image_url || productImageNull}
+          onClick={() =>
+            history.push(
+              `/system/item-manage?product_id=${props.product.product_id}&shop_id=${props.shop_id}`
+            )
+          }
           alt="info?.sku"
         />
       </div>
-      <div
+      <div className="productshop-name">Name</div>
+      <input
         className="productshop-name limit-text-to-2-lines"
-        contentEditable={true}
-        onInput={(e) => handleInput(e.target.textContent)}
-      >
-        {props.product.title}
-      </div>
+        value={productTitle}
+        onChange={handleProductTitle}
+      />
+      <div className="productshop-name">Description</div>
+      <input
+        className="productshop-name limit-text-to-2-lines"
+        value={productDescription}
+        onChange={handleProductDescription}
+      />
       {/* <div className="productshop-price">
         {info?.price.toLocaleString("vi-VN")} VNĐ
       </div> */}
@@ -94,14 +151,17 @@ const ProductShop = (props) => {
         >
           Manage Item
         </button>
-        <button className={`productshop-manageitem`} onClick={() => {}}>
+        <button
+          className={`productshop-manageitem`}
+          onClick={() => handleProductUpdate(props.product.product_id)}
+        >
           Update
         </button>
       </div>
 
       <img
         onClick={() => {
-          // props.removeProduct({ id: props.id });
+          handleProductRemove(props.product.product_id);
         }}
         className="productshop-remove-icon"
         src={cross_icon}

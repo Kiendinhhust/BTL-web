@@ -6,6 +6,7 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
+import productImageNull from "../../assets/images/icons/product.png";
 import axios from "axios";
 import ProductAdd from "./ProductAdd";
 import ProductShop from "../../components/Product/ProductShop";
@@ -22,7 +23,10 @@ const ProductManage = (props) => {
   if (title === null || title === undefined) {
     title = "";
   }
-  const shop_id = query.get("shop_id");
+  let shop_id = query.get("shop_id");
+  if (shop_id === null) {
+    shop_id = "";
+  }
   useEffect(() => {
     axios({
       method: "get",

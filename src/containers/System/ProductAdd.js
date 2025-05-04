@@ -5,8 +5,13 @@ import { addProduct } from "../../store/actions/productActions";
 import "./ProductAdd.scss";
 import checkmark from "../../assets/images/icons/checkmark.png";
 import axios from "axios";
-import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
+import {
+  useHistory,
+  useLocation,
+} from "react-router-dom/cjs/react-router-dom.min";
+import { accessToken, LoginHack, loginHack } from "./LoginHack";
 const ProductAdd = (props) => {
+  const history = useHistory();
   const [image, setImage] = useState(null);
   const [productDetails, setProductDetails] = useState({
     title: "",
@@ -18,7 +23,32 @@ const ProductAdd = (props) => {
     checkCheckMark: false,
     timeOut: null,
   });
-
+  const handleProductAdd = async () => {
+    await LoginHack;
+    await axios
+      .post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/products/create`,
+        {
+          title: productDetails.title,
+          shop_id: props.shop_id,
+          description: productDetails.description,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+          },
+        }
+      )
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    handleAdded();
+    props.toggle();
+    history.push(window.location.pathname + window.location.search);
+  };
   const handleAdded = () => {
     setAdded((prevState) => {
       prevState.timeOut && clearTimeout(prevState.timeOut);
@@ -139,25 +169,7 @@ const ProductAdd = (props) => {
         />
       </div> */}
 
-      <button
-        onClick={() => {
-          axios
-            .post(`${process.env.REACT_APP_BACKEND_URL}/api/products/create`, {
-              title: productDetails.title,
-              shop_id: props.shop_id,
-              description: productDetails.description,
-            })
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-          handleAdded();
-          props.toggle();
-        }}
-        className="productadd-btn"
-      >
+      <button onClick={handleProductAdd} className="productadd-btn">
         Add Product
       </button>
       {added.checkCheckMark && (
