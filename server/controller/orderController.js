@@ -279,6 +279,15 @@ const createOrder = async (req, res) => {
     }
 };
 
+// Hàm helper tạo dữ liệu phân trang cho response
+const getPagingData = (data, page, limit) => {
+    const { count: totalItems, rows: products } = data;
+    const currentPage = page ? +page : 1;
+    const totalPages = Math.ceil(totalItems / limit);
+  
+    return { totalItems, products, totalPages, currentPage };
+};
+
 // GET /api/orders/my-order - Lấy đơn hàng của người dùng hiện tại (phân trang)
 const getUserOrders = async (req, res) => {
   const userId = req.user.user_id;
@@ -301,7 +310,7 @@ const getUserOrders = async (req, res) => {
           order: [['created_at', 'DESC']],
           limit: limit,
           offset: offset,
-          distinct: true // Required when using limit with include hasMany
+          distinct: true
       });
 
       const response = getPagingData(data, page, limit);

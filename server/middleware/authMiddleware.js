@@ -5,7 +5,7 @@ const { User } = require('../models');
 const authenticateToken = async (req, res, next) => {
     // Lấy token từ header Authorization: Bearer TOKEN
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Lấy phần token sau 'Bearer '
+    let token = authHeader && authHeader.split(' ')[1]; // Lấy phần token sau 'Bearer '
     //Authorization: "Bearer + TOKEN"
     if (token == null) {
         token = req.cookies.accessToken
