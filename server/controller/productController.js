@@ -95,11 +95,9 @@ const getAllProducts = async (req, res) => {
     res.send(response);
   } catch (error) {
     console.error("Lỗi khi lấy danh sách sản phẩm:", error);
-    res
-      .status(500)
-      .send({
-        message: error.message || "Đã xảy ra lỗi khi lấy danh sách sản phẩm.",
-      });
+    res.status(500).send({
+      message: error.message || "Đã xảy ra lỗi khi lấy danh sách sản phẩm.",
+    });
   }
 };
 
@@ -159,11 +157,9 @@ const updateProduct = async (req, res) => {
     console.error(`Lỗi khi cập nhật sản phẩm id=${id}:`, error);
     // Bắt lỗi UNIQUE constraint của slug
     if (error.name === "SequelizeUniqueConstraintError") {
-      return res
-        .status(400)
-        .send({
-          message: `Sản phẩm với tiêu đề mới đã tồn tại (slug bị trùng).`,
-        });
+      return res.status(400).send({
+        message: `Sản phẩm với tiêu đề mới đã tồn tại (slug bị trùng).`,
+      });
     }
     res
       .status(500)
@@ -214,12 +210,12 @@ const createItem = async (req, res) => {
 
   // Up ảnh và lấy url, nếu không có ảnh url là mặc định
   // if (req.file) {
-  //   const folder = req.body.folder || 'items';
+  //   const folder = req.body.folder || "items";
 
   //   const result = await uploadImage(folder, req.file.buffer);
-  //   req.body.image_url = result.secure_url
+  //   req.body.image_url = result.secure_url;
   // } else {
-  //   req.body.image_url = process.env.DEFAULT_PRODUCT_URL
+  //   req.body.image_url = process.env.DEFAULT_PRODUCT_URL;
   // }
   // delete req.file.buffer;
 
@@ -256,11 +252,9 @@ const createItem = async (req, res) => {
     }
 
     if (!isOwner && req.user.role !== "admin") {
-      return res
-        .status(403)
-        .send({
-          message: "Bạn không có quyền thêm mặt hàng cho sản phẩm này.",
-        });
+      return res.status(403).send({
+        message: "Bạn không có quyền thêm mặt hàng cho sản phẩm này.",
+      });
     }
 
     // Tạo mặt hàng
