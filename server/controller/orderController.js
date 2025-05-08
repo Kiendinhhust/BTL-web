@@ -429,7 +429,7 @@ const updateOrderStatus = async (req, res) => {
       const allowedTransitions = {
           pending: ['processing', 'canceled'],
           processing: ['shipped', 'canceled'],
-          shipped: ['delivered', 'canceled'], // Maybe 'failed_delivery'?
+          shipped: ['delivered', 'canceled'],
           delivered: [], // Final state
           canceled: [], // Final state
       };
