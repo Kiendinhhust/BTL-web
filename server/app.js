@@ -9,7 +9,7 @@ const { sequelize } = require('./models')
 
 // Auth và bảo mậtmật
 const sanitize = require('./middleware/sanitize')
-const auth = require('./middleware/authMiddleware')
+//const auth = require('./middleware/authMiddleware')
 
 const userAPI = require('./routes/userRouter')
 const authAPI = require('./routes/authRouter')

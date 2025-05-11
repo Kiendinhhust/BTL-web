@@ -37,6 +37,7 @@ const createOrder = async (req, res) => {
     try {
         // --- 2. Kiểm tra địa chỉ giao hàng ---
         const shippingAddress = await UserAddress.findOne({ where: { address_id: shipping_address_id, user_id: userId } });
+        console.log(shipping_address_id, " : ", userId)
         if (!shippingAddress) return res.status(403).json({ message: "Địa chỉ giao hàng không hợp lệ hoặc không thuộc về bạn." });
 
         // --- 3. Bắt đầu Transaction ---
@@ -48,12 +49,19 @@ const createOrder = async (req, res) => {
         let shopId = null;
         const itemIds = orderItemsInput.map(i => i.item_id);
 
-        // Lấy items từ DB kèm Product và Shop, khóa để cập nhật stock
         const itemsFromDb = await Item.findAll({
             where: { item_id: { [Op.in]: itemIds } },
             include: [{
-                model: Product, as: 'product', attributes: ['product_id', 'shop_id', 'title'], // Chỉ lấy các trường cần thiết
-                include: [{ model: Shop, as: 'shop', attributes: ['shop_id'] }] // Chỉ lấy shop_id
+                model: Product,
+                as: 'product',
+                required: true, // CHUYỂN thành INNER JOIN
+                attributes: ['product_id', 'shop_id', 'title'],
+                include: [{
+                    model: Shop,
+                    as: 'shop',
+                    required: true, // CHUYỂN thành INNER JOIN
+                    attributes: ['shop_id']
+                }]
             }],
             lock: transaction.LOCK.UPDATE, // Khóa dòng để tránh race condition khi kiểm tra/trừ stock
             transaction
