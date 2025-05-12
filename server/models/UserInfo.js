@@ -15,11 +15,9 @@ const UserInfo = sequelize.define(
     email: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
     },
     phone_number: {
       type: DataTypes.STRING(20),
-      unique: true,
     },
     firstname: {
       type: DataTypes.STRING(50),

@@ -118,7 +118,15 @@ const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
     });
     console.log("check", res.cookies);
-
+    console.log({
+      accessToken,
+      refreshToken,
+      userId: user.user_id,
+      username: user.username,
+      email: user.UserInfo ? user.UserInfo.email : null,
+      shop: shop ? shop.shop_id : null,
+      role: user.role,
+    });
     res.json({
       message: "Đăng nhập thành công!",
       accessToken,
