@@ -88,7 +88,7 @@ const getAllProducts = async (req, res) => {
       limit: limit,
       offset: offset,
       order: [["created_at", "DESC"]], // Sắp xếp theo mới nhất
-      include: [{ model: Shop, as: "shop" }], // join với Shop
+      // join với Shop
     });
 
     const response = getPagingData(data, page, limit);

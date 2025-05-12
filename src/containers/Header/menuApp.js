@@ -19,14 +19,7 @@ export const adminMenu = [
             name: "menu.system.system-administrator.product-manage",
             link: "/system/product-manage",
           },
-          {
-            name: "system.product-manage.add-product",
-            link: "/system/add-product",
-          },
-          {
-            name: "menu.system.system-administrator.register-package-group-or-account",
-            link: "/system/register-package-group-or-account",
-          },
+          { name: "Quản lý người bán hàng", link: "/system/shop-admin" },
         ],
       },
     ],

@@ -60,11 +60,12 @@ class Login extends Component {
           userId: response.data.userId,
           email: response.data.email,
           role: response.data.role,
+          shop: response.data.shop,
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
         };
         console.log("check", userInfo);
-        console.log(response.data.accessToken);
+
         // Lưu thông tin đăng nhập vào Redux
         this.props.adminLoginSuccess(userInfo);
 

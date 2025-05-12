@@ -1,11 +1,12 @@
-const { Shop, ShopRevenue, User} = require('../models')
-const sequelize = require('../config/db');
-const { Op } = require('sequelize');
+const Shop = require("../models/Shop");
+const ShopRevenue = require("../models/ShopRevenue");
+const User = require("../models/User");
+const sequelize = require("../config/db");
+const { Op } = require("sequelize");
 
 // Create a new shop
 const createShop = async (req, res) => {
   try {
-
     const { shop_name, address, phone, description, owner_id, img } = req.body;
 
     // Tạo đối tượng dữ liệu shop
@@ -16,14 +17,14 @@ const createShop = async (req, res) => {
       description,
       owner_id: owner_id || (req.user ? req.user.userId : null),
       img,
-      status: 'pending'
+      status: "pending",
     };
 
     // Kiểm tra owner_id
     if (!shopData.owner_id) {
       return res.status(400).json({
         success: false,
-        message: 'Owner ID is required'
+        message: "Owner ID is required",
       });
     }
 
@@ -35,18 +36,18 @@ const createShop = async (req, res) => {
       shop_id: shop_id,
       date: new Date(),
       total_orders: 0,
-      total_revenue: 0
+      total_revenue: 0,
     });
 
     res.status(201).json({
       success: true,
-      message: 'Shop đã được tạo và đang chờ duyệt',
-      shop
+      message: "Shop đã được tạo và đang chờ duyệt",
+      shop,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -64,18 +65,17 @@ const getAllShops = async (req, res) => {
 // Get a shop by ID
 const getShopById = async (req, res) => {
   try {
-    
     const shop = await Shop.findByPk(req.params.id);
 
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Shop not found'
+        message: "Shop not found",
       });
     }
     const shopRevenue = await ShopRevenue.findOne({
       where: { shop_id: req.params.id },
-      order: [['date', 'DESC']]
+      order: [["date", "DESC"]],
     });
 
     const response = {
@@ -85,20 +85,20 @@ const getShopById = async (req, res) => {
       date: shopRevenue ? shopRevenue.date : null,
       // Đảm bảo các trường được trả về đầy đủ
       rating: shop.rating || 0,
-      status: shop.status || 'pending',
-      description: shop.description || '',
-      rejection_reason: shop.rejection_reason || '',
-      phone: shop.phone || ''
+      status: shop.status || "pending",
+      description: shop.description || "",
+      rejection_reason: shop.rejection_reason || "",
+      phone: shop.phone || "",
     };
 
     res.json({
       success: true,
-      data: response
+      data: response,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -110,47 +110,45 @@ const updateShop = async (req, res) => {
 
     const { shop_name, address, phone, description, img } = req.body;
     if (!shop) {
-      return res.status(404).json({ error: 'Không tìm thấy cửa hàng' });
+      return res.status(404).json({ error: "Không tìm thấy cửa hàng" });
     }
 
     if (shop) {
       const updateData = {};
-      
+
       if (phone) {
         updateData.phone = phone;
       }
-      
+
       if (description !== undefined) {
         updateData.description = description;
       }
-    
+
       if (shop_name !== undefined) {
         updateData.shop_name = shop_name;
       }
-      
+
       if (address !== undefined) {
         updateData.address = address;
       }
-      
-     
+
       if (img !== undefined) {
         updateData.img = img;
       }
-      
+
       if (Object.keys(updateData).length > 0) {
         await shop.update(updateData);
       }
     }
 
-
     res.json({
       success: true,
-      message: 'Shop updated successfully'
+      message: "Shop updated successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -164,7 +162,7 @@ const deleteShop = async (req, res) => {
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Shop not found'
+        message: "Shop not found",
       });
     }
 
@@ -176,30 +174,27 @@ const deleteShop = async (req, res) => {
 
     // Xóa shop
     await Shop.destroy({
-      where: { shop_id: req.params.id }
+      where: { shop_id: req.params.id },
     });
 
     // Kiểm tra xem người dùng có phải là admin không
     const { role } = req.user || {};
 
-
-    if (role !== 'admin' && owner && owner.role === 'seller') {
-
-        await User.update(
-          { role: 'buyer' },
-          { where: { user_id: shop.owner_id } }
-        );
-
+    if (role !== "admin" && owner && owner.role === "seller") {
+      await User.update(
+        { role: "buyer" },
+        { where: { user_id: shop.owner_id } }
+      );
     }
 
     res.json({
       success: true,
-      message: 'Shop deleted successfully'
+      message: "Shop deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -213,34 +208,34 @@ const approveShop = async (req, res) => {
     if (!shop) {
       return res.status(404).json({
         success: false,
-        message: 'Không tìm thấy shop'
+        message: "Không tìm thấy shop",
       });
     }
 
     // Cập nhật trạng thái shop thành accepted
     await Shop.update(
-      { status: 'accepted' },
+      { status: "accepted" },
       { where: { shop_id: req.params.id } }
     );
 
-
     const owner = await User.findByPk(shop.owner_id);
-    if (owner && owner.role === 'buyer') {
+    if (owner && owner.role === "buyer") {
       // Cập nhật role của người dùng từ buyer thành seller
       await User.update(
-        { role: 'seller' },
+        { role: "seller" },
         { where: { user_id: shop.owner_id } }
       );
     }
 
     res.json({
       success: true,
-      message: 'Shop đã được duyệt thành công và người dùng đã được cập nhật thành seller'
+      message:
+        "Shop đã được duyệt thành công và người dùng đã được cập nhật thành seller",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -253,26 +248,26 @@ const rejectShop = async (req, res) => {
     if (!reason) {
       return res.status(400).json({
         success: false,
-        message: 'Vui lòng cung cấp lý do từ chối'
+        message: "Vui lòng cung cấp lý do từ chối",
       });
     }
 
     await Shop.update(
       {
-        status: 'rejected',
-        rejection_reason: reason
+        status: "rejected",
+        rejection_reason: reason,
       },
       { where: { shop_id: req.params.id } }
     );
 
     res.json({
       success: true,
-      message: 'Shop đã bị từ chối'
+      message: "Shop đã bị từ chối",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -280,17 +275,17 @@ const rejectShop = async (req, res) => {
 const getPendingShops = async (req, res) => {
   try {
     const pendingShops = await Shop.findAll({
-      where: { status: 'pending' }
+      where: { status: "pending" },
     });
 
     res.json({
       success: true,
-      data: pendingShops
+      data: pendingShops,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -302,41 +297,40 @@ const getShopByUserId = async (req, res) => {
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: 'User ID is required'
+        message: "User ID is required",
       });
     }
 
     // Tìm shop mới nhất (shop_id cao nhất) của user
     const latestShop = await Shop.findOne({
       where: { owner_id: userId },
-      order: [['shop_id', 'DESC']]
+      order: [["shop_id", "DESC"]],
     });
 
     if (!latestShop) {
       return res.status(404).json({
         success: false,
-        message: 'Không tìm thấy shop nào của người dùng này'
+        message: "Không tìm thấy shop nào của người dùng này",
       });
     }
-
 
     const response = {
       ...latestShop.dataValues,
       rating: latestShop.rating || 0,
-      status: latestShop.status || 'pending',
-      description: latestShop.description || '',
-      rejection_reason: latestShop.rejection_reason || '',
-      phone: latestShop.phone || ''
+      status: latestShop.status || "pending",
+      description: latestShop.description || "",
+      rejection_reason: latestShop.rejection_reason || "",
+      phone: latestShop.phone || "",
     };
 
     res.json({
       success: true,
-      data: response
+      data: response,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -350,5 +344,5 @@ module.exports = {
   approveShop,
   rejectShop,
   getPendingShops,
-  getShopByUserId
+  getShopByUserId,
 };

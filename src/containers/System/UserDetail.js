@@ -31,7 +31,7 @@ class UserDetail extends Component {
 
     componentDidMount() {
         const userId = this.props.userInfo?.userId;
-        console.log(userId);
+        
         if (userId) {
             // Dispatch action để lấy thông tin user
             this.props.fetchUserDetail(userId);
@@ -55,7 +55,7 @@ class UserDetail extends Component {
             }
           }
 
-        // Xử lý ảnh đại diện khi dữ liệu user được cập nhật
+        
         if (prevProps.userDetail.userInfo !== this.props.userDetail.userInfo) {
             const userInfo = this.props.userDetail.userInfo;
             if (userInfo && userInfo.UserInfo && userInfo.UserInfo.img && userInfo.UserInfo.img.data && userInfo.UserInfo.img.data.length > 0) {
@@ -151,13 +151,13 @@ class UserDetail extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            // Lấy các giá trị từ form (có thể lấy từ Redux store hoặc DOM)
+           
             const firstname = document.querySelector('input[name="firstname"]').value;
             const lastname = document.querySelector('input[name="lastname"]').value;
             const phone_number = document.querySelector('input[name="phone_number"]').value;
             const address_infor = document.querySelector('input[name="address_infor"]').value;
 
-            // Cập nhật thông tin người dùng qua Redux
+           
             const userData = {
                 firstname,
                 lastname,
@@ -169,7 +169,7 @@ class UserDetail extends Component {
             const result = await this.props.updateUserDetail(userId, userData);
 
             if (result && result.success) {
-                // Hiển thị thông báo thành công với Toast
+          
                 toast.success('Cập nhật thông tin thành công', {
                     position: "top-right",
                     autoClose: 3000,
@@ -186,10 +186,10 @@ class UserDetail extends Component {
                     errorMessage: ''
                 });
 
-                // Tải lại thông tin người dùng
+                
                 this.props.fetchUserDetail(userId);
             } else {
-                // Hiển thị thông báo lỗi với Toast
+               
                 toast.error(result.message || 'Cập nhật thông tin thất bại', {
                     position: "top-right",
                     autoClose: 3000,
@@ -203,7 +203,7 @@ class UserDetail extends Component {
             }
         } catch (error) {
             console.error('Lỗi khi cập nhật thông tin:', error);
-            // Hiển thị thông báo lỗi với Toast
+            
             toast.error(error.response?.data?.message || 'Lỗi khi cập nhật thông tin', {
                 position: "top-right",
                 autoClose: 3000,
@@ -221,7 +221,7 @@ class UserDetail extends Component {
         const { password, newPassword, confirmPassword } = this.state;
         const { userInfo } = this.props;
 
-        // Kiểm tra các trường dữ liệu
+       
         if (!password) {
             this.setState({ errorMessage: 'Vui lòng nhập mật khẩu hiện tại' });
             return;
@@ -240,14 +240,14 @@ class UserDetail extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            // Gọi API để đổi mật khẩu qua Redux
+          
             const result = await this.props.updateUserDetail(userInfo.userId, {
                 currentPassword: password,
                 newPassword: newPassword
             });
 
             if (result && result.success) {
-                // Hiển thị thông báo thành công với Toast
+              
                 toast.success('Đổi mật khẩu thành công', {
                     position: "top-right",
                     autoClose: 3000,
@@ -263,7 +263,7 @@ class UserDetail extends Component {
                     errorMessage: ''
                 });
             } else {
-                // Hiển thị thông báo lỗi với Toast
+        
                 toast.error(result.message || 'Đổi mật khẩu thất bại', {
                     position: "top-right",
                     autoClose: 3000,
@@ -277,7 +277,7 @@ class UserDetail extends Component {
             }
         } catch (error) {
             console.error('Lỗi khi đổi mật khẩu:', error);
-            // Hiển thị thông báo lỗi với Toast
+         
             toast.error(error.response?.data?.message || 'Lỗi khi đổi mật khẩu', {
                 position: "top-right",
                 autoClose: 3000,
