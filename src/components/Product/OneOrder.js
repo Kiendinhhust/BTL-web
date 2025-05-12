@@ -35,11 +35,16 @@ const OneOrder = (props) => {
                     alt=""
                   />
                   <p>{item.name}</p>
-                  <p>{item.priceCents} VNĐ</p>
+                  <p>{Number(item.priceCents).toLocaleString("vi-VN")} VNĐ</p>
                   <button className="oneOrder-quantity">
                     {props.order[item.id]}
                   </button>
-                  <p>{item.priceCents * props.order[item.id]} VNĐ</p>
+                  <p>
+                    {Number(
+                      item.priceCents * props.order[item.id]
+                    ).toLocaleString("vi-VN")}{" "}
+                    VNĐ
+                  </p>
                 </div>
                 <hr />
               </React.Fragment>
@@ -53,7 +58,9 @@ const OneOrder = (props) => {
             <div>
               <div className="oneOrder-total-item">
                 <p>Subtotal</p>
-                <p>{getTotalCartAmount()} VNĐ</p>
+                <p>
+                  {Number(getTotalCartAmount()).toLocaleString("vi-VN")} VNĐ
+                </p>
               </div>
               <hr />
               <div className="oneOrder-total-item">
@@ -64,7 +71,9 @@ const OneOrder = (props) => {
             </div>
             <div className="oneOrder-total-item">
               <h3>Total</h3>
-              <h3>{getTotalCartAmount()} VNĐ</h3>
+              <h3>
+                {Number(getTotalCartAmount()).toLocaleString("vi-VN")} VNĐ
+              </h3>
             </div>
           </div>
         </div>

@@ -55,6 +55,7 @@ const actionTypes = Object.freeze({
   REMOVE_PRODUCT: "REMOVE_PRODUCT",
   //order
   MAKE_ORDER: "MAKE_ORDER",
+  FETCH_ORDER: "FETCH_ORDER",
 });
 
 export default actionTypes;

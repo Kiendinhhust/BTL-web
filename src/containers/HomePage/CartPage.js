@@ -10,14 +10,15 @@ import {
 } from "../../store/actions/navbarCartActions";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { makeOrder } from "../../store/actions/orderActions";
+import { accessToken, LoginHack } from "../System/LoginHack";
+import axios from "axios";
 const CartPage = (props) => {
   const history = useHistory();
   const getTotalCartAmount = () => {
     let totalAmount = 0;
-
-    for (const item in props.carts) {
+    for (const item of props.carts) {
       if (item.quantity > 0) {
-        totalAmount += item.price * item.quantity;
+        totalAmount += Number(item?.info?.price) * Number(item?.quantity);
       }
     }
     return totalAmount;
@@ -61,13 +62,19 @@ const CartPage = (props) => {
                   alt=""
                 />
                 <p>{item.title}</p>
-                <p>{item.info.price} VNĐ</p>
+                <p>{Number(item?.info.price).toLocaleString("vi-VN")} VNĐ</p>
                 <input
                   value={item.quantity}
                   onChange={(e) => handleUpdate(e, item.info.item_id)}
                   className="cartpage-quantity"
                 />
-                <p>{item.info.price * item.quantity} VNĐ</p>
+
+                <p>
+                  {Number(item.info.price * item.quantity).toLocaleString(
+                    "vi-VN"
+                  )}{" "}
+                  VNĐ
+                </p>
                 <img
                   className="cartpage-remove-icon"
                   src={remove_icon}
@@ -90,7 +97,9 @@ const CartPage = (props) => {
             <div>
               <div className="cartpage-total-item">
                 <p>Subtotal</p>
-                <p>{getTotalCartAmount()} VNĐ</p>
+                <p>
+                  {Number(getTotalCartAmount()).toLocaleString("vi-VN")} VNĐ
+                </p>
               </div>
               <hr />
               <div className="cartpage-total-item">
@@ -101,19 +110,48 @@ const CartPage = (props) => {
             </div>
             <div className="cartpage-total-item">
               <h3>Total</h3>
-              <h3>{getTotalCartAmount()} VNĐ</h3>
+              <h3>
+                {Number(getTotalCartAmount()).toLocaleString("vi-VN")} VNĐ
+              </h3>
             </div>
 
             <button
-              onClick={() => {
-                const orderId = generateUUID();
-                const orderProducts = { ...props.carts };
-                props.makeOrder({
-                  orderProducts,
-                  orderId,
-                });
-                props.removeAllCart();
-                history.push(`/order/${orderId}`);
+              onClick={async () => {
+                await LoginHack;
+                await axios
+                  .post(
+                    `${process.env.REACT_APP_BACKEND_URL}/api/order/create-order`,
+                    {
+                      shipping_address_id: 7,
+                      items: props.carts.map((item) => ({
+                        item_id: item.info?.item_id,
+                        quantity: item.quantity,
+                      })),
+                      shipping_method_id: 1,
+                      payment_method: "cod",
+                      note: "Giao giờ hành chính",
+                      clear_cart: true,
+                    },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+                      },
+                    }
+                  )
+                  .then(function (response) {
+                    console.log(response);
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+                // const orderId = generateUUID();
+                // const orderProducts = { ...props.carts };
+                // props.makeOrder({
+                //   orderProducts,
+                //   orderId,
+                // });
+                // props.removeAllCart();
+                // history.push(`/order/${orderId}`);
               }}
               className="cartpage-checkout"
             >

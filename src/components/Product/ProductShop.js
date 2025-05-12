@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import checkmark from "../../assets/images/icons/checkmark.png";
+
 import cross_icon from "../../assets/images/icons/cross_icon.png";
 import { removeProduct } from "../../store/actions/productActions";
 import "./ProductShop.scss";
@@ -15,6 +17,22 @@ const ProductShop = (props) => {
   const [productDescription, setProductDescription] = useState(
     props.product.description
   );
+  const [state, setState] = useState({
+    checkCheckMark: false,
+    timeOut: null,
+  });
+  const handleUpdate = () => {
+    setState((prevState) => {
+      prevState.timeOut && clearTimeout(prevState.timeOut);
+      const timeOut = setTimeout(() => {
+        setState((prevState) => ({ checkCheckMark: false }));
+      }, 1000);
+      return {
+        checkCheckMark: true,
+        timeOut,
+      };
+    });
+  };
   const handleProductTitle = (e) => {
     setProductTitle(e.target.value);
     // Thực hiện các xử lý khác nếu cần
@@ -60,6 +78,7 @@ const ProductShop = (props) => {
       .catch(function (error) {
         console.log(error);
       });
+    handleUpdate();
     // history.push(window.location.pathname + window.location.search);
   };
   useEffect(() => {
@@ -140,6 +159,14 @@ const ProductShop = (props) => {
           <button className="productshop-etc">...</button>
         ) : null}
       </div>
+      {state.checkCheckMark === true ? (
+        <div className={`added-to-cart js-added-to-cart-${props.product_id}`}>
+          <img className="itemshop-checkmark" src={checkmark} alt="checkmark" />
+          <span className="itemshop-added">Updated</span>
+        </div>
+      ) : (
+        <br className={`added-to-cart js-added-to-cart-${props.product_id}`} />
+      )}
       <div className={`productshop-manageitem-container`}>
         <button
           className={`productshop-manageitem`}
@@ -151,6 +178,7 @@ const ProductShop = (props) => {
         >
           Manage Item
         </button>
+
         <button
           className={`productshop-manageitem`}
           onClick={() => handleProductUpdate(props.product.product_id)}

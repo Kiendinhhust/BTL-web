@@ -15,7 +15,6 @@ const {
   Cart,
   sequelize,
 } = db;
-
 const { Op } = require("sequelize");
 
 // HÀM TẠO ĐƠN HÀNG
@@ -77,12 +76,12 @@ const createOrder = async (req, res) => {
     const shippingAddress = await UserAddress.findOne({
       where: { address_id: shipping_address_id, user_id: userId },
     });
-    // if (!shippingAddress)
-    //   return res
-    //     .status(403)
-    //     .json({
-    //       message: "Địa chỉ giao hàng không hợp lệ hoặc không thuộc về bạn.",
-    //     });
+    console.log(shipping_address_id, userId);
+    console.log(shippingAddress);
+    if (!shippingAddress)
+      return res.status(403).json({
+        message: "Địa chỉ giao hàng không hợp lệ hoặc không thuộc về bạn.",
+      });
 
     // --- 3. Bắt đầu Transaction ---
     transaction = await sequelize.transaction();
@@ -551,7 +550,7 @@ const updateOrderStatus = async (req, res) => {
     const allowedTransitions = {
       pending: ["processing", "canceled"],
       processing: ["shipped", "canceled"],
-      shipped: ["delivered", "canceled"], // Maybe 'failed_delivery'?
+      shipped: ["delivered", "canceled"],
       delivered: [], // Final state
       canceled: [], // Final state
     };

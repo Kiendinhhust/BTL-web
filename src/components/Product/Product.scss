@@ -34,7 +34,7 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: $border-radius;
   background-color: $white;
   text-align: center;
-  height: 650px;
+  height: 600px;
   width: 310px;
   max-width: 100%;
   position: relative;
@@ -63,8 +63,9 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: $border-radius;
 
   .product-image {
-    width: 100%;
-    height: 300px;
+    width: auto;
+    max-width: 100%;
+    height: 150px;
     object-fit: cover;
     transition: $transition;
     cursor: pointer;
@@ -213,6 +214,7 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 // Styling cho nút thuộc tính sản phẩm
 .product-attributes-button {
   background-color: $light-gray;
+  height: 40px;
   color: $navy-dark;
   border: 1px solid $medium-gray;
   border-radius: $border-radius;

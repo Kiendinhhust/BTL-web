@@ -115,6 +115,7 @@ const Product = (props) => {
             </button>
           );
         })}
+        {items.length === 0 && <div style={{ height: "48px" }} />}
         {items.length > 2 ? <button className="product-etc">...</button> : null}
       </div>
       {state.checkCheckMark === true ? (
