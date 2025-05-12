@@ -2,20 +2,55 @@ const sequelize = require('../config/db');
 const { DataTypes } = require('sequelize');
 
 const OrderShipping = sequelize.define('OrderShipping', {
-  order_shipping_id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
-  order_id: { type: DataTypes.BIGINT, allowNull: false, unique: true },
-  shipping_method_id: { type: DataTypes.BIGINT, allowNull: false },
-  shipping_address_id: { type: DataTypes.BIGINT, allowNull: false },
-  tracking_number: { type: DataTypes.STRING(100), unique: true },
-  shipping_cost: { type: DataTypes.DECIMAL(10, 2) },
-  status: { type: DataTypes.ENUM('pending', 'awaiting_pickup', 'shipped', 'delivered', 'canceled', 'failed_delivery'), allowNull: false, defaultValue: 'pending' },
-  shipped_at: { type: DataTypes.DATE },
-  delivered_at: { type: DataTypes.DATE },
-  notes: { type: DataTypes.TEXT }
+  order_shipping_id: {
+    type: DataTypes.BIGINT,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  order_id: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    references: {
+      model: 'orders',
+      key: 'order_id'
+    }
+  },
+  user_address_id: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    references: {
+      model: 'user_addresses',
+      key: 'address_id'
+    }
+  },
+  shipping_method_id: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    references: {
+      model: 'shipping_methods',
+      key: 'shipping_id'
+    }
+  },
+  tracking_number: {
+    type: DataTypes.STRING(50),
+    unique: true
+  },
+  status: {
+    type: DataTypes.ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled'),
+    allowNull: false,
+    defaultValue: 'pending'
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  }
 }, {
   tableName: 'order_shipping',
-  timestamps: true, // Có timestamps
-  underscored: true
+  timestamps: false
 });
 
 module.exports = OrderShipping;

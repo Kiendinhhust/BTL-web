@@ -1,11 +1,10 @@
-const sequelize = require('../config/db');
 const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-const User = sequelize.define('User', {
+const AdminUser = sequelize.define('AdminUser', {
   user_id: {
     type: DataTypes.BIGINT,
-    primaryKey: true,
-    autoIncrement: true
+    primaryKey: true
   },
   username: {
     type: DataTypes.STRING(50),
@@ -16,20 +15,13 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(255),
     allowNull: false
   },
-  role: {
-    type: DataTypes.ENUM('buyer', 'seller','admin'),
-    allowNull: false,
-    defaultValue: 'admin'
-  },
-  
-
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'users',
+  tableName: 'admin_users',
   timestamps: false
 });
 
-module.exports = User;
+module.exports = AdminUser;

@@ -1,18 +1,18 @@
 const sequelize = require('../config/db');
 const { DataTypes } = require('sequelize');
 
-const ShopRevenue = sequelize.define('ShopRevenue', {
+const ProductRevenue = sequelize.define('ProductRevenue', {
   revenue_id: {
     type: DataTypes.BIGINT,
     primaryKey: true,
     autoIncrement: true
   },
-  shop_id: {
+  product_id: {
     type: DataTypes.BIGINT,
     allowNull: false,
     references: {
-      model: 'shops',
-      key: 'shop_id'
+      model: 'products',
+      key: 'product_id'
     }
   },
   date: {
@@ -24,7 +24,7 @@ const ShopRevenue = sequelize.define('ShopRevenue', {
     allowNull: false,
     defaultValue: 0
   },
-  total_orders: {
+  total_sold: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0
@@ -34,14 +34,14 @@ const ShopRevenue = sequelize.define('ShopRevenue', {
     defaultValue: DataTypes.NOW
   }
 }, {
-  tableName: 'shop_revenue',
+  tableName: 'product_revenue',
   timestamps: false,
   indexes: [
     {
       unique: true,
-      fields: ['shop_id', 'date']
+      fields: ['product_id', 'date']
     }
   ]
 });
 
-module.exports = ShopRevenue;
+module.exports = ProductRevenue;
