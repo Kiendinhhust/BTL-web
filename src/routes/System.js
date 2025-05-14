@@ -19,7 +19,6 @@ class System extends Component {
             <Route path="/system/user-detail" component={UserDetail} />
             <Route path="/system/user-address" component={UserAddress} />
             <Route path="/system/item-manage" component={ItemManage} />
-            <Route path="/system/product-manage" component={ProductManage} />
             <Route path="/system/shop-admin" component={ShopAdmin} />
             <Route
               component={() => {

@@ -88,7 +88,7 @@ const getAllProducts = async (req, res) => {
       limit: limit,
       offset: offset,
       order: [["created_at", "DESC"]], // Sắp xếp theo mới nhất
-      // join với Shop
+      //  include: [{ model: Shop, as: 'shop' }] // join với Shop
     });
 
     const response = getPagingData(data, page, limit);
@@ -209,15 +209,15 @@ const createItem = async (req, res) => {
   const loggedInUserId = req.user.user_id; // từ auth middleware
 
   // Up ảnh và lấy url, nếu không có ảnh url là mặc định
-  // if (req.file) {
-  //   const folder = req.body.folder || "items";
+  if (req.file) {
+    const folder = req.body.folder || "items";
 
-  //   const result = await uploadImage(folder, req.file.buffer);
-  //   req.body.image_url = result.secure_url;
-  // } else {
-  //   req.body.image_url = process.env.DEFAULT_PRODUCT_URL;
-  // }
-  // delete req.file.buffer;
+    const result = await uploadImage(folder, req.file.buffer);
+    req.body.image_url = result.secure_url;
+  } else {
+    req.body.image_url = process.env.DEFAULT_PRODUCT_URL;
+  }
+  delete req.file.buffer;
 
   const { sku, price, stock, image_url, sale_price, attributes } = req.body;
   if (!price || stock === undefined || stock === null) {
@@ -310,10 +310,8 @@ module.exports = {
   getProductById,
   updateProduct,
   deleteProduct,
-
   createItem,
   getItemsByProduct,
-
   getPagination,
   getPagingData,
   generateUniqueSlug,

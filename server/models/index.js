@@ -1,27 +1,23 @@
 const sequelize = require("../config/db");
 
-const User = require("./User");
+// Import tất cả các model
+const User = require("./user");
 const UserAddress = require("./UserAddress");
 const UserInfo = require("./UserInfo");
+const UserActivityLog = require("./UserActivityLog");
 const Shop = require("./Shop");
-const ShopAddress = require("./ShopAddress");
-const Category = require("./Category");
 const Product = require("./Product");
-const ProductImage = require("./ProductImage");
 const Item = require("./Item");
+const ProductImage = require("./ProductImage");
+const ProductReview = require("./ProductReview");
 const Order = require("./Order");
 const OrderItem = require("./OrderItem");
-const ShippingMethod = require("./ShippingMethod");
 const OrderShipping = require("./OrderShipping");
 const Payment = require("./Payment");
-const ProductReview = require("./ProductReview");
+const ShippingMethod = require("./ShippingMethod");
 const ReviewImage = require("./ReviewImage");
-const Cart = require("./Cart");
-
-const ShopRevenueSummary = require("./ShopRevenueSummary");
-const ProductRevenueSummary = require("./ProductRevenueSummary");
-const UserActivityLog = require("./UserActivityLog");
 const ShopRevenue = require("./ShopRevenue");
+const Cart = require("./Cart");
 
 // 1 User có 1 UserInfo
 User.hasOne(UserInfo, { foreignKey: "user_id", onDelete: "CASCADE" });
@@ -147,27 +143,25 @@ ShopRevenue.belongsTo(Shop, { foreignKey: "shop_id" });
 // 1 User có nhiều hoạt động
 User.hasMany(UserActivityLog, { foreignKey: "user_id", onDelete: "CASCADE" });
 UserActivityLog.belongsTo(User, { foreignKey: "user_id" });
-// --- Xuất các models và sequelize instance ---
+
+// Xuất các models đã liên kết
 module.exports = {
   sequelize,
+  Cart,
   User,
   UserAddress,
   UserInfo,
   Shop,
-  ShopAddress,
-  Category,
   Product,
   ProductImage,
   Item,
+  UserActivityLog,
+  ProductReview,
   Order,
   OrderItem,
-  ShippingMethod,
   OrderShipping,
   Payment,
-  ProductReview,
+  ShopRevenue,
+  ShippingMethod,
   ReviewImage,
-  Cart,
-  ShopRevenueSummary,
-  ProductRevenueSummary,
-  UserActivityLog,
 };

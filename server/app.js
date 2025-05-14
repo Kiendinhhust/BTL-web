@@ -9,16 +9,16 @@ const { sequelize } = require("./models");
 
 // Auth và bảo mậtmật
 const sanitize = require("./middleware/sanitize");
-// const auth = require('./middleware/authMiddleware')
+//const auth = require('./middleware/authMiddleware')
 
 const userAPI = require("./routes/userRouter");
 const authAPI = require("./routes/authRouter");
+const shopAPI = require("./routes/shopRouter");
+const userAddressAPI = require("./routes/userAddressRouter");
 const productAPI = require("./routes/productRouter");
 const cardAPI = require("./routes/cartRouter");
 const utilsAPI = require("./routes/utilsRouter");
 const orderAPI = require("./routes/orderRouter");
-const shopAPI = require("./routes/shopRouter");
-const userAddressAPI = require("./routes/userAddressRouter");
 
 const app = express();
 
@@ -41,7 +41,7 @@ app.use(sanitize.sanitizeBody);
 
 // Middleware xử lý form
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cookieParser());
 
 // Kết nối database

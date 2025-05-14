@@ -71,7 +71,7 @@ const ProductManage = (props) => {
           <button
             onClick={() =>
               history.push(
-                `/system/product-manage?page=${1}${
+                `/seller/product-manage?page=${1}${
                   title !== null && title !== "" ? `&title=${title}` : ""
                 }${
                   shop_id !== null && shop_id !== ""
@@ -88,7 +88,7 @@ const ProductManage = (props) => {
           <button
             onClick={() =>
               history.push(
-                `/system/product-manage?page=${Number(page) - 2}${
+                `/seller/product-manage?page=${Number(page) - 2}${
                   title !== null && title !== "" ? `&title=${title}` : ""
                 }${
                   shop_id !== null && shop_id !== ""
@@ -105,7 +105,7 @@ const ProductManage = (props) => {
           <button
             onClick={() =>
               history.push(
-                `/system/product-manage?page=${Number(page) - 1}${
+                `/seller/product-manage?page=${Number(page) - 1}${
                   title !== null && title !== "" ? `&title=${title}` : ""
                 }${
                   shop_id !== null && shop_id !== ""
@@ -123,7 +123,7 @@ const ProductManage = (props) => {
           className="productmanage-pagination-now"
           onClick={() =>
             history.push(
-              `/system/product-manage?page=${Number(page)}${
+              `/seller/product-manage?page=${Number(page)}${
                 title !== null && title !== "" ? `&title=${title}` : ""
               }${
                 shop_id !== null && shop_id !== "" ? `&shop_id=${shop_id}` : ""
@@ -136,7 +136,7 @@ const ProductManage = (props) => {
         <button
           onClick={() =>
             history.push(
-              `/system/product-manage?page=${Number(page) + 1}${
+              `/seller/product-manage?page=${Number(page) + 1}${
                 title !== null && title !== "" ? `&title=${title}` : ""
               }${
                 shop_id !== null && shop_id !== "" ? `&shop_id=${shop_id}` : ""
@@ -149,7 +149,7 @@ const ProductManage = (props) => {
         <button
           onClick={() =>
             history.push(
-              `/system/product-manage?page=${Number(page) + 2}${
+              `/seller/product-manage?page=${Number(page) + 2}${
                 title !== null && title !== "" ? `&title=${title}` : ""
               }${
                 shop_id !== null && shop_id !== "" ? `&shop_id=${shop_id}` : ""
