@@ -82,8 +82,8 @@ class App extends Component {
                     component={userIsAuthenticated(System)}
                   />
                   <Route
-                    path={"/system/product-manage"}
-                    component={userIsAuthenticated(ProductManage)}
+                    path={"/seller/product-manage"}
+                    component={ProductManage}
                   />
                   <Route
                     path={"/system/item-manage"}

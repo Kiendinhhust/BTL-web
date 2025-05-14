@@ -5,6 +5,8 @@ import { getShopById } from "../../services/shopService";
 import CommonUtils from "../../utils/CommonUtils";
 import { toast } from "react-toastify";
 import ProductManage from "../System/ProductManage";
+import { withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 class ShopManage extends Component {
   constructor(props) {
@@ -81,8 +83,15 @@ class ShopManage extends Component {
             <button className="btn-edit-shop">
               <i className="fas fa-edit"></i> Chỉnh sửa thông tin
             </button>
-            <button className="btn-add-product">
-              <i className="fas fa-plus"></i> Thêm sản phẩm
+            <button
+              className="btn-add-product"
+              onClick={() => {
+                this.props.history.push(
+                  `/seller/product-manage?page=1&shop_id=${this.state.shopInfo.id}`
+                );
+              }}
+            >
+              <i className="fas fa-edit"></i> Quản lý sản phẩm
             </button>
           </div>
         </div>
@@ -220,4 +229,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(ShopManage);
+export default connect(mapStateToProps)(withRouter(ShopManage));
