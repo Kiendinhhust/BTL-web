@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 // Lấy danh sách địa chỉ của người dùng
 const getUserAddresses = async (req, res) => {
     try {
-        const userId = req.user.user_id;
+        const userId = req.params.userId;
 
         const userInfo = await UserInfo.findOne({ where: { user_id: userId } });
         const userAddresses = await UserAddress.findAll({
@@ -25,7 +25,28 @@ const getUserAddresses = async (req, res) => {
             }
         }
 
-        return res.status(200).json(userAddresses.map(addr => addr.get({ plain: true }))); // Trả về plain objects
+        // Format lại dữ liệu
+        const formattedAddresses = userAddresses.map(addr => {
+            const plainAddr = addr.get({ plain: true });
+
+            return {
+                address_id: plainAddr.address_id,
+                user_id: plainAddr.user_id,
+                full_name: plainAddr.full_name,
+                phone_number: plainAddr.phone_number,
+                address_infor: [
+                    plainAddr.street_address,
+                    plainAddr.ward,
+                    plainAddr.district,
+                    plainAddr.city,
+                    plainAddr.country
+                ].filter(Boolean).join(', '),
+                type: plainAddr.address_type,
+                created_at: plainAddr.created_at
+            };
+        });
+
+        return res.status(200).json(formattedAddresses);
     } catch (error) {
         console.error('Lỗi khi lấy danh sách địa chỉ:', error);
         return res.status(500).json({

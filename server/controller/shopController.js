@@ -1,6 +1,6 @@
-const { Shop, ShopRevenue, User} = require('../models')
+const { Shop, ShopRevenue, User, Order} = require('../models')
 const sequelize = require('../config/db');
-const { Op } = require('sequelize');
+const { Op, fn, col, literal} = require('sequelize');
 
 // Create a new shop
 const createShop = async (req, res) => {
@@ -341,6 +341,183 @@ const getShopByUserId = async (req, res) => {
   }
 };
 
+// Hàm helper để kiểm tra quyền sở hữu shop hoặc vai trò admin
+const checkShopAccess = async (shopId, userId, userRole) => {
+    const shop = await Shop.findByPk(shopId, { attributes: ['owner_id'] });
+    if (!shop) {
+        return { authorized: false, message: 'Cửa hàng không tồn tại.', shop: null };
+    }
+    if (userRole === 'admin' || shop.owner_id === userId) {
+        return { authorized: true, shop };
+    }
+    return { authorized: false, message: 'Bạn không có quyền truy cập thông tin của cửa hàng này.', shop: null };
+};
+
+// API Lấy Thống Kê Tổng Quan Của Shop
+const getShopOverall = async (req, res) => {
+    try {
+        const shopId = parseInt(req.params.shopId);
+        const userId = req.user.user_id;
+        const userRole = req.user.role;
+
+        // Kiểm tra quyền truy cập
+        const accessCheck = await checkShopAccess(shopId, userId, userRole);
+        if (!accessCheck.authorized) {
+            return res.status(accessCheck.shop ? 403 : 404).json({ message: accessCheck.message });
+        }
+
+        // 1. Tổng số đơn hàng (Tính tất cả đơn hàng trừ 'canceled')
+        const totalOrders = await Order.count({
+            where: {
+                shop_id: shopId,
+                status: { [Op.notIn]: ['canceled'] } // Loại trừ đơn hủy
+            }
+        });
+
+        // 2. Tổng số sản phẩm đang bán (status = 'active')
+        const totalActiveProducts = await Product.count({
+            where: {
+                shop_id: shopId,
+                status: 'active'
+            }
+        });
+
+        // 3. Tổng số sản phẩm (items) đã bán (từ Product.sold_count)
+        const totalItemsSoldFromOrders = await OrderItem.sum('quantity', {
+            include: [{
+                model: Order,
+                as: 'order',
+                where: {
+                    shop_id: shopId,
+                    status: 'delivered' // Chỉ tính đơn đã giao thành công
+                },
+                attributes: []
+            }]
+        });
+
+        // 4. Tổng doanh thu (từ Order.total_price của các đơn hàng đã hoàn thành)
+        // Chỉ tính các đơn hàng đã 'delivered' (hoàn thành và có khả năng đã thanh toán)
+        const totalRevenue = await Order.sum('total_price', {
+            where: {
+                shop_id: shopId,
+                status: 'delivered'
+            }
+        });
+
+        res.status(200).json({
+            shopId: shopId,
+            totalOrders: totalOrders || 0,
+            totalActiveProducts: totalActiveProducts || 0,
+            totalProductsSold: totalItemsSoldFromOrders || 0,
+            totalRevenue: parseFloat(totalRevenue) || 0, // Đảm bảo là số
+        });
+
+    } catch (error) {
+        console.error(`Lỗi khi lấy thống kê cửa hàng ${req.params.shopId}:`, error);
+        res.status(500).json({ message: 'Lỗi máy chủ khi lấy thống kê cửa hàng.' });
+    }
+};
+
+
+const getShopRevenueAndOrdersByPeriod = async (req, res) => {
+  try {
+    const shopId = parseInt(req.params.shopId);
+    const userId = req.user.user_id;
+    const userRole = req.user.role;
+    let { startDate, endDate, groupBy = 'day' } = req.query;
+
+    // Kiểm tra quyền truy cập
+    const accessCheck = await checkShopAccess(shopId, userId, userRole);
+    if (!accessCheck.authorized) {
+        return res.status(accessCheck.shop ? 403 : 404).json({ message: accessCheck.message });
+    }
+
+    const now = new Date();
+    if (endDate) {
+        endDate = new Date(endDate);
+        if (isNaN(endDate)) {
+            return res.status(400).json({ message: "Ngày kết thúc không hợp lệ." });
+        }
+        endDate.setHours(23, 59, 59, 999);
+    } else {
+        const now = new Date();
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    }
+
+    if (startDate) {
+        startDate = new Date(startDate);
+        if (isNaN(startDate)) {
+            return res.status(400).json({ message: "Ngày bắt đầu không hợp lệ." });
+        }
+        startDate.setHours(0, 0, 0, 0);
+    } else {
+        const now = new Date();
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+    }
+
+    if (startDate > endDate) {
+        return res.status(400).json({ message: "Ngày bắt đầu không được lớn hơn ngày kết thúc." });
+    }
+
+    const orderWhereConditions = {
+        shop_id: shopId,
+        status: 'delivered',
+        created_at: {
+            [Op.gte]: startDate,
+            [Op.lte]: endDate,
+        }
+    };
+
+    // Chọn format thời gian theo groupBy
+    let dateTrunc;
+    switch (groupBy) {
+        case 'month':
+            dateTrunc = 'month';
+            break;
+        case 'week':
+            dateTrunc = 'week';
+            break;
+        case 'day':
+        default:
+            dateTrunc = 'day';
+            break;
+    }
+
+    const dateFunction = fn('date_trunc', dateTrunc, col('created_at'));
+
+    const statistics = await Order.findAll({
+        attributes: [
+            [dateFunction, 'period'],
+            [fn('SUM', col('total_price')), 'totalRevenue'],
+            [fn('COUNT', col('order_id')), 'totalOrders'],
+        ],
+        where: orderWhereConditions,
+        group: [literal('period')],
+        order: [[literal('period'), 'ASC']],
+        raw: true
+    });
+
+    const formattedStatistics = statistics.map(stat => ({
+        ...stat,
+        period: stat.period.toISOString().split('T')[0],
+        totalRevenue: parseFloat(stat.totalRevenue) || 0,
+        totalOrders: parseInt(stat.totalOrders) || 0,
+    }));
+
+    res.status(200).json({
+        shopId,
+        startDate: startDate.toISOString().split('T')[0],
+        endDate: endDate.toISOString().split('T')[0],
+        groupBy,
+        statistics: formattedStatistics
+    });
+
+  } catch (error) {
+      console.error(`Lỗi khi lấy thống kê doanh thu theo kỳ của cửa hàng ${req.params.shopId}:`, error);
+      res.status(500).json({ message: 'Lỗi máy chủ khi lấy thống kê.' });
+  }
+};
+
 module.exports = {
   createShop,
   getAllShops,
@@ -350,5 +527,7 @@ module.exports = {
   approveShop,
   rejectShop,
   getPendingShops,
-  getShopByUserId
+  getShopByUserId,
+  getShopOverall,
+  getShopRevenueAndOrdersByPeriod
 };

@@ -27,21 +27,20 @@ const authenticateToken = async (req, res, next) => {
         });
         console.log(decoded)
         if (!user) {
-            // User không tồn tại (có thể đã bị xóa sau khi token được tạo)
             return res.status(403).json({ error: 'Token hợp lệ nhưng không tìm thấy người dùng.' });
         }
 
         // Gắn thông tin user vào request để các middleware/handler sau có thể sử dụng
-        req.user = user.get({ plain: true }); // Lấy dữ liệu thuần, bao gồm cả 'role'
+        req.user = user.get({ plain: true });
         next(); // Chuyển sang middleware hoặc route handler tiếp theo
 
     } catch (error) {
         console.error("Lỗi xác thực token:", error.name, error.message);
         if (error.name === 'TokenExpiredError') {
-             return res.status(403).json({ error: 'Token đã hết hạn.', refress: true });
+            return res.status(403).json({ error: 'Token đã hết hạn.', refress: true });
         }
         if (error.name === 'JsonWebTokenError') {
-             return res.status(403).json({ error: 'Token không hợp lệ.' });
+            return res.status(403).json({ error: 'Token không hợp lệ.' });
         }
         // Lỗi khác
         return res.status(500).json({ error: 'Lỗi hệ thống khi xác thực token.' });

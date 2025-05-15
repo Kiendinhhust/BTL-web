@@ -11,6 +11,7 @@ const { sequelize } = require('./models')
 const sanitize = require('./middleware/sanitize')
 //const auth = require('./middleware/authMiddleware')
 
+const adminAPI = require('./routes/adminRouter')
 const userAPI = require('./routes/userRouter')
 const authAPI = require('./routes/authRouter')
 const productAPI = require('./routes/productRouter')
@@ -23,7 +24,7 @@ const userAddressAPI = require('./routes/userAddressRouter')
 const app = express();
 
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', "http://localhost:5500"],  // Cho phép frontend của bạn
+    origin: ['http://localhost:3000', 'http://127.0.0.1:5500', "http://localhost:5500"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true  // Cho phép gửi cookies

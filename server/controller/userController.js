@@ -112,9 +112,6 @@ const createUser = async (req, res) => {
             user_id: newUser.user_id,
             address_infor
           });
-
-
-
         }
       }
 
@@ -144,7 +141,7 @@ const updateUser = async (req, res) => {
         // 2. Cập nhật thông tin cơ bản trên bảng User
         const userUpdateData = {};
         if (role !== undefined && req.user.role === 'admin') {
-            userUpdateData.role = role;
+          userUpdateData.role = role;
         }
 
         if (Object.keys(userUpdateData).length > 0) {
@@ -229,7 +226,7 @@ const updateUser = async (req, res) => {
     }
 };
 
-// Cập nhật thông tin chi tiết (thường do người dùng tự cập nhật profile của họ)
+// Cập nhật thông tin chi tiết
 const updateUserDetail = async (req, res) => {
     try {
         const userId = req.user.user_id; // Người dùng chỉ cập nhật thông tin của chính họ
@@ -294,13 +291,7 @@ const updateUserDetail = async (req, res) => {
                 await userInfo.update(userInfoUpdateData);
             } else {
                 // Nếu UserInfo chưa tồn tại, tạo mới
-                // Cần email, nên lấy từ user hoặc yêu cầu gửi kèm nếu logic cho phép
                 const userRecord = await User.findByPk(userId, { include: [{model: UserInfo, as: 'user_info'}]});
-                // Hoặc bạn cần đảm bảo UserInfo luôn được tạo khi tạo User.
-                // Nếu email lưu ở UserInfo, bạn cần tìm cách lấy email.
-                // Giả sử bạn có một trường email trong UserInfo và nó được thiết lập khi tạo User
-                // Bạn có thể cần logic để lấy email. Nếu không có email, việc tạo UserInfo có thể thất bại.
-                // Ví dụ, nếu email được lưu trong user_info:
                  if(userRecord && userRecord.user_info && userRecord.user_info.email){
                     userInfo = await UserInfo.create({
                         user_id: userId,

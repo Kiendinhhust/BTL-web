@@ -287,6 +287,14 @@ const createOrder = async (req, res) => {
     }
 };
 
+// Hàm helper lấy thông tin phân trang
+const getPagination = (page, size) => {
+  const limit = (size > 30 || size < 0) ? +size : 30; // Mặc định 30 sản phẩm/trang
+  const offset = page ? (page - 1) * limit : 0; // Tính offset
+
+  return { limit, offset };
+};
+
 // Hàm helper tạo dữ liệu phân trang cho response
 const getPagingData = (data, page, limit) => {
     const { count: totalItems, rows: products } = data;

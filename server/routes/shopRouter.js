@@ -1,7 +1,10 @@
 const express = require('express');
 const shopController = require('../controller/shopController');
+const auth = require('../middleware/authMiddleware')
 
 const router = express.Router();
+
+router.use(auth.authenticateToken);
 
 // Các routes cơ bản
 router.post('/',  shopController.createShop);
@@ -15,5 +18,9 @@ router.get('/user/:userId', shopController.getShopByUserId);
 router.get('/admin/pending',  shopController.getPendingShops);
 router.put('/:id/approve',  shopController.approveShop);
 router.put('/:id/reject',  shopController.rejectShop);
+
+// Hiển thị thống kê shop
+router.get('/:shopId/statistics/overall', shopController.getShopOverall);
+router.get('/:shopId/statistics/period', shopController.getShopRevenueAndOrdersByPeriod);
 
 module.exports = router;

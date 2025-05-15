@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, UserInfo , sequelize } = require('../models');
+const { User, UserInfo, Shop , sequelize } = require('../models');
 const { sendOTP } = require('../utils/mailer');
 const { saveTempUser, getTempUser, deleteTempUser, allTempUser } = require('../utils/tempUser');
 
@@ -79,7 +79,10 @@ const login = async (req, res) => {
     try {
         
         const { username, password } = req.body;
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { username },
+            include: [{ model: UserInfo, as: 'user_info' }]
+        });
+
         if (!user) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
@@ -88,8 +91,13 @@ const login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
         }
-        console.log(process.env.JWT_REFRESH_SECRET)
-        console.log(user)
+
+        // Lấy shop của người dùng
+        const shop = await Shop.findOne({
+            where: { owner_id: user.user_id },
+            order: [["shop_id", "DESC"]],
+        });
+
         const accessToken = generateAccessToken(user.user_id);
         const refreshToken = generateRefreshToken(user.user_id);
 
@@ -109,7 +117,16 @@ const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 ngày
         });
 
-        res.json({ message: 'Đăng nhập thành công!', accessToken });
+
+        res.json({ message: 'Đăng nhập thành công!', 
+            accessToken,
+            refreshToken,
+            userId: user.user_id,
+            username: user.username,
+            email: user.UserInfo ? user.UserInfo.email : null,
+            shop: shop ? shop.shop_id : null,
+            role: user.role,
+        });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Lỗi đăng nhập!' });
