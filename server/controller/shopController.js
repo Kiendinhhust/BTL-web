@@ -1,4 +1,4 @@
-const { Shop, ShopRevenue, User, Order} = require('../models')
+const { Shop, ShopRevenue, User, Order, Product, OrderItem} = require('../models')
 const sequelize = require('../config/db');
 const { Op, fn, col, literal} = require('sequelize');
 
