@@ -30,10 +30,13 @@ export const sellerMenu = [
     name: "Trang chủ",
     link: "/home",
   },
-
   {
     name: "Quản lý cửa hàng",
     link: "/seller/shop-manage",
+  },
+  {
+    name: "Quản lý sản phẩm",
+    link: "/seller/product-manage",
   },
 ];
 

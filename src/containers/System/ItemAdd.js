@@ -39,12 +39,13 @@ const ItemAdd = (props) => {
         }
       )
       .then(function (response) {
-        image_url = response.data.url;
+        // Lưu public_id thay vì URL
+        image_url = response.data.public_id;
       })
       .catch(function (error) {
         console.log(error);
       });
-    console.log(image_url);
+    console.log("Public ID:", image_url);
     await axios
       .post(
         `${process.env.REACT_APP_BACKEND_URL}/api/products/add-item/${props.product_id}`,

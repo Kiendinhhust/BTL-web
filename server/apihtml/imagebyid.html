@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Ảnh và Hiển Thị Theo Public ID</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    img  { max-width: 300px; margin-top: 10px; display: block; }
+  </style>
+</head>
+<body>
+  <h1>Upload Ảnh</h1>
+  <form id="uploadForm">
+    <input type="file" id="fileInput" accept="image/*" required>
+    <button type="submit">Upload</button>
+  </form>
+  <div id="preview"></div>
+
+  <script>
+    const uploadForm = document.getElementById('uploadForm');
+    const fileInput  = document.getElementById('fileInput');
+    const preview    = document.getElementById('preview');
+    // Base URL cho các API (/store/image/upload, /store/image/:public_id,…)
+    const apiBase    = '/store/image';
+
+    // Hàm gọi API GET /store/image/:public_id để lấy URL và hiển thị ảnh
+    async function loadImage(publicId) {
+      try {
+        const res  = await fetch(`http://localhost:3434/api/utils/store/image/${publicId}`);
+        const data = await res.json();
+        if (data.url) {
+          preview.innerHTML = `<img src="${data.url}" alt="${data.public_id}">`;
+        } else {
+          preview.textContent = 'Không tìm thấy ảnh!';
+        }
+      } catch (err) {
+        console.error(err);
+        preview.textContent = 'Lỗi khi lấy ảnh!';
+      }
+    }
+
+    // Xử lý sự kiện upload form
+    uploadForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const file = fileInput.files[0];
+      if (!file) return alert('Vui lòng chọn file ảnh!');
+      const fd = new FormData();
+      fd.append('image', file);
+
+      // Gửi POST /store/image/upload
+      const res    = await fetch(`http://localhost:3434/api/utils/store/image/upload`, { method: 'POST', body: fd });
+      const result = await res.json();
+        console.log(result);    
+      if (result.public_id) {
+        // Lưu public_id vào localStorage và hiển thị ảnh
+        localStorage.setItem('public_id', result.public_id);
+        loadImage(result.public_id);
+      } else {
+        alert('Upload thất bại: ' + (result.error || ''));
+      }
+    });
+
+    // Khi load trang, nếu đã có public_id trong localStorage thì tự hiển thị ảnh
+    document.addEventListener('DOMContentLoaded', () => {
+      const storedId = localStorage.getItem('public_id');
+      if (storedId) loadImage(storedId);
+    });
+  </script>
+</body>
+</html>

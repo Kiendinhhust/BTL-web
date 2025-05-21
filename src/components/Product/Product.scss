@@ -102,6 +102,35 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 }
 
+.product-shop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 5px 10px;
+  background-color: $light-gray;
+  border-radius: 20px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+
+  i {
+    color: $navy-medium;
+    font-size: 14px;
+  }
+
+  span {
+    color: $navy-dark;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &:hover {
+    background-color: $medium-gray;
+  }
+}
+
 .product-rating-container {
   display: flex;
   align-items: center;
@@ -109,20 +138,30 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   gap: 5px;
   margin: 10px 0;
 
-  .star-icon {
-    color: #ffc107;
-    transition: $transition;
+  .stars-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
 
-    &:hover {
-      transform: scale(1.2) rotate(5deg);
+    i {
+      color: #ddd;
+      font-size: 16px;
+
+      &.filled {
+        color: #ffc107;
+      }
+
+      &:hover {
+        transform: scale(1.2) rotate(5deg);
+      }
+    }
+
+    .rating-value {
+      margin-left: 5px;
+      color: $dark-gray;
+      font-size: 14px;
     }
   }
-}
-
-.product-rating-count {
-  color: $navy-light;
-  font-weight: 500;
-  font-size: 14px;
 }
 
 .product-price {
@@ -131,16 +170,69 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   color: $accent-color;
   margin: 10px 0;
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  &::before {
-    content: "";
-    position: absolute;
-    bottom: -3px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: rgba($accent-color, 0.3);
+  .original-price {
+    text-decoration: line-through;
+    color: $dark-gray;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 5px;
+  }
+
+  .sale-price {
+    color: $accent-color;
+    font-size: 18px;
+    font-weight: 700;
+  }
+}
+
+.product-stock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  color: $navy-dark;
+  margin: 8px 0;
+  font-weight: 500;
+
+  i {
+    color: $navy-medium;
+    font-size: 14px;
+  }
+
+  span {
+    color: $navy-dark;
+  }
+}
+
+.product-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0;
+
+  .stars-container {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 5px;
+
+    i {
+      color: #ddd;
+      font-size: 16px;
+
+      &.filled {
+        color: #ffc107;
+      }
+    }
+  }
+
+  .rating-value {
+    font-size: 14px;
+    color: $dark-gray;
   }
 }
 
@@ -274,13 +366,88 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 }
 
+// Variant details display
+.product-variant-info {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: $border-radius;
+  background-color: $light-gray;
+
+  .variant-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .variant-sku {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      .label {
+        font-weight: 600;
+        color: $navy-dark;
+      }
+
+      .value {
+        color: $navy-medium;
+      }
+    }
+
+    .variant-attributes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .attribute-item {
+        background-color: $white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid $medium-gray;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        .attribute-key {
+          font-weight: 600;
+          color: $navy-dark;
+          font-size: 12px;
+        }
+
+        .attribute-value {
+          color: $navy-medium;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
 // Container cho các nút thuộc tính
 .product-attributes-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
   margin: 10px 0;
-  gap: 5px;
+
+  .attributes-title {
+    font-weight: 600;
+    color: $navy-dark;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .attributes-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .no-variants {
+    color: $dark-gray;
+    font-style: italic;
+    text-align: center;
+    padding: 10px;
+  }
 }
 .product-checkmark {
   width: 16px;

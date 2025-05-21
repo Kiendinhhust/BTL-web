@@ -5,34 +5,47 @@ import { addToCart } from "../../store/actions/navbarCartActions";
 import "./Product.scss";
 import productImageNull from "../../assets/images/icons/product.png";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
-import axios from "axios";
 
 const Product = (props) => {
   const history = useHistory();
-  const [items, setItems] = useState([]);
   const [info, setInfo] = useState(null);
   const [state, setState] = useState({
     checkCheckMark: false,
     timeOut: null,
   });
   const [cartQuantity, setCartQuantity] = useState(1);
+
+  // Use items passed from HomePage
+  const items = Array.isArray(props.items) ? props.items : [];
+
   useEffect(() => {
-    axios({
-      method: "get",
-      url: `${process.env.REACT_APP_BACKEND_URL}/api/products/item/${props.product.product_id}`,
-      withCredentials: true,
-    }).then((response) => {
-      setItems(response.data);
-      setInfo(response.data[0]);
-      console.log(response.data[0]);
-    });
-  }, [props.product.product_id]);
+    console.log("Product items:", items);
+
+    // Set the first item as default if available
+    if (items && items.length > 0 && !info) {
+      setInfo(items[0]);
+    }
+  }, [items, info]);
+
+  // Safely format price to avoid NaN
+  const formatPrice = (price) => {
+    if (price === undefined || price === null || isNaN(Number(price))) {
+      return "0";
+    }
+    return Number(price).toLocaleString("vi-VN");
+  };
   const handleAddToCart = () => {
     setState((prevState) => {
-      prevState.timeOut && clearTimeout(prevState.timeOut);
+      // Clear previous timeout if exists
+      if (prevState.timeOut) {
+        clearTimeout(prevState.timeOut);
+      }
+
+      // Set new timeout
       const timeOut = setTimeout(() => {
-        setState((prevState) => ({ checkCheckMark: false }));
+        setState(() => ({ checkCheckMark: false, timeOut: null }));
       }, 1000);
+
       return {
         checkCheckMark: true,
         timeOut,
@@ -56,9 +69,9 @@ const Product = (props) => {
         <img
           className="product-image"
           loading="lazy"
-          src={info?.image_url || productImageNull}
-          alt={`${info?.sku || ""} ${info?.attributes["Màu"] || ""} ${
-            info?.attributes.Size || ""
+          src={info?.imageUrl || info?.image_url || productImageNull}
+          alt={`${info?.sku || ""} ${info?.attributes?.["Màu"] || ""} ${
+            info?.attributes?.Size || ""
           }`}
           onClick={() =>
             history.push(
@@ -72,13 +85,36 @@ const Product = (props) => {
       <div className="product-name limit-text-to-2-lines">
         {props.product.title}
       </div>
+
+      <div className="product-shop">
+        <i className="fas fa-store"></i>
+        <span>{props.product.Shop?.shop_name || "Cửa hàng không xác định"}</span>
+      </div>
+
       <div className="product-rating-container">
-        <div className="product-rating-count link-primary">
-          Product rating count: {props.product.rating}
+        <div className="stars-container">
+          {[...Array(5)].map((_, index) => (
+            <i
+              key={index}
+              className={`fas fa-star ${index < Math.round(props.product.rating || 0) ? 'filled' : ''}`}
+            ></i>
+          ))}
+          <span className="rating-value">({props.product.rating || 0})</span>
         </div>
       </div>
       <div className="product-price">
-        {Number(info?.price).toLocaleString("vi-VN")} VNĐ
+        {info?.sale_price ? (
+          <>
+            <span className="original-price">{formatPrice(info.price)} VNĐ</span>
+            <span className="sale-price">{formatPrice(info.sale_price)} VNĐ</span>
+          </>
+        ) : (
+          <span>{formatPrice(info?.price)} VNĐ</span>
+        )}
+      </div>
+      <div className="product-stock">
+        <i className="fas fa-cubes"></i>
+        <span>Còn lại: {info?.stock || 0}</span>
       </div>
       <div className="product-quantity-container">
         <select
@@ -93,30 +129,59 @@ const Product = (props) => {
           ))}
         </select>
       </div>
-      <div className="product-attributes-container">
-        {items.slice(0, 2).map((item, index) => {
-          const key = Object.keys(item?.attributes);
-          const isSelected = info?.item_id === item?.item_id; // Kiểm tra xem item này có đang được chọn không
+      <div className="product-variant-info">
+        {info && (
+          <div className="variant-details">
+            <div className="variant-sku">
+              <span className="label">SKU:</span>
+              <span className="value">{info.sku || "N/A"}</span>
+            </div>
+            {info.attributes && Object.keys(info.attributes).length > 0 && (
+              <div className="variant-attributes">
+                {Object.entries(info.attributes).map(([key, value], idx) => (
+                  <div key={idx} className="attribute-item">
+                    <span className="attribute-key">{key}:</span>
+                    <span className="attribute-value">{value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
-          return (
-            <button
-              key={index}
-              className={`product-attributes-button ${
-                isSelected ? "selected" : ""
-              }`}
-              onClick={() => setInfo(item)}
-            >
-              {key.length > 0 && item?.attributes[key[0]]
-                ? item?.attributes[key[0]]
-                : ""}
-              {key.length > 1 && item?.attributes[key[1]]
-                ? ` - ${item?.attributes[key[1]]}`
-                : ""}
-            </button>
-          );
-        })}
-        {items.length === 0 && <div style={{ height: "48px" }} />}
-        {items.length > 2 ? <button className="product-etc">...</button> : null}
+      <div className="product-attributes-container">
+        <div className="attributes-title">Chọn biến thể:</div>
+        <div className="attributes-buttons">
+          {Array.isArray(items) && items.length > 0 ? (
+            items.map((item, index) => {
+              // Get attribute values for display
+              let displayText = item.sku || `Biến thể ${index + 1}`;
+
+              if (item.attributes && Object.keys(item.attributes).length > 0) {
+                const attributeValues = Object.values(item.attributes);
+                if (attributeValues.length > 0) {
+                  displayText = attributeValues.join(' - ');
+                }
+              }
+
+              const isSelected = info?.item_id === item?.item_id;
+
+              return (
+                <button
+                  key={index}
+                  className={`product-attributes-button ${isSelected ? "selected" : ""}`}
+                  onClick={() => setInfo(item)}
+                  title={`${item.sku || ''} - ${formatPrice(item.price)} VNĐ - SL: ${item.stock || 0}`}
+                >
+                  {displayText}
+                </button>
+              );
+            })
+          ) : (
+            <div className="no-variants">Không có biến thể</div>
+          )}
+        </div>
       </div>
       {state.checkCheckMark === true ? (
         <div

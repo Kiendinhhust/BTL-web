@@ -63,11 +63,6 @@
       try {
         const response = await fetch(`http://localhost:3434/api/products/add-item/${productId}`, {
           method: 'POST',
-          headers: {
-            // Không set Content-Type khi dùng FormData
-            // Authorization nếu cần
-            'Authorization': 'Bearer your_access_token_here'
-          },
           body: formData
         });
 
