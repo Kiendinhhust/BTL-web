@@ -6,6 +6,8 @@ import "./ProductDetail.scss";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import productImageNull from "../../assets/images/icons/product.png";
 import { getImageByPublicId } from "../../services/storeService";
+import { addItemToCart } from "../../services/cartService";
+import { toast } from "react-toastify";
 
 const ProductDetail = (props) => {
   const location = useLocation();
@@ -75,13 +77,25 @@ const ProductDetail = (props) => {
     };
 
     processItems();
-  }, [items]);
+  }, []);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    if (!info || !info.item_id) {
+      toast.error("Không thể thêm sản phẩm vào giỏ hàng");
+      return;
+    }
+    console.log("props.userInfo:", props.userInfo);
+    // Check if user is logged in
+    if (!props.userInfo || !props.userInfo.userId) {
+      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+      return;
+    }
+
+    // Show visual feedback
     setState((prevState) => {
       if (prevState.timeOut) {
         clearTimeout(prevState.timeOut);
@@ -94,7 +108,29 @@ const ProductDetail = (props) => {
         timeOut,
       };
     });
-    props.addToCart({ quantity: cartQuantity, info, title: product.title });
+
+     // Add to Redux store for UI updates
+    // props.addToCart({ quantity: cartQuantity, item: info, userId: props.userInfo.userId });
+
+    // Add to server-side cart using cartService
+    try {
+      const cartItem = {
+        item_id: info.item_id,
+        quantity: parseInt(cartQuantity),
+        user_id: props.userInfo.userId 
+      };
+      console.log("cartItem:", cartItem);
+      const result = await addItemToCart(cartItem);
+
+      if (result.success) {
+        toast.success("Đã thêm sản phẩm vào giỏ hàng");
+      } else {
+        toast.error(result.error || "Không thể thêm sản phẩm vào giỏ hàng");
+      }
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      toast.error("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng");
+    }
   };
 
   useEffect(() => {
@@ -303,6 +339,7 @@ const mapStateToProps = (state) => {
   return {
     cartQuantity: state.navbarCart.quantity,
     products: state.productR.products,
+    userInfo: state.admin.userInfo,
   };
 };
 

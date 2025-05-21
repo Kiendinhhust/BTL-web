@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 
 // Lấy toàn bộ giỏ hàng của người dùng
 const getCart = async (req, res) => {
-    const userId = req.user.user_id; // Lấy từ authenticateToken middleware
+    const userId = req.user.user_id; 
 
     try {
         const cartItems = await Cart.findAll({

@@ -16,7 +16,7 @@ const authAPI = require("./routes/authRouter");
 const shopAPI = require("./routes/shopRouter");
 const userAddressAPI = require("./routes/userAddressRouter");
 const productAPI = require("./routes/productRouter");
-const cardAPI = require("./routes/cartRouter");
+const cartAPI = require("./routes/cartRouter");
 const utilsAPI = require("./routes/utilsRouter");
 const orderAPI = require("./routes/orderRouter");
 
@@ -58,7 +58,7 @@ app.use("/api/user", userAPI);
 app.use("/auth", authAPI);
 app.use("/api/products", productAPI);
 app.use("/api/utils", utilsAPI);
-app.use("/api/card", cardAPI);
+app.use("/api/cart", cartAPI);
 app.use("/api/order", orderAPI);
 app.use("/api/shop", shopAPI);
 app.use("/api/address", userAddressAPI);

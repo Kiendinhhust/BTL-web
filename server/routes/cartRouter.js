@@ -1,15 +1,15 @@
 const express = require('express')
-const cardController = require('../controller/cardController')
+const cartController = require('../controller/cartController')
 const auth = require('../middleware/authMiddleware')
 
 const router = express.Router()
 
-router.use(auth.authenticateToken)
 
-router.get('/', cardController.getCart)
-router.post('/add', cardController.addItemToCart)
-router.put('/update/:itemId', cardController.updateCartItemQuantity)
-router.delete('/:itemId', cardController.removeItemFromCart)
-router.delete('/clear', cardController.clearCart)
+
+router.get('/', cartController.getCart)
+router.post('/add', cartController.addItemToCart)
+router.put('/update/:itemId', cartController.updateCartItemQuantity)
+router.delete('/:itemId', cartController.removeItemFromCart)
+router.delete('/clear', cartController.clearCart)
 
 module.exports = router

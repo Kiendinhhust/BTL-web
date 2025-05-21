@@ -17,7 +17,7 @@ const Product = (props) => {
 
   // Use items passed from HomePage
   const items = Array.isArray(props.items) ? props.items : [];
-
+  console.log("Items:", items);
   useEffect(() => {
     console.log("Product items:", items);
 
@@ -44,7 +44,7 @@ const Product = (props) => {
       // Set new timeout
       const timeOut = setTimeout(() => {
         setState(() => ({ checkCheckMark: false, timeOut: null }));
-      }, 1000);
+      }, 100000);
 
       return {
         checkCheckMark: true,

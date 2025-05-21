@@ -17,7 +17,7 @@ import BuyerSystem from "../routes/BuyerSystem";
 import Register from "../routes/Register.js";
 import VerifyOTP from "../routes/VerifyOTP.js";
 import HomePage from "./HomePage/HomePage.js";
-import CartPage from "./HomePage/CartPage.js";
+import CartPage from "./CartPage/CartPage.js";
 import MyOrders from "../components/Product/MyOrders";
 import Order from "../components/Product/Order";
 import ProductDetail from "../components/Product/ProductDetail";
