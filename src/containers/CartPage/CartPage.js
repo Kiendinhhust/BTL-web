@@ -16,8 +16,9 @@ const CartPage = (props) => {
   // Fetch cart data
   useEffect(() => {
     const fetchCart = async () => {
-      // Check if user is logged in
-      if (!props.userInfo || !props.userInfo.userId) {
+      // Check if user is logged in and has an access token
+      const accessToken = props.userInfo?.accessToken;
+      if (!accessToken) {
         setLoading(false);
         return;
       }
@@ -26,8 +27,10 @@ const CartPage = (props) => {
 
       try {
         const result = await getCart();
+        console.log('Cart data:', result);
 
         if (result.success) {
+          // The server now returns items directly in the result.data.items
           setCartItems(result.data.items || []);
         } else {
           toast.error(result.error || 'Không thể tải giỏ hàng');
@@ -77,16 +80,17 @@ const CartPage = (props) => {
   const handleQuantityChange = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
 
-    // Check if user is logged in
-    if (!props.userInfo || !props.userInfo.userId) {
+    // Check if user is logged in and has an access token
+    const accessToken = props.userInfo?.accessToken;
+    if (!accessToken) {
       toast.warning('Vui lòng đăng nhập để cập nhật giỏ hàng');
       return;
     }
 
     const result = await updateCartItem({
       item_id: itemId,
-      quantity: newQuantity,
-      user_id: props.userInfo.userId
+      quantity: newQuantity
+      // No need to include user_id, it will be extracted from the JWT token
     });
 
     if (result.success) {
@@ -102,8 +106,9 @@ const CartPage = (props) => {
 
   // Handle remove item
   const handleRemoveItem = async (itemId) => {
-    // Check if user is logged in
-    if (!props.userInfo || !props.userInfo.userId) {
+    // Check if user is logged in and has an access token
+    const accessToken = props.userInfo?.accessToken;
+    if (!accessToken) {
       toast.warning('Vui lòng đăng nhập để cập nhật giỏ hàng');
       return;
     }
@@ -128,8 +133,9 @@ const CartPage = (props) => {
 
   // Handle clear cart
   const handleClearCart = async () => {
-    // Check if user is logged in
-    if (!props.userInfo || !props.userInfo.userId) {
+    // Check if user is logged in and has an access token
+    const accessToken = props.userInfo?.accessToken;
+    if (!accessToken) {
       toast.warning('Vui lòng đăng nhập để cập nhật giỏ hàng');
       return;
     }
@@ -226,9 +232,13 @@ const CartPage = (props) => {
                     </div>
                   )}
 
-                  {item.attributes && Object.keys(item.attributes).length > 0 && (
+                  {item.attributes && (
                     <div className="item-attributes">
-                      {Object.entries(item.attributes).map(([key, value], idx) => (
+                      {Object.entries(
+                        typeof item.attributes === 'string'
+                          ? JSON.parse(item.attributes)
+                          : item.attributes
+                      ).map(([key, value], idx) => (
                         <div key={idx} className="attribute-item">
                           <span className="attribute-key">{key}:</span>
                           <span className="attribute-value">{value}</span>

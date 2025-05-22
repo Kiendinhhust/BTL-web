@@ -26,7 +26,7 @@ import { CustomToastCloseButton } from "../components/CustomToast";
 import ConfirmModal from "../components/ConfirmModal";
 import Footer from "./Footer/Footer";
 import "./App.scss";
-import ProductManage from "./System/ProductManage.js";
+
 import ItemManage from "./System/ItemManage.js";
 
 class App extends Component {
@@ -81,10 +81,7 @@ class App extends Component {
                     path={path.SYSTEM}
                     component={userIsAuthenticated(System)}
                   />
-                  <Route
-                    path={"/seller/product-manage"}
-                    component={ProductManage}
-                  />
+                 
                   <Route
                     path={"/system/item-manage"}
                     component={userIsAuthenticated(ItemManage)}

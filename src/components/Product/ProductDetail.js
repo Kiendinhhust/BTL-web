@@ -88,9 +88,9 @@ const ProductDetail = (props) => {
       toast.error("Không thể thêm sản phẩm vào giỏ hàng");
       return;
     }
-    console.log("props.userInfo:", props.userInfo);
-    // Check if user is logged in
-    if (!props.userInfo || !props.userInfo.userId) {
+    // Check if user is logged in and has an access token
+    const accessToken = props.userInfo?.accessToken;
+    if (!accessToken) {
       toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
       return;
     }
@@ -110,16 +110,16 @@ const ProductDetail = (props) => {
     });
 
      // Add to Redux store for UI updates
-    // props.addToCart({ quantity: cartQuantity, item: info, userId: props.userInfo.userId });
+    // props.addToCart({ quantity: cartQuantity, info, title: product.title });
 
     // Add to server-side cart using cartService
     try {
       const cartItem = {
         item_id: info.item_id,
-        quantity: parseInt(cartQuantity),
-        user_id: props.userInfo.userId 
+        quantity: parseInt(cartQuantity)
+        // No need to include user_id, it will be extracted from the JWT token
       };
-      console.log("cartItem:", cartItem);
+
       const result = await addItemToCart(cartItem);
 
       if (result.success) {

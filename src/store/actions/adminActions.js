@@ -11,7 +11,12 @@ export const adminLoginSuccess = (userInfo) => {
         userInfo: userInfo
     };
 }
-
+export const updateUserInfo = (userInfo) => {
+    return {
+      type: actionTypes.UPDATE_USER_INFO,
+      payload: userInfo,
+    };
+  };
 export const adminLoginFail = () => ({
     type: actionTypes.ADMIN_LOGIN_FAIL
 })

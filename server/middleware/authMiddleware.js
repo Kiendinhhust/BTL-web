@@ -51,6 +51,7 @@ const authenticateToken = async (req, res, next) => {
         // Gắn thông tin user vào request để các middleware/handler sau có thể sử dụng
         req.user = {
             userId: user.user_id,
+            user_id: user.user_id, // Add user_id for backward compatibility
             username: user.username,
             email: user.email,
             role: user.role

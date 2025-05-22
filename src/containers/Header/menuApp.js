@@ -34,10 +34,7 @@ export const sellerMenu = [
     name: "Quản lý cửa hàng",
     link: "/seller/shop-manage",
   },
-  {
-    name: "Quản lý sản phẩm",
-    link: "/seller/product-manage",
-  },
+  
 ];
 
 export const buyerMenu = [

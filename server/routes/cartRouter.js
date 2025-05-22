@@ -6,10 +6,10 @@ const router = express.Router()
 
 
 
-router.get('/', cartController.getCart)
-router.post('/add', cartController.addItemToCart)
-router.put('/update/:itemId', cartController.updateCartItemQuantity)
-router.delete('/:itemId', cartController.removeItemFromCart)
-router.delete('/clear', cartController.clearCart)
+router.get('/',auth.authenticateToken, cartController.getCart)
+router.post('/add',auth.authenticateToken, cartController.addItemToCart)
+router.put('/update/:itemId',auth.authenticateToken, cartController.updateCartItemQuantity)
+router.delete('/:itemId',auth.authenticateToken, cartController.removeItemFromCart)
+router.delete('/clear',auth.authenticateToken, cartController.clearCart)
 
 module.exports = router

@@ -4,7 +4,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import UserManage from "../containers/System/UserManage";
 import UserDetail from "../containers/System/UserDetail";
 import UserAddress from "../containers/System/UserAddress";
-import ProductManage from "../containers/System/ProductManage";
+
 import ShopAdmin from "../containers/System/ShopAdmin";
 import ItemManage from "../containers/System/ItemManage";
 

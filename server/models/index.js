@@ -37,13 +37,13 @@ UserInfo.belongsTo(UserAddress, {
 User.hasMany(Shop, { foreignKey: "owner_id", onDelete: "CASCADE" });
 Shop.belongsTo(User, { foreignKey: "owner_id" });
 
-// 1 Shop có nhiều Product
+ // 1 Shop có nhiều Product
 Shop.hasMany(Product, { foreignKey: "shop_id", onDelete: "CASCADE" });
 Product.belongsTo(Shop, { foreignKey: "shop_id" });
 
-// 1 Product có nhiều Items
-Product.hasMany(Item, { foreignKey: "product_id", onDelete: "CASCADE" });
-Item.belongsTo(Product, { foreignKey: "product_id" });
+ // 1 Product có nhiều Items
+ Product.hasMany(Item, { foreignKey: "product_id", onDelete: "CASCADE", as: "items" });
+ Item.belongsTo(Product, { foreignKey: "product_id", as: "product" });
 
 // 1 Product có nhiều hình ảnh
 Product.hasMany(ProductImage, {
@@ -135,6 +135,11 @@ Item.belongsToMany(User, {
   foreignKey: "item_id",
   onDelete: "CASCADE",
 });
+
+
+// Cart - Item association (for eager loading item from cart)
+Cart.belongsTo(Item, { foreignKey: 'item_id', as: 'item' });
+Item.hasMany(Cart, { foreignKey: 'item_id' });
 
 // 1 Shop có nhiều bản ghi doanh thu theo ngày
 Shop.hasMany(ShopRevenue, { foreignKey: "shop_id", onDelete: "CASCADE" });

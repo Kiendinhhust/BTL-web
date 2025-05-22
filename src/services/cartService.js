@@ -1,6 +1,76 @@
 import axios from 'axios';
+import store from '../redux';
+import { updateUserInfo } from '../store/actions/adminActions';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3434';
+
+// Helper function to get the access token from Redux state
+const getAccessTokenFromRedux = () => {
+  const state = store.getState();
+  return state.admin.userInfo?.accessToken;
+};
+
+// Helper function to refresh the access token
+const refreshAccessToken = async () => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/auth/refresh-token`,
+      {},
+      { withCredentials: true }
+    );
+
+    if (response.data && response.data.accessToken) {
+      // Update the access token in Redux
+      const state = store.getState();
+      const userInfo = { ...state.admin.userInfo, accessToken: response.data.accessToken };
+      store.dispatch(updateUserInfo(userInfo));
+
+      return response.data.accessToken;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error refreshing access token:', error);
+    return null;
+  }
+};
+
+// Create an axios instance with interceptors
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  withCredentials: true
+});
+
+// Add a response interceptor to handle token expiration
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If the error is due to an expired token and we haven't tried to refresh yet
+    if (error.response &&
+        error.response.status === 403 &&
+        error.response.data &&
+        error.response.data.refresh === true &&
+        !originalRequest._retry) {
+
+      originalRequest._retry = true;
+
+      // Try to refresh the token
+      const newAccessToken = await refreshAccessToken();
+
+      if (newAccessToken) {
+        // Update the authorization header with the new token
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+        // Retry the original request
+        return axiosInstance(originalRequest);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 /**
  * Add an item to the cart
@@ -12,22 +82,28 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3434';
  */
 export const addItemToCart = async (cartItem) => {
   try {
-    if (!cartItem.user_id) {
+    // Get access token from Redux
+    const accessToken = getAccessTokenFromRedux();
+
+    if (!accessToken) {
       return {
         success: false,
-        error: 'User ID is required'
+        error: 'User not authenticated'
       };
     }
 
-    const response = await axios.post(
-      `${API_URL}/api/cart/add`,
-      cartItem,
+    // We don't need to pass user_id in the request body anymore
+    // The server will extract it from the JWT token
+    const { user_id, ...itemData } = cartItem;
+
+    const response = await axiosInstance.post(
+      '/api/cart/add',
+      itemData,
       {
-        withCredentials: true,
-        // headers: {
-        //   'Content-Type': 'application/json',
-        //   'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        // }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
       }
     );
 
@@ -50,7 +126,8 @@ export const addItemToCart = async (cartItem) => {
  */
 export const getCart = async () => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
+    // Get access token from Redux
+    const accessToken = getAccessTokenFromRedux();
 
     if (!accessToken) {
       return {
@@ -59,13 +136,12 @@ export const getCart = async () => {
       };
     }
 
-    const response = await axios.get(
-      `${API_URL}/api/cart`,
+    const response = await axiosInstance.get(
+      '/api/cart',
       {
-        withCredentials: true,
-      //   headers: {
-      //     'Authorization': `Bearer ${accessToken}`
-      //   }
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
       }
     );
 
@@ -92,14 +168,8 @@ export const getCart = async () => {
  */
 export const updateCartItem = async (cartItem) => {
   try {
-    if (!cartItem.user_id) {
-      return {
-        success: false,
-        error: 'User ID is required'
-      };
-    }
-
-    const accessToken = localStorage.getItem('accessToken');
+    // Get access token from Redux
+    const accessToken = getAccessTokenFromRedux();
 
     if (!accessToken) {
       return {
@@ -108,15 +178,17 @@ export const updateCartItem = async (cartItem) => {
       };
     }
 
-    const response = await axios.put(
-      `${API_URL}/api/cart/update`,
-      cartItem,
+   
+    const { user_id, ...itemData } = cartItem;
+
+    const response = await axiosInstance.put(
+      '/api/cart/update',
+      itemData,
       {
-        withCredentials: true,
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${accessToken}`
-      //   }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
       }
     );
 
@@ -140,7 +212,8 @@ export const updateCartItem = async (cartItem) => {
  */
 export const removeCartItem = async (itemId) => {
   try {
-    const accessToken = localStorage.getItem('accessToken');
+    // Get access token from Redux
+    const accessToken = getAccessTokenFromRedux();
 
     if (!accessToken) {
       return {
@@ -149,13 +222,12 @@ export const removeCartItem = async (itemId) => {
       };
     }
 
-    const response = await axios.delete(
-      `${API_URL}/api/cart/remove/${itemId}`,
+    const response = await axiosInstance.delete(
+      `/api/cart/${itemId}`,
       {
-        withCredentials: true,
-        // headers: {
-        //   'Authorization': `Bearer ${accessToken}`
-        // }
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
       }
     );
 
@@ -178,9 +250,24 @@ export const removeCartItem = async (itemId) => {
  */
 export const clearCart = async () => {
   try {
+    // Get access token from Redux
+    const accessToken = getAccessTokenFromRedux();
+
+    if (!accessToken) {
+      return {
+        success: false,
+        error: 'User not authenticated'
+      };
+    }
+
     const response = await axios.delete(
       `${API_URL}/api/cart/clear`,
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      }
     );
 
     return {

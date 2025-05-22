@@ -73,7 +73,7 @@ const verifyOTP = async (req, res) => {
 };
 
 const generateAccessToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "15m" }); // Token có hiệu lực 15 phút
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" }); // Token có hiệu lực 7 ngày
 };
 
 const generateRefreshToken = (userId) => {
@@ -137,18 +137,51 @@ const login = async (req, res) => {
 
 // Refresh Access Token
 const refreshAccessToken = (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
+  // Try to get the refresh token from cookies first
+  let refreshToken = req.cookies.refreshToken;
+
+  // If not in cookies, try to get it from the Authorization header
+  if (!refreshToken) {
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      refreshToken = authHeader.substring(7);
+    }
+  }
+
+  // If still no refresh token, check if it's in the request body
+  if (!refreshToken && req.body.refreshToken) {
+    refreshToken = req.body.refreshToken;
+  }
 
   if (!refreshToken) {
-    return res.status(401).json({ error: "Chưa đăng nhập!" });
+    return res.status(401).json({
+      success: false,
+      error: "Chưa đăng nhập! Không tìm thấy refresh token."
+    });
   }
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const newAccessToken = generateAccessToken(decoded.userId);
-    res.json({ accessToken: newAccessToken });
+
+    res.json({
+      success: true,
+      accessToken: newAccessToken
+    });
   } catch (error) {
-    res.status(403).json({ error: "Refresh Token không hợp lệ!" });
+    console.error("Error refreshing token:", error);
+
+    if (error.name === 'TokenExpiredError') {
+      return res.status(403).json({
+        success: false,
+        error: "Refresh Token đã hết hạn. Vui lòng đăng nhập lại."
+      });
+    }
+
+    res.status(403).json({
+      success: false,
+      error: "Refresh Token không hợp lệ!"
+    });
   }
 };
 
