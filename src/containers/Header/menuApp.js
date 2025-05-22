@@ -16,8 +16,8 @@ export const adminMenu = [
             link: "/system/user-manage",
           },
           {
-            name: "menu.system.system-administrator.product-manage",
-            link: "/system/product-manage",
+            name: "menu.system.system-administrator.shipping-method",
+            link: "/system/shipping-method",
           },
           { name: "Quản lý người bán hàng", link: "/system/shop-admin" },
         ],

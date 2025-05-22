@@ -7,6 +7,7 @@ import UserAddress from "../containers/System/UserAddress";
 
 import ShopAdmin from "../containers/System/ShopAdmin";
 import ItemManage from "../containers/System/ItemManage";
+import ShippingMethodPage from "../containers/System/ShippingMethodPage/ShippingMethodPage";
 
 class System extends Component {
   render() {
@@ -20,6 +21,7 @@ class System extends Component {
             <Route path="/system/user-address" component={UserAddress} />
             <Route path="/system/item-manage" component={ItemManage} />
             <Route path="/system/shop-admin" component={ShopAdmin} />
+            <Route path="/system/shipping-method" component={ShippingMethodPage} />
             <Route
               component={() => {
                 return <Redirect to={systemMenuPath} />;

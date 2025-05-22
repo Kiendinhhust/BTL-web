@@ -19,6 +19,7 @@ const productAPI = require("./routes/productRouter");
 const cartAPI = require("./routes/cartRouter");
 const utilsAPI = require("./routes/utilsRouter");
 const orderAPI = require("./routes/orderRouter");
+const shippingMethodAPI = require("./routes/shippingMethodRouter");
 
 const app = express();
 
@@ -56,12 +57,14 @@ app.get("/", (req, res) => {
 // Cấu hình router, api
 app.use("/api/user", userAPI);
 app.use("/auth", authAPI);
+app.use("/api/auth", authAPI); // Add an additional mount point for compatibility
 app.use("/api/products", productAPI);
 app.use("/api/utils", utilsAPI);
 app.use("/api/cart", cartAPI);
 app.use("/api/order", orderAPI);
 app.use("/api/shop", shopAPI);
 app.use("/api/address", userAddressAPI);
+app.use("/api/shipping-methods", shippingMethodAPI);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -102,7 +102,6 @@ const createOrder = async (req, res) => {
           include: [
             {
               model: Shop,
-              as: "shop",
               required: true, // CHUYỂN thành INNER JOIN
               attributes: ["shop_id"],
             },
@@ -126,13 +125,13 @@ const createOrder = async (req, res) => {
         });
       }
       // Kiểm tra có Product và Shop liên kết không
-      if (!dbItem.product?.shop?.shop_id) {
+      if (!dbItem.product?.Shop?.shop_id) {
         await transaction.rollback();
         return res.status(500).json({
           message: `Lỗi xác định cửa hàng cho mặt hàng ID ${dbItem.item_id}. Vui lòng liên hệ hỗ trợ.`,
         });
       }
-      const currentShopId = dbItem.product.shop.shop_id;
+      const currentShopId = dbItem.product.Shop.shop_id;
 
       // KIỂM TRA ĐẶT HÀNG TỪ MỘT SHOP DUY NHẤT
       if (shopId === null) {
@@ -367,8 +366,17 @@ const createOrder = async (req, res) => {
     });
   } catch (error) {
     // --- Xử Lý Lỗi và Rollback ---
-    if (transaction) await transaction.rollback(); // Rollback nếu có lỗi xảy ra
+    try {
+      // Chỉ rollback nếu transaction tồn tại và chưa được commit hoặc rollback
+      if (transaction && !transaction.finished) {
+        await transaction.rollback();
+      }
+    } catch (rollbackError) {
+      console.error("Lỗi khi rollback transaction:", rollbackError);
+    }
+
     console.error("Lỗi khi tạo đơn hàng:", error);
+
     // Phân loại lỗi để trả về message rõ ràng hơn nếu cần
     if (error.name === "SequelizeForeignKeyConstraintError") {
       return res.status(400).json({
@@ -376,6 +384,7 @@ const createOrder = async (req, res) => {
           "Thông tin liên kết không hợp lệ (ví dụ: shop_id, user_id không tồn tại).",
       });
     }
+
     res.status(500).json({
       message:
         error.message ||
@@ -457,10 +466,10 @@ const getOrderDetails = async (req, res) => {
         },
         {
           model: OrderShipping,
-          as: "shippingInfo",
+          as: "orderShipping",
           include: [
-            { model: UserAddress, as: "address" }, // Ensure 'as' is set correctly in OrderShipping model association
-            { model: ShippingMethod, as: "shippingMethod" }, // Ensure 'as' is set
+            { model: UserAddress, as: "shippingAddress" }, // Using the correct alias
+            { model: ShippingMethod, as: "shippingMethod" }, // Using the correct alias
           ],
         },
         { model: Payment, as: "payments" },
@@ -610,14 +619,22 @@ const updateOrderStatus = async (req, res) => {
       include: [
         { model: Shop, as: "shop" },
         { model: OrderItem, as: "orderItems" },
-        { model: OrderShipping, as: "shippingInfo" },
+        { model: OrderShipping, as: "orderShipping" },
         { model: Payment, as: "payments" },
       ],
     });
 
     res.send(updatedOrderDetails);
   } catch (error) {
-    if (transaction) await transaction.rollback();
+    try {
+      // Chỉ rollback nếu transaction tồn tại và chưa được commit hoặc rollback
+      if (transaction && !transaction.finished) {
+        await transaction.rollback();
+      }
+    } catch (rollbackError) {
+      console.error("Lỗi khi rollback transaction:", rollbackError);
+    }
+
     console.error(`Lỗi khi cập nhật trạng thái đơn hàng ${orderId}:`, error);
     res
       .status(500)

@@ -54,22 +54,22 @@ ProductImage.belongsTo(Product, { foreignKey: "product_id" });
 
 // 1 User có nhiều Orders
 User.hasMany(Order, { foreignKey: "user_id", onDelete: "CASCADE" });
-Order.belongsTo(User, { foreignKey: "user_id" });
+Order.belongsTo(User, { foreignKey: "user_id", as: "user" });
 
 // 1 Shop có nhiều Orders
 Shop.hasMany(Order, { foreignKey: "shop_id", onDelete: "CASCADE" });
-Order.belongsTo(Shop, { foreignKey: "shop_id" });
+Order.belongsTo(Shop, { foreignKey: "shop_id", as: "shop" });
 
 // 1 Order có nhiều OrderItems
-Order.hasMany(OrderItem, { foreignKey: "order_id", onDelete: "CASCADE" });
+Order.hasMany(OrderItem, { foreignKey: "order_id", onDelete: "CASCADE", as: "orderItems" });
 OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 
 // 1 OrderItem thuộc về 1 Item
 Item.hasMany(OrderItem, { foreignKey: "item_id", onDelete: "CASCADE" });
-OrderItem.belongsTo(Item, { foreignKey: "item_id" });
+OrderItem.belongsTo(Item, { foreignKey: "item_id", as: "item" });
 
 // 1 Order có 1 Payment
-Order.hasOne(Payment, { foreignKey: "order_id", onDelete: "CASCADE" });
+Order.hasOne(Payment, { foreignKey: "order_id", onDelete: "CASCADE", as: "payments" });
 Payment.belongsTo(Order, { foreignKey: "order_id" });
 
 // 1 User có nhiều Payments
@@ -77,7 +77,7 @@ User.hasMany(Payment, { foreignKey: "user_id", onDelete: "CASCADE" });
 Payment.belongsTo(User, { foreignKey: "user_id" });
 
 // 1 Order có 1 OrderShipping
-Order.hasOne(OrderShipping, { foreignKey: "order_id", onDelete: "CASCADE" });
+Order.hasOne(OrderShipping, { foreignKey: "order_id", onDelete: "CASCADE", as: "orderShipping" });
 OrderShipping.belongsTo(Order, { foreignKey: "order_id" });
 
 // 1 ShippingMethod có nhiều OrderShipping
@@ -85,14 +85,14 @@ ShippingMethod.hasMany(OrderShipping, {
   foreignKey: "shipping_method_id",
   onDelete: "CASCADE",
 });
-OrderShipping.belongsTo(ShippingMethod, { foreignKey: "shipping_method_id" });
+OrderShipping.belongsTo(ShippingMethod, { foreignKey: "shipping_method_id", as: "shippingMethod" });
 
 // 1 OrderShipping sử dụng 1 UserAddress
 UserAddress.hasMany(OrderShipping, {
-  foreignKey: "user_address_id",
+  foreignKey: "shipping_address_id",
   onDelete: "CASCADE",
 });
-OrderShipping.belongsTo(UserAddress, { foreignKey: "user_address_id" });
+OrderShipping.belongsTo(UserAddress, { foreignKey: "shipping_address_id", as: "shippingAddress" });
 
 // 1 User có nhiều ProductReviews
 User.hasMany(ProductReview, { foreignKey: "user_id", onDelete: "CASCADE" });

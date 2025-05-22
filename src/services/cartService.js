@@ -178,7 +178,7 @@ export const updateCartItem = async (cartItem) => {
       };
     }
 
-   
+
     const { user_id, ...itemData } = cartItem;
 
     const response = await axiosInstance.put(
@@ -223,7 +223,7 @@ export const removeCartItem = async (itemId) => {
     }
 
     const response = await axiosInstance.delete(
-      `/api/cart/${itemId}`,
+      `/api/cart/remove/${itemId}`,
       {
         headers: {
           'Authorization': `Bearer ${accessToken}`

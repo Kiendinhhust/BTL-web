@@ -22,8 +22,8 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
     saveTempUser(email, username, hashedPassword, otp);
-    await sendOTP(email, otp);
-
+    const result = await sendOTP(email, otp);
+    console.log("Kết quả gửi email:", result);
     res.json({ message: "OTP đã được gửi đến email của bạn!" });
   } catch (error) {
     res.status(500).json({ error: error.message });

@@ -195,7 +195,22 @@ const addItemToCart = async (req, res) => {
 // Cập nhật số lượng một item trong giỏ
 const updateCartItemQuantity = async (req, res) => {
     const userId = req.user.user_id;
-    const itemId = req.params.itemId; // Lấy item_id từ URL
+
+    // Get itemId from either params or body
+    let itemId = req.params.itemId;
+    if (!itemId && req.body.item_id) {
+        itemId = req.body.item_id;
+    }
+
+    // If still no itemId, return error
+    if (!itemId) {
+        return res.status(400).json({
+            success: false,
+            message: "Vui lòng cung cấp ID mặt hàng (item_id)."
+        });
+    }
+
+    // Get quantity from body
     const { quantity: newQuantity } = req.body;
 
     // --- Validation ---
