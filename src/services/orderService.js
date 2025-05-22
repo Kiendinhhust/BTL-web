@@ -145,7 +145,7 @@ export const updateOrderStatus = async (orderId, status, statusNote = '') => {
 export const getShippingMethods = async () => {
   try {
     const response = await axiosInstance.get('/api/shipping-methods');
-    
+
     return {
       success: true,
       data: response.data
@@ -159,10 +159,39 @@ export const getShippingMethods = async () => {
   }
 };
 
+/**
+ * Get shop orders
+ * @param {number} shopId - The ID of the shop
+ * @param {Object} params - Query parameters
+ * @param {number} params.page - Page number
+ * @param {number} params.size - Page size
+ * @returns {Promise<Object>} - The response
+ */
+export const getShopOrders = async (shopId, params = { page: 1, size: 10 }) => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/order/shop/${shopId}`,
+      { params }
+    );
+
+    return {
+      success: true,
+      data: response.data.data
+    };
+  } catch (error) {
+    console.error(`Error getting shop orders for shop ${shopId}:`, error);
+    return {
+      success: false,
+      error: error.response?.data?.message || 'Lỗi khi lấy danh sách đơn hàng của cửa hàng'
+    };
+  }
+};
+
 export default {
   createOrder,
   getUserOrders,
   getOrderDetails,
   updateOrderStatus,
-  getShippingMethods
+  getShippingMethods,
+  getShopOrders
 };

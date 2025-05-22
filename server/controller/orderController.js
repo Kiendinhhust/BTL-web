@@ -416,7 +416,7 @@ const getUserOrders = async (req, res) => {
         {
           model: Shop,
           as: "shop",
-          attributes: ["shop_id", "shop_name", "logo_url"],
+          attributes: ["shop_id", "shop_name"],
         },
         // Maybe include just the count of items or first item image?
         {
@@ -455,7 +455,7 @@ const getOrderDetails = async (req, res) => {
     const order = await Order.findByPk(orderId, {
       include: [
         { model: User, as: "user", attributes: ["user_id", "username"] }, // Limited user info
-        { model: Shop, as: "shop" }, // Include full shop details
+        { model: Shop, as: "shop", attributes: ["shop_id", "shop_name", "owner_id", "description", "address", "rating", "status"] }, // Include specific shop details
         {
           model: OrderItem,
           as: "orderItems",
@@ -609,6 +609,48 @@ const updateOrderStatus = async (req, res) => {
       }
     }
 
+    // --- Handle Shop Revenue Update when order is shipped ---
+    if (newStatus === "shipped") {
+      // Get the shop
+      const shop = await Shop.findByPk(order.shop_id, { transaction });
+      if (shop) {
+        // Update shop revenue
+        const orderTotal = parseFloat(order.total_price);
+        const currentRevenue = parseFloat(shop.total_revenue || 0);
+        const currentOrders = parseInt(shop.total_orders || 0);
+
+        await shop.update({
+          total_revenue: currentRevenue + orderTotal,
+          total_orders: currentOrders + 1
+        }, { transaction });
+
+        console.log(`Updated shop ${shop.shop_id} revenue: +${orderTotal}, total orders: ${currentOrders + 1}`);
+      } else {
+        console.warn(`Shop not found for order ${orderId} when updating revenue.`);
+      }
+    }
+
+    // --- Handle Item Stock Restoration when order is canceled ---
+    if (newStatus === "canceled") {
+      // Get order items
+      const orderItems = await OrderItem.findAll({
+        where: { order_id: orderId },
+        transaction
+      });
+
+      // Restore stock for each item
+      for (const orderItem of orderItems) {
+        const item = await Item.findByPk(orderItem.item_id, { transaction });
+        if (item) {
+          const newStock = item.stock + orderItem.quantity;
+          await item.update({ stock: newStock }, { transaction });
+          console.log(`Restored ${orderItem.quantity} stock for item ${item.item_id}, new stock: ${newStock}`);
+        } else {
+          console.warn(`Item ${orderItem.item_id} not found when restoring stock.`);
+        }
+      }
+    }
+
     // --- TODO: Trigger Notifications (Email, SMS) ---
     // Example: sendEmailNotification(order.user_id, `Order ${order.order_code} status updated to ${newStatus}`);
 
@@ -617,7 +659,7 @@ const updateOrderStatus = async (req, res) => {
     // Return the updated order details
     const updatedOrderDetails = await Order.findByPk(orderId, {
       include: [
-        { model: Shop, as: "shop" },
+        { model: Shop, as: "shop", attributes: ["shop_id", "shop_name", "owner_id", "description", "address", "rating", "status"] },
         { model: OrderItem, as: "orderItems" },
         { model: OrderShipping, as: "orderShipping" },
         { model: Payment, as: "payments" },
@@ -642,9 +684,108 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+// Lấy danh sách đơn hàng của một shop
+const getShopOrders = async (req, res) => {
+  try {
+    const { shopId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 10;
+    const offset = (page - 1) * size;
+
+    // Validate shopId
+    if (!shopId) {
+      return res.status(400).json({
+        success: false,
+        message: "Shop ID is required",
+      });
+    }
+
+    // Tìm tất cả đơn hàng của shop với phân trang
+    const { count, rows: orders } = await Order.findAndCountAll({
+      where: { shop_id: shopId },
+      limit: size,
+      offset: offset,
+      order: [["created_at", "DESC"]],
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["user_id", "username"],
+        },
+        {
+          model: OrderItem,
+          as: "orderItems",
+          include: [
+            {
+              model: Item,
+              as: "item",
+              attributes: ["item_id", "sku", "name", "price", "sale_price", "stock", "image_url"],
+            },
+          ],
+        },
+        {
+          model: OrderShipping,
+          as: "orderShipping",
+          include: [
+            { model: UserAddress, as: "shippingAddress" },
+            { model: ShippingMethod, as: "shippingMethod" },
+          ],
+        },
+        {
+          model: Payment,
+          as: "payments",
+        },
+      ],
+    });
+
+    // Format response data
+    const formattedOrders = orders.map((order) => {
+      const plainOrder = order.get({ plain: true });
+
+      // Format orderItems to include necessary information
+      if (plainOrder.orderItems) {
+        plainOrder.orderItems = plainOrder.orderItems.map((orderItem) => {
+          return {
+            order_item_id: orderItem.order_item_id,
+            item_id: orderItem.item_id,
+            quantity: orderItem.quantity,
+            price: orderItem.price,
+            item_name: orderItem.item?.name || orderItem.item?.sku || "Unknown Item",
+            item_image_url: orderItem.item?.image_url || null,
+            item_attributes: orderItem.attributes,
+          };
+        });
+      }
+
+      return plainOrder;
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(count / size);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        products: formattedOrders,
+        totalItems: count,
+        totalPages: totalPages,
+        currentPage: page,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching shop orders:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error fetching shop orders",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createOrder,
   getUserOrders,
   getOrderDetails,
   updateOrderStatus,
+  getShopOrders,
 };
