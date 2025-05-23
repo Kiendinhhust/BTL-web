@@ -95,7 +95,7 @@ class ShopAdmin extends Component {
       this.setState({ isLoading: false });
       if (res && res.success) {
         // Cập nhật lại danh sách shop
-        this.props.fetchAllShops();
+         this.props.fetchAllShops();
 
         // Hiển thị thông báo thành công với Toast
         toast.success(res.message, {
@@ -219,6 +219,7 @@ class ShopAdmin extends Component {
 
   render() {
     let { shops, buyers } = this.props;
+    
     let {
       isOpenModalShop,
       isOpenModalEditShop,

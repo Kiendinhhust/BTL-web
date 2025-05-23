@@ -1,6 +1,6 @@
 // src/services/productService.js
-import axios from 'axios';
-
+// import axios from 'axios';
+import axios from "../axios";
 const API_URL = 'http://localhost:3434';
 
 // Lấy tất cả sản phẩm (có phân trang)

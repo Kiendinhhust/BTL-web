@@ -29,7 +29,7 @@ export const fetchAllShopsStart = () => {
 
 export const fetchAllShopsSuccess = (data) => ({
   type: actionTypes.FETCH_SHOPS_SUCCESS,
-  shops: data
+  shops: data.data || []
 });
 
 export const fetchAllShopsFailed = () => ({
