@@ -240,6 +240,7 @@ const getProductById = async (req, res) => {
       include: [
         {
           model: Shop,
+          
           attributes: ['shop_name', 'shop_id', 'owner_id']
         },
         {
