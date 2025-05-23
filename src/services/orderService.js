@@ -118,11 +118,11 @@ export const getOrderDetails = async (orderId) => {
  * @param {string} statusNote - Optional note for the status change
  * @returns {Promise<Object>} - The response
  */
-export const updateOrderStatus = async (orderId, status, statusNote = '') => {
+export const updateOrderStatus = async (orderId, statusData) => {
   try {
     const response = await axiosInstance.put(
       `/api/order/${orderId}/status`,
-      { status, statusNote }
+      statusData
     );
 
     return {

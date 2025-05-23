@@ -13,6 +13,7 @@ const {
   Payment,
   ShippingMethod,
   Cart,
+  ShopRevenue,
   sequelize,
 } = db;
 const { Op } = require("sequelize");
@@ -508,8 +509,8 @@ const getOrderDetails = async (req, res) => {
 
 // PUT /api/orders/:orderId/status - Cập nhật trạng thái đơn hàng (Admin/Seller)
 const updateOrderStatus = async (req, res) => {
-  const userId = req.user.user_id;
-  const userRole = req.user.role;
+  // const userId = req.user.user_id;
+  // const userRole = req.user.role;
   const orderId = req.params.orderId;
   const { status: newStatus, tracking_number } = req.body; // Allow updating tracking number when shipping
 
@@ -547,16 +548,16 @@ const updateOrderStatus = async (req, res) => {
         .send({ message: `Không tìm thấy đơn hàng với ID=${orderId}.` });
     }
 
-    const isAdmin = userRole === "admin";
-    const isSellerOfOrder =
-      userRole === "seller" && order.shop?.owner_id === userId;
+    // const isAdmin = userRole === "admin";
+    // const isSellerOfOrder =
+    //   userRole === "seller" && order.shop?.owner_id === userId;
 
-    if (!isAdmin && !isSellerOfOrder) {
-      await transaction.rollback();
-      return res.status(403).send({
-        message: "Bạn không có quyền cập nhật trạng thái đơn hàng này.",
-      });
-    }
+    // if (!isAdmin && !isSellerOfOrder) {
+    //   await transaction.rollback();
+    //   return res.status(403).send({
+    //     message: "Bạn không có quyền cập nhật trạng thái đơn hàng này.",
+    //   });
+    // }
 
     const currentStatus = order.status;
 
@@ -609,24 +610,67 @@ const updateOrderStatus = async (req, res) => {
       }
     }
 
-    // --- Handle Shop Revenue Update when order is shipped ---
-    if (newStatus === "shipped") {
-      // Get the shop
-      const shop = await Shop.findByPk(order.shop_id, { transaction });
-      if (shop) {
+    // --- Handle Shop Revenue Update when order is delivered ---
+    if (newStatus === "delivered") {
+      // Get today's date in YYYY-MM-DD format
+      const today = new Date().toISOString().split('T')[0];
+
+      // Find or create ShopRevenue record for today
+      const [shopRevenue] = await ShopRevenue.findOrCreate({
+        where: {
+          shop_id: order.shop_id,
+          date: today
+        },
+        defaults: {
+          total_revenue: 0,
+          total_orders: 0
+        },
+        transaction
+      });
+
+      if (shopRevenue) {
         // Update shop revenue
         const orderTotal = parseFloat(order.total_price);
-        const currentRevenue = parseFloat(shop.total_revenue || 0);
-        const currentOrders = parseInt(shop.total_orders || 0);
+        const currentRevenue = parseFloat(shopRevenue.total_revenue || 0);
+        const currentOrders = parseInt(shopRevenue.total_orders || 0);
 
-        await shop.update({
+        await shopRevenue.update({
           total_revenue: currentRevenue + orderTotal,
           total_orders: currentOrders + 1
         }, { transaction });
 
-        console.log(`Updated shop ${shop.shop_id} revenue: +${orderTotal}, total orders: ${currentOrders + 1}`);
+        console.log(`Updated shop ${order.shop_id} revenue for ${today}: +${orderTotal}, total orders: ${currentOrders + 1}`);
+
+        // Update sold_count for each product
+        const orderItems = await OrderItem.findAll({
+          where: { order_id: orderId },
+          include: [{ model: Item, as: 'item', include: [{ model: Product, as: 'product' }] }],
+          transaction
+        });
+
+        // Group items by product_id to update each product once
+        const productQuantities = {};
+
+        for (const orderItem of orderItems) {
+          if (orderItem.item && orderItem.item.product) {
+            const productId = orderItem.item.product.product_id;
+            if (!productQuantities[productId]) {
+              productQuantities[productId] = 0;
+            }
+            productQuantities[productId] += orderItem.quantity;
+          }
+        }
+
+        // Update each product's sold_count
+        for (const [productId, quantity] of Object.entries(productQuantities)) {
+          await Product.increment(
+            { sold_count: quantity },
+            { where: { product_id: productId }, transaction }
+          );
+          console.log(`Updated product ${productId} sold_count: +${quantity}`);
+        }
       } else {
-        console.warn(`Shop not found for order ${orderId} when updating revenue.`);
+        console.warn(`ShopRevenue record not found for shop ${order.shop_id} on ${today} when updating revenue.`);
       }
     }
 
@@ -719,7 +763,7 @@ const getShopOrders = async (req, res) => {
             {
               model: Item,
               as: "item",
-              attributes: ["item_id", "sku", "name", "price", "sale_price", "stock", "image_url"],
+              attributes: ["item_id", "sku",  "price", "sale_price", "stock", "image_url"],
             },
           ],
         },

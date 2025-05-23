@@ -52,8 +52,9 @@ const OrderDetail = (props) => {
       if (item.item_image_url && !newImageCache[item.item_image_url]) {
         try {
           const imageResult = await getImageByPublicId(item.item_image_url);
-          if (imageResult.success && imageResult.data) {
-            newImageCache[item.item_image_url] = imageResult.data.url;
+          console.log('Image result:', imageResult);
+          if (imageResult.success) {
+            newImageCache[item.item_image_url] = imageResult.url;
           }
         } catch (error) {
           console.error('Error fetching image:', error);
@@ -132,7 +133,7 @@ const OrderDetail = (props) => {
   return (
     <div className="order-detail-container">
       <div className="order-detail-header">
-        <button className="back-btn" onClick={() => history.push('/buyer/my-orders')}>
+        <button className="back-btn" onClick={() => history.push('/myorders')}>
           <i className="fas fa-arrow-left"></i> Quay lại
         </button>
         <h1>Chi tiết đơn hàng</h1>

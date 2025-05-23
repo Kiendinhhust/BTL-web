@@ -56,9 +56,51 @@ const createShop = async (req, res) => {
 const getAllShops = async (req, res) => {
   try {
     const shops = await Shop.findAll();
-    res.json(shops);
+
+    // Fetch revenue data for all shops
+    const shopIds = shops.map(shop => shop.shop_id);
+
+    // Get the latest revenue record for each shop
+    const shopRevenues = await ShopRevenue.findAll({
+      where: { shop_id: { [Op.in]: shopIds } },
+      order: [['shop_id', 'ASC'], ['date', 'DESC']],
+    });
+
+    // Create a map of shop_id to latest revenue record
+    const revenueMap = {};
+    shopRevenues.forEach(revenue => {
+      if (!revenueMap[revenue.shop_id]) {
+        revenueMap[revenue.shop_id] = revenue;
+      }
+    });
+
+    // Add revenue data to each shop
+    const shopsWithRevenue = shops.map(shop => {
+      const shopData = shop.get({ plain: true });
+      const revenue = revenueMap[shop.shop_id];
+
+      return {
+        ...shopData,
+        total_orders: revenue ? revenue.total_orders : 0,
+        total_revenue: revenue ? revenue.total_revenue : 0,
+        date: revenue ? revenue.date : null,
+        rating: shop.rating || 0,
+        status: shop.status || "pending",
+        description: shop.description || "",
+        rejection_reason: shop.rejection_reason || "",
+        phone: shop.phone || "",
+      };
+    });
+
+    res.json({
+      success: true,
+      data: shopsWithRevenue
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
@@ -278,9 +320,43 @@ const getPendingShops = async (req, res) => {
       where: { status: "pending" },
     });
 
+    // Fetch revenue data for all pending shops
+    const shopIds = pendingShops.map(shop => shop.shop_id);
+
+    // Get the latest revenue record for each shop
+    const shopRevenues = await ShopRevenue.findAll({
+      where: { shop_id: { [Op.in]: shopIds } },
+      order: [['shop_id', 'ASC'], ['date', 'DESC']],
+    });
+
+    // Create a map of shop_id to latest revenue record
+    const revenueMap = {};
+    shopRevenues.forEach(revenue => {
+      if (!revenueMap[revenue.shop_id]) {
+        revenueMap[revenue.shop_id] = revenue;
+      }
+    });
+
+    // Add revenue data to each shop
+    const shopsWithRevenue = pendingShops.map(shop => {
+      const shopData = shop.get({ plain: true });
+      const revenue = revenueMap[shop.shop_id];
+
+      return {
+        ...shopData,
+        total_orders: revenue ? revenue.total_orders : 0,
+        total_revenue: revenue ? revenue.total_revenue : 0,
+        date: revenue ? revenue.date : null,
+        rating: shop.rating || 0,
+        description: shop.description || "",
+        rejection_reason: shop.rejection_reason || "",
+        phone: shop.phone || "",
+      };
+    });
+
     res.json({
       success: true,
-      data: pendingShops,
+      data: shopsWithRevenue,
     });
   } catch (error) {
     res.status(500).json({
@@ -314,6 +390,12 @@ const getShopByUserId = async (req, res) => {
       });
     }
 
+    // Tìm bản ghi doanh thu mới nhất của shop
+    const shopRevenue = await ShopRevenue.findOne({
+      where: { shop_id: latestShop.shop_id },
+      order: [["date", "DESC"]],
+    });
+
     const response = {
       ...latestShop.dataValues,
       rating: latestShop.rating || 0,
@@ -321,6 +403,10 @@ const getShopByUserId = async (req, res) => {
       description: latestShop.description || "",
       rejection_reason: latestShop.rejection_reason || "",
       phone: latestShop.phone || "",
+      // Thêm thông tin doanh thu
+      total_orders: shopRevenue ? shopRevenue.total_orders : 0,
+      total_revenue: shopRevenue ? shopRevenue.total_revenue : 0,
+      date: shopRevenue ? shopRevenue.date : null
     };
 
     res.json({

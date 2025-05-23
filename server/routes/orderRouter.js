@@ -5,13 +5,13 @@ const auth = require('../middleware/authMiddleware')
 
 const router = express.Router()
 
-router.use(auth.authenticateToken)
+// router.use(auth.authenticateToken)
 
-router.post('/create-order', orderController.createOrder)
-router.get('/my-order', orderController.getUserOrders)
-router.get('/shop/:shopId', orderController.getShopOrders)
-router.get('/:orderId', orderController.getOrderDetails)
-router.put('/:orderId/status', orderController.updateOrderStatus)
+router.post('/create-order',auth.authenticateToken, orderController.createOrder)
+router.get('/my-order',auth.authenticateToken, orderController.getUserOrders)
+router.get('/shop/:shopId',auth.authenticateToken, orderController.getShopOrders)
+router.get('/:orderId',auth.authenticateToken, orderController.getOrderDetails)
+router.put('/:orderId/status', auth.authenticateToken, orderController.updateOrderStatus)
 
 
 module.exports = router

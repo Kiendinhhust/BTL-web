@@ -56,8 +56,8 @@ const MyOrders = (props) => {
       if (firstItem && firstItem.item_image_url && !newImageCache[firstItem.item_image_url]) {
         try {
           const imageResult = await getImageByPublicId(firstItem.item_image_url);
-          if (imageResult.success && imageResult.data) {
-            newImageCache[firstItem.item_image_url] = imageResult.data.url;
+          if (imageResult.success) {
+            newImageCache[firstItem.item_image_url] = imageResult.url;
           }
         } catch (error) {
           console.error('Error fetching image:', error);

@@ -49,7 +49,7 @@ class ShopManage extends Component {
       // Lấy thông tin shop từ API
       if (this.props.userInfo && this.props.userInfo.userId) {
         const res = await getShopByUserId(this.props.userInfo.userId);
-
+        console.log("Shop info response:", res);
         if (res && res.data && res.data.success) {
           const shopData = res.data.data;
 
@@ -549,14 +549,14 @@ class ShopManage extends Component {
             </div>
             <div className="stat-item">
               <div className="stat-value">
-                {products.reduce((total, product) => total + product.sold, 0)}
+                {products.reduce((total, product) => total + product.sold_count, 0)}
               </div>
               <div className="stat-label">Đã bán</div>
             </div>
             {shopInfo.totalRevenue !== undefined && (
               <div className="stat-item">
                 <div className="stat-value">
-                  {shopInfo.totalRevenue.toLocaleString("vi-VN")} đ
+                  {this.formatPrice(shopInfo.totalRevenue)}
                 </div>
                 <div className="stat-label">Doanh thu</div>
               </div>
