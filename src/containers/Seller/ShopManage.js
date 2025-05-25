@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./ShopManage.scss";
 import { getShopByUserId } from "../../services/shopService";
-import { getProductsByShop, deleteProduct, getItemsByProduct } from "../../services/productService";
+import {
+  getProductsByShop,
+  deleteProduct,
+  getItemsByProduct,
+} from "../../services/productService";
 import { getImageByPublicId } from "../../services/storeService";
 import CommonUtils from "../../utils/CommonUtils";
 import { toast } from "react-toastify";
@@ -27,7 +31,7 @@ class ShopManage extends Component {
       totalItems: 0,
       showVariantDetails: false,
       selectedVariantIndex: -1,
-      selectedProductId: null
+      selectedProductId: null,
     };
   }
 
@@ -39,7 +43,16 @@ class ShopManage extends Component {
       }
     } catch (error) {
       console.error("Error in componentDidMount:", error);
-      toast.error("Có lỗi xảy ra khi tải dữ liệu");
+      toast.error("Có lỗi xảy ra khi tải dữ liệu", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       this.setState({ loading: false });
     }
   }
@@ -70,26 +83,53 @@ class ShopManage extends Component {
               image: shopData.img
                 ? CommonUtils.getBase64Image(shopData.img)
                 : null,
-            }
+            },
           });
           return true;
         } else {
-          toast.error("Không thể lấy thông tin shop");
+          toast.error("Không thể lấy thông tin shop", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
           this.setState({ loading: false });
           return false;
         }
       } else {
-        toast.error("Bạn cần đăng nhập để xem thông tin shop");
+        toast.error("Bạn cần đăng nhập để xem thông tin shop", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
         this.setState({ loading: false });
         return false;
       }
     } catch (error) {
       console.error("Error fetching shop data:", error);
-      toast.error("Lỗi khi lấy thông tin shop");
+      toast.error("Lỗi khi lấy thông tin shop", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       this.setState({ loading: false });
       return false;
     }
-  }
+  };
 
   fetchProducts = async () => {
     try {
@@ -106,112 +146,136 @@ class ShopManage extends Component {
         const productItems = { ...this.state.productItems };
 
         // Xử lý ảnh và lấy items cho mỗi sản phẩm
-        const productsWithImages = await Promise.all(products.map(async (product) => {
-          // Lấy danh sách items cho sản phẩm
-          try {
-            const itemsRes = await getItemsByProduct(product.product_id);
-            console.log("Items response:", itemsRes);
-            if (itemsRes.data && itemsRes.data.success) {
-              const items = itemsRes.data.data.items || [];
-
-              // Lưu items vào state
-              productItems[product.product_id] = items;
-
-              // Xử lý ảnh cho mỗi item
-              const itemsWithImages = await Promise.all(items.map(async (item) => {
-                if (item.image_url) {
-                  try {
-                    // Lấy URL ảnh từ public_id
-                    const imageResult = await getImageByPublicId(item.image_url);
-                    if (imageResult.success) {
-                      return {
-                        ...item,
-                        imageUrl: imageResult.url // Thêm imageUrl để hiển thị
-                      };
-                    }
-                  } catch (imgError) {
-                    console.error("Error fetching item image:", imgError);
-                  }
-                }
-                return item;
-              }));
-
-              productItems[product.product_id] = itemsWithImages;
-
-              // Sử dụng ảnh của item đầu tiên cho sản phẩm nếu có
-              if (itemsWithImages.length > 0 && itemsWithImages[0].imageUrl) {
-                return {
-                  ...product,
-                  image_url: itemsWithImages[0].imageUrl
-                };
-              }
-            }
-          } catch (itemsError) {
-            console.error("Error fetching items for product:", itemsError);
-          }
-
-          // Fallback: Nếu không có items hoặc có lỗi, sử dụng ảnh từ product nếu có
-          if (product.image_url) {
+        const productsWithImages = await Promise.all(
+          products.map(async (product) => {
+            // Lấy danh sách items cho sản phẩm
             try {
-              const imageResult = await getImageByPublicId(product.image_url);
-              if (imageResult.success) {
-                return {
-                  ...product,
-                  image_url: imageResult.url
-                };
-              }
-            } catch (imgError) {
-              console.error("Error fetching product image:", imgError);
-            }
-          }
+              const itemsRes = await getItemsByProduct(product.product_id);
+              console.log("Items response:", itemsRes);
+              if (itemsRes.data && itemsRes.data.success) {
+                const items = itemsRes.data.data.items || [];
 
-          return product;
-        }));
+                // Lưu items vào state
+                productItems[product.product_id] = items;
+
+                // Xử lý ảnh cho mỗi item
+                const itemsWithImages = await Promise.all(
+                  items.map(async (item) => {
+                    if (item.image_url) {
+                      try {
+                        // Lấy URL ảnh từ public_id
+                        const imageResult = await getImageByPublicId(
+                          item.image_url
+                        );
+                        if (imageResult.success) {
+                          return {
+                            ...item,
+                            imageUrl: imageResult.url, // Thêm imageUrl để hiển thị
+                          };
+                        }
+                      } catch (imgError) {
+                        console.error("Error fetching item image:", imgError);
+                      }
+                    }
+                    return item;
+                  })
+                );
+
+                productItems[product.product_id] = itemsWithImages;
+
+                // Sử dụng ảnh của item đầu tiên cho sản phẩm nếu có
+                if (itemsWithImages.length > 0 && itemsWithImages[0].imageUrl) {
+                  return {
+                    ...product,
+                    image_url: itemsWithImages[0].imageUrl,
+                  };
+                }
+              }
+            } catch (itemsError) {
+              console.error("Error fetching items for product:", itemsError);
+            }
+
+            // Fallback: Nếu không có items hoặc có lỗi, sử dụng ảnh từ product nếu có
+            if (product.image_url) {
+              try {
+                const imageResult = await getImageByPublicId(product.image_url);
+                if (imageResult.success) {
+                  return {
+                    ...product,
+                    image_url: imageResult.url,
+                  };
+                }
+              } catch (imgError) {
+                console.error("Error fetching product image:", imgError);
+              }
+            }
+
+            return product;
+          })
+        );
 
         this.setState({
           products: productsWithImages,
           productItems: productItems,
           totalPages: res.data.totalPages || 0,
           totalItems: res.data.totalItems || 0,
-          loading: false
+          loading: false,
         });
       } else {
-        toast.error("Không thể lấy danh sách sản phẩm");
+        toast.error("Không thể lấy danh sách sản phẩm", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
         this.setState({ loading: false });
       }
     } catch (error) {
       console.error("Error fetching products:", error);
-      toast.error("Có lỗi xảy ra khi lấy danh sách sản phẩm");
+      toast.error("Có lỗi xảy ra khi lấy danh sách sản phẩm", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       this.setState({ loading: false });
     }
-  }
+  };
 
   toggleModal = () => {
     this.setState({
       isModalOpen: !this.state.isModalOpen,
       selectedProduct: null,
       selectedItems: [],
-      isEdit: false
+      isEdit: false,
     });
-  }
+  };
 
   // Show variant details
   showVariantDetails = (productId, variantIndex) => {
     this.setState({
       showVariantDetails: true,
       selectedVariantIndex: variantIndex,
-      selectedProductId: productId
+      selectedProductId: productId,
     });
-  }
+  };
 
   // Hide variant details
   hideVariantDetails = () => {
     this.setState({
       showVariantDetails: false,
       selectedVariantIndex: -1,
-      selectedProductId: null
+      selectedProductId: null,
     });
-  }
+  };
 
   openEditModal = (product) => {
     // Get items for the selected product
@@ -221,54 +285,91 @@ class ShopManage extends Component {
       isModalOpen: true,
       selectedProduct: product,
       selectedItems: items,
-      isEdit: true
+      isEdit: true,
     });
-  }
+  };
 
   handleDeleteProduct = async (productId) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) {
       try {
         this.setState({ loading: true });
         const res = await deleteProduct(productId);
 
         if (res.data && res.data.success) {
-          toast.success('Xóa sản phẩm thành công!');
+          toast.success("Xóa sản phẩm thành công!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
           this.fetchProducts();
         } else {
-          toast.error(res.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm');
+          toast.error(res.data?.message || "Có lỗi xảy ra khi xóa sản phẩm", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
           this.setState({ loading: false });
         }
       } catch (error) {
-        console.error('Error deleting product:', error);
-        toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm');
+        console.error("Error deleting product:", error);
+        toast.error(
+          error.response?.data?.message || "Có lỗi xảy ra khi xóa sản phẩm",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          }
+        );
         this.setState({ loading: false });
       }
     }
-  }
+  };
 
   formatPrice = (price) => {
     // Handle NaN, undefined, or null values
     if (price === undefined || price === null || isNaN(price)) {
-      return '0 ₫';
+      return "0 ₫";
     }
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-  }
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
 
   formatPriceRange = (items) => {
-    if (!items || items.length === 0) return '';
+    if (!items || items.length === 0) return "";
 
     // Find min and max prices
-    const prices = items.map(item => {
-      // Use sale_price if available, otherwise use regular price
-      // Handle potential NaN values
-      const salePrice = item.sale_price ? parseFloat(item.sale_price) : null;
-      const regularPrice = item.price ? parseFloat(item.price) : 0;
+    const prices = items
+      .map((item) => {
+        // Use sale_price if available, otherwise use regular price
+        // Handle potential NaN values
+        const salePrice = item.sale_price ? parseFloat(item.sale_price) : null;
+        const regularPrice = item.price ? parseFloat(item.price) : 0;
 
-      return salePrice !== null && !isNaN(salePrice) ? salePrice : regularPrice;
-    }).filter(price => !isNaN(price) && price !== null);
+        return salePrice !== null && !isNaN(salePrice)
+          ? salePrice
+          : regularPrice;
+      })
+      .filter((price) => !isNaN(price) && price !== null);
 
     // If no valid prices, return default
-    if (prices.length === 0) return '0 ₫';
+    if (prices.length === 0) return "0 ₫";
 
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
@@ -278,14 +379,14 @@ class ShopManage extends Component {
     } else {
       return `${this.formatPrice(minPrice)} - ${this.formatPrice(maxPrice)}`;
     }
-  }
+  };
 
   calculateTotalStock = (items) => {
     if (!items || items.length === 0) return 0;
 
     // Sum up all stock values
     return items.reduce((total, item) => total + parseInt(item.stock || 0), 0);
-  }
+  };
 
   // Render variant details
   renderVariantDetails = () => {
@@ -293,14 +394,22 @@ class ShopManage extends Component {
     const items = this.state.productItems[selectedProductId] || [];
 
     if (items.length === 0) {
-      return <div className="no-variants-message">Không có biến thể nào cho sản phẩm này</div>;
+      return (
+        <div className="no-variants-message">
+          Không có biến thể nào cho sản phẩm này
+        </div>
+      );
     }
 
     // Find the product
-    const product = this.state.products.find(p => p.product_id === selectedProductId);
+    const product = this.state.products.find(
+      (p) => p.product_id === selectedProductId
+    );
 
     if (!product) {
-      return <div className="error-message">Không tìm thấy thông tin sản phẩm</div>;
+      return (
+        <div className="error-message">Không tìm thấy thông tin sản phẩm</div>
+      );
     }
 
     return (
@@ -312,7 +421,7 @@ class ShopManage extends Component {
         <div className="variants-tabs">
           <div className="variants-tabs-header">
             <button
-              className={selectedVariantIndex === -1 ? 'active' : ''}
+              className={selectedVariantIndex === -1 ? "active" : ""}
               onClick={() => this.setState({ selectedVariantIndex: -1 })}
             >
               Tất cả
@@ -321,10 +430,10 @@ class ShopManage extends Component {
             {items.map((item, idx) => (
               <button
                 key={idx}
-                className={selectedVariantIndex === idx ? 'active' : ''}
+                className={selectedVariantIndex === idx ? "active" : ""}
                 onClick={() => this.setState({ selectedVariantIndex: idx })}
               >
-                {item.sku || `Biến thể ${idx+1}`}
+                {item.sku || `Biến thể ${idx + 1}`}
               </button>
             ))}
           </div>
@@ -347,21 +456,32 @@ class ShopManage extends Component {
                   <tbody>
                     {items.map((item, idx) => (
                       <tr key={idx}>
-                        <td>{item.sku || `Biến thể ${idx+1}`}</td>
+                        <td>{item.sku || `Biến thể ${idx + 1}`}</td>
                         <td>
-                          {Object.entries(item.attributes || {}).map(([key, value], attrIdx) => (
-                            <div key={attrIdx} className="attribute-pair">
-                              <span className="attribute-key">{key}:</span>
-                              <span className="attribute-value">{value}</span>
-                            </div>
-                          ))}
+                          {Object.entries(item.attributes || {}).map(
+                            ([key, value], attrIdx) => (
+                              <div key={attrIdx} className="attribute-pair">
+                                <span className="attribute-key">{key}:</span>
+                                <span className="attribute-value">{value}</span>
+                              </div>
+                            )
+                          )}
                         </td>
                         <td>{this.formatPrice(item.price)}</td>
-                        <td>{item.sale_price ? this.formatPrice(item.sale_price) : '-'}</td>
+                        <td>
+                          {item.sale_price
+                            ? this.formatPrice(item.sale_price)
+                            : "-"}
+                        </td>
                         <td>{item.stock}</td>
                         <td>
                           {item.imageUrl ? (
-                            <div className="variant-image" style={{ backgroundImage: `url(${item.imageUrl})` }}></div>
+                            <div
+                              className="variant-image"
+                              style={{
+                                backgroundImage: `url(${item.imageUrl})`,
+                              }}
+                            ></div>
                           ) : (
                             <div className="no-image">
                               <i className="fas fa-image"></i>
@@ -382,7 +502,9 @@ class ShopManage extends Component {
                       {items[selectedVariantIndex].imageUrl ? (
                         <div
                           className="variant-image-large"
-                          style={{ backgroundImage: `url(${items[selectedVariantIndex].imageUrl})` }}
+                          style={{
+                            backgroundImage: `url(${items[selectedVariantIndex].imageUrl})`,
+                          }}
                         ></div>
                       ) : (
                         <div className="no-image-large">
@@ -395,37 +517,54 @@ class ShopManage extends Component {
                     <div className="variant-info">
                       <div className="info-row">
                         <span className="info-label">SKU:</span>
-                        <span className="info-value">{items[selectedVariantIndex].sku || `Biến thể ${selectedVariantIndex+1}`}</span>
+                        <span className="info-value">
+                          {items[selectedVariantIndex].sku ||
+                            `Biến thể ${selectedVariantIndex + 1}`}
+                        </span>
                       </div>
 
                       <div className="info-row">
                         <span className="info-label">Giá:</span>
-                        <span className="info-value">{this.formatPrice(items[selectedVariantIndex].price)}</span>
+                        <span className="info-value">
+                          {this.formatPrice(items[selectedVariantIndex].price)}
+                        </span>
                       </div>
 
                       {items[selectedVariantIndex].sale_price && (
                         <div className="info-row">
                           <span className="info-label">Giá khuyến mãi:</span>
-                          <span className="info-value sale-price">{this.formatPrice(items[selectedVariantIndex].sale_price)}</span>
+                          <span className="info-value sale-price">
+                            {this.formatPrice(
+                              items[selectedVariantIndex].sale_price
+                            )}
+                          </span>
                         </div>
                       )}
 
                       <div className="info-row">
                         <span className="info-label">Tồn kho:</span>
-                        <span className="info-value">{items[selectedVariantIndex].stock}</span>
+                        <span className="info-value">
+                          {items[selectedVariantIndex].stock}
+                        </span>
                       </div>
 
                       <div className="info-row attributes">
                         <span className="info-label">Thuộc tính:</span>
                         <div className="attributes-list">
-                          {Object.entries(items[selectedVariantIndex].attributes || {}).map(([key, value], attrIdx) => (
+                          {Object.entries(
+                            items[selectedVariantIndex].attributes || {}
+                          ).map(([key, value], attrIdx) => (
                             <div key={attrIdx} className="attribute-pair">
                               <span className="attribute-key">{key}:</span>
                               <span className="attribute-value">{value}</span>
                             </div>
                           ))}
-                          {Object.keys(items[selectedVariantIndex].attributes || {}).length === 0 && (
-                            <span className="no-attributes">Không có thuộc tính</span>
+                          {Object.keys(
+                            items[selectedVariantIndex].attributes || {}
+                          ).length === 0 && (
+                            <span className="no-attributes">
+                              Không có thuộc tính
+                            </span>
                           )}
                         </div>
                       </div>
@@ -438,10 +577,17 @@ class ShopManage extends Component {
         </div>
       </div>
     );
-  }
+  };
 
   render() {
-    const { shopInfo, products, loading, isModalOpen, selectedProduct, isEdit } = this.state;
+    const {
+      shopInfo,
+      products,
+      loading,
+      isModalOpen,
+      selectedProduct,
+      isEdit,
+    } = this.state;
     console.log("products:", products);
     if (loading) {
       return (
@@ -465,7 +611,7 @@ class ShopManage extends Component {
             <button
               className="btn-add-product"
               onClick={this.toggleModal}
-              disabled={shopInfo?.status !== 'accepted'}
+              disabled={shopInfo?.status !== "accepted"}
             >
               <i className="fas fa-plus"></i> Thêm sản phẩm
             </button>
@@ -549,7 +695,10 @@ class ShopManage extends Component {
             </div>
             <div className="stat-item">
               <div className="stat-value">
-                {products.reduce((total, product) => total + product.sold_count, 0)}
+                {products.reduce(
+                  (total, product) => total + product.sold_count,
+                  0
+                )}
               </div>
               <div className="stat-label">Đã bán</div>
             </div>
@@ -583,52 +732,75 @@ class ShopManage extends Component {
                     <h3>{product.title}</h3>
                     <div className="product-variants">
                       {this.state.productItems[product.product_id] &&
-                       this.state.productItems[product.product_id].length > 0 ? (
+                      this.state.productItems[product.product_id].length > 0 ? (
                         <div className="variants-info">
                           <div className="variant-count">
-                            {this.state.productItems[product.product_id].length} biến thể
+                            {this.state.productItems[product.product_id].length}{" "}
+                            biến thể
                           </div>
                           <div className="price-range">
-                            {this.formatPriceRange(this.state.productItems[product.product_id])}
+                            {this.formatPriceRange(
+                              this.state.productItems[product.product_id]
+                            )}
                           </div>
                           <div className="total-stock">
-                            Tổng tồn kho: {this.calculateTotalStock(this.state.productItems[product.product_id])}
+                            Tổng tồn kho:{" "}
+                            {this.calculateTotalStock(
+                              this.state.productItems[product.product_id]
+                            )}
                           </div>
 
                           {/* Variant list */}
                           <div className="variant-list">
                             <button
                               className="view-variants-btn"
-                              onClick={() => this.showVariantDetails(product.product_id, -1)}
+                              onClick={() =>
+                                this.showVariantDetails(product.product_id, -1)
+                              }
                             >
                               Xem tất cả biến thể
                             </button>
 
                             {/* Display first 3 variants as quick access */}
                             <div className="quick-variants">
-                              {this.state.productItems[product.product_id].slice(0, 3).map((item, idx) => (
-                                <div
-                                  key={idx}
-                                  className="variant-item"
-                                  onClick={() => this.showVariantDetails(product.product_id, idx)}
-                                >
-                                  <span className="variant-sku">{item.sku || `Biến thể ${idx+1}`}</span>
-                                  <span className="variant-price">{this.formatPrice(item.sale_price || item.price)}</span>
-                                </div>
-                              ))}
+                              {this.state.productItems[product.product_id]
+                                .slice(0, 3)
+                                .map((item, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="variant-item"
+                                    onClick={() =>
+                                      this.showVariantDetails(
+                                        product.product_id,
+                                        idx
+                                      )
+                                    }
+                                  >
+                                    <span className="variant-sku">
+                                      {item.sku || `Biến thể ${idx + 1}`}
+                                    </span>
+                                    <span className="variant-price">
+                                      {this.formatPrice(
+                                        item.sale_price || item.price
+                                      )}
+                                    </span>
+                                  </div>
+                                ))}
 
-                              {this.state.productItems[product.product_id].length > 3 && (
+                              {this.state.productItems[product.product_id]
+                                .length > 3 && (
                                 <div className="more-variants">
-                                  +{this.state.productItems[product.product_id].length - 3} biến thể khác
+                                  +
+                                  {this.state.productItems[product.product_id]
+                                    .length - 3}{" "}
+                                  biến thể khác
                                 </div>
                               )}
                             </div>
                           </div>
                         </div>
                       ) : (
-                        <div className="no-variants">
-                          Chưa có biến thể
-                        </div>
+                        <div className="no-variants">Chưa có biến thể</div>
                       )}
                     </div>
                     <div className="product-stats">
@@ -639,14 +811,16 @@ class ShopManage extends Component {
                     <button
                       className="btn-edit"
                       onClick={() => this.openEditModal(product)}
-                      disabled={shopInfo?.status !== 'accepted'}
+                      disabled={shopInfo?.status !== "accepted"}
                     >
                       <i className="fas fa-edit"></i>
                     </button>
                     <button
                       className="btn-delete"
-                      onClick={() => this.handleDeleteProduct(product.product_id)}
-                      disabled={shopInfo?.status !== 'accepted'}
+                      onClick={() =>
+                        this.handleDeleteProduct(product.product_id)
+                      }
+                      disabled={shopInfo?.status !== "accepted"}
                     >
                       <i className="fas fa-trash"></i>
                     </button>
@@ -658,8 +832,10 @@ class ShopManage extends Component {
             <div className="no-products">
               <i className="fas fa-box-open"></i>
               <p>Chưa có sản phẩm nào</p>
-              {shopInfo?.status === 'accepted' && (
-                <button onClick={this.toggleModal}>Thêm sản phẩm đầu tiên</button>
+              {shopInfo?.status === "accepted" && (
+                <button onClick={this.toggleModal}>
+                  Thêm sản phẩm đầu tiên
+                </button>
               )}
             </div>
           )}

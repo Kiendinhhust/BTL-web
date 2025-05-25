@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import checkmark from "../../assets/images/icons/checkmark.png";
 import { connect } from "react-redux";
-import { addToCart } from "../../store/actions/navbarCartActions";
+import {
+  addToCart,
+  updateCart,
+  updateQuantity,
+} from "../../store/actions/navbarCartActions";
 import "./ProductDetail.scss";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import productImageNull from "../../assets/images/icons/product.png";
 import { getImageByPublicId } from "../../services/storeService";
-import { addItemToCart } from "../../services/cartService";
+import { addItemToCart, getCart } from "../../services/cartService";
 import { toast } from "react-toastify";
 
 const ProductDetail = (props) => {
@@ -36,30 +40,32 @@ const ProductDetail = (props) => {
       }
 
       try {
-        const processed = await Promise.all(items.map(async (item) => {
-          if (!item) return null;
+        const processed = await Promise.all(
+          items.map(async (item) => {
+            if (!item) return null;
 
-          let imageUrl = null;
+            let imageUrl = null;
 
-          if (item.image_url) {
-            try {
-              const imageResult = await getImageByPublicId(item.image_url);
-              if (imageResult.success) {
-                imageUrl = imageResult.url;
+            if (item.image_url) {
+              try {
+                const imageResult = await getImageByPublicId(item.image_url);
+                if (imageResult.success) {
+                  imageUrl = imageResult.url;
+                }
+              } catch (imgError) {
+                console.error("Error fetching item image:", imgError);
               }
-            } catch (imgError) {
-              console.error("Error fetching item image:", imgError);
             }
-          }
 
-          return {
-            ...item,
-            imageUrl
-          };
-        }));
+            return {
+              ...item,
+              imageUrl,
+            };
+          })
+        );
 
         // Filter out any null items
-        const filteredItems = processed.filter(item => item !== null);
+        const filteredItems = processed.filter((item) => item !== null);
 
         setProcessedItems(filteredItems);
 
@@ -85,13 +91,31 @@ const ProductDetail = (props) => {
 
   const handleAddToCart = async () => {
     if (!info || !info.item_id) {
-      toast.error("Không thể thêm sản phẩm vào giỏ hàng");
+      toast.error("Không thể thêm sản phẩm vào giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
     // Check if user is logged in and has an access token
     const accessToken = props.userInfo?.accessToken;
     if (!accessToken) {
-      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
@@ -109,28 +133,62 @@ const ProductDetail = (props) => {
       };
     });
 
-     // Add to Redux store for UI updates
+    // Add to Redux store for UI updates
     // props.addToCart({ quantity: cartQuantity, info, title: product.title });
 
     // Add to server-side cart using cartService
     try {
       const cartItem = {
         item_id: info.item_id,
-        quantity: parseInt(cartQuantity)
+        quantity: parseInt(cartQuantity),
         // No need to include user_id, it will be extracted from the JWT token
       };
 
       const result = await addItemToCart(cartItem);
 
       if (result.success) {
-        toast.success("Đã thêm sản phẩm vào giỏ hàng");
+        toast.success("Đã thêm sản phẩm vào giỏ hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       } else {
-        toast.error(result.error || "Không thể thêm sản phẩm vào giỏ hàng");
+        toast.error(result.error || "Không thể thêm sản phẩm vào giỏ hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (error) {
       console.error("Error adding item to cart:", error);
-      toast.error("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng");
+      toast.error("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
+    const cartRes = await getCart();
+    const totalQuantity = cartRes.data.items.reduce(
+      (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
+      0
+    );
+    console.log(totalQuantity);
+    props.updateQuantity({ quantity: totalQuantity });
   };
 
   useEffect(() => {
@@ -174,7 +232,9 @@ const ProductDetail = (props) => {
 
             <div className="productdetail-shop">
               <i className="fas fa-store"></i>
-              <span>{product.Shop?.shop_name || "Cửa hàng không xác định"}</span>
+              <span>
+                {product.Shop?.shop_name || "Cửa hàng không xác định"}
+              </span>
             </div>
 
             <div className="productdetail-rating-container">
@@ -182,7 +242,9 @@ const ProductDetail = (props) => {
                 {[...Array(5)].map((_, index) => (
                   <i
                     key={index}
-                    className={`fas fa-star ${index < Math.round(product.rating || 0) ? 'filled' : ''}`}
+                    className={`fas fa-star ${
+                      index < Math.round(product.rating || 0) ? "filled" : ""
+                    }`}
                   ></i>
                 ))}
                 <span className="rating-value">({product.rating || 0})</span>
@@ -192,8 +254,12 @@ const ProductDetail = (props) => {
             <div className="productdetail-price">
               {info?.sale_price ? (
                 <>
-                  <span className="original-price">{formatPrice(info.price)} VNĐ</span>
-                  <span className="sale-price">{formatPrice(info.sale_price)} VNĐ</span>
+                  <span className="original-price">
+                    {formatPrice(info.price)} VNĐ
+                  </span>
+                  <span className="sale-price">
+                    {formatPrice(info.sale_price)} VNĐ
+                  </span>
                 </>
               ) : (
                 <span>{formatPrice(info?.price)} VNĐ</span>
@@ -228,16 +294,20 @@ const ProductDetail = (props) => {
                 </div>
               )}
 
-              {info && info.attributes && Object.keys(info.attributes).length > 0 && (
-                <div className="variant-attributes">
-                  {Object.entries(info.attributes).map(([key, value], idx) => (
-                    <div key={idx} className="attribute-item">
-                      <span className="attribute-key">{key}:</span>
-                      <span className="attribute-value">{value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {info &&
+                info.attributes &&
+                Object.keys(info.attributes).length > 0 && (
+                  <div className="variant-attributes">
+                    {Object.entries(info.attributes).map(
+                      ([key, value], idx) => (
+                        <div key={idx} className="attribute-item">
+                          <span className="attribute-key">{key}:</span>
+                          <span className="attribute-value">{value}</span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
             </div>
 
             <div className="product-attributes-container">
@@ -247,10 +317,13 @@ const ProductDetail = (props) => {
                   // Get attribute values for display
                   let displayText = item.sku || `Biến thể ${index + 1}`;
 
-                  if (item.attributes && Object.keys(item.attributes).length > 0) {
+                  if (
+                    item.attributes &&
+                    Object.keys(item.attributes).length > 0
+                  ) {
                     const attributeValues = Object.values(item.attributes);
                     if (attributeValues.length > 0) {
-                      displayText = attributeValues.join(' - ');
+                      displayText = attributeValues.join(" - ");
                     }
                   }
 
@@ -259,9 +332,13 @@ const ProductDetail = (props) => {
                   return (
                     <button
                       key={index}
-                      className={`product-attributes-button ${isSelected ? "selected" : ""}`}
+                      className={`product-attributes-button ${
+                        isSelected ? "selected" : ""
+                      }`}
                       onClick={() => setInfo(item)}
-                      title={`${item.sku || ''} - ${formatPrice(item.price)} VNĐ - SL: ${item.stock || 0}`}
+                      title={`${item.sku || ""} - ${formatPrice(
+                        item.price
+                      )} VNĐ - SL: ${item.stock || 0}`}
                     >
                       {displayText}
                     </button>
@@ -271,7 +348,9 @@ const ProductDetail = (props) => {
             </div>
 
             {state.checkCheckMark === true ? (
-              <div className={`added-to-cart js-added-to-cart-${product.product_id}`}>
+              <div
+                className={`added-to-cart js-added-to-cart-${product.product_id}`}
+              >
                 <img
                   className="productdetail-checkmark"
                   src={checkmark}
@@ -280,7 +359,9 @@ const ProductDetail = (props) => {
                 <span className="productdetail-added">Added</span>
               </div>
             ) : (
-              <br className={`added-to-cart js-added-to-cart-${product.product_id}`} />
+              <br
+                className={`added-to-cart js-added-to-cart-${product.product_id}`}
+              />
             )}
 
             <button
@@ -295,19 +376,25 @@ const ProductDetail = (props) => {
           <div className="productdetail-tabs">
             <div className="tabs-header">
               <button
-                className={`tab-button ${activeTab === "content" ? "active" : ""}`}
+                className={`tab-button ${
+                  activeTab === "content" ? "active" : ""
+                }`}
                 onClick={() => handleTabChange("content")}
               >
                 Mô tả
               </button>
               <button
-                className={`tab-button ${activeTab === "detail" ? "active" : ""}`}
+                className={`tab-button ${
+                  activeTab === "detail" ? "active" : ""
+                }`}
                 onClick={() => handleTabChange("detail")}
               >
                 Thông số kỹ thuật
               </button>
               <button
-                className={`tab-button ${activeTab === "comment" ? "active" : ""}`}
+                className={`tab-button ${
+                  activeTab === "comment" ? "active" : ""
+                }`}
                 onClick={() => handleTabChange("comment")}
               >
                 Đánh giá
@@ -346,6 +433,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     addToCart: (payload) => dispatch(addToCart(payload)),
+    updateQuantity: (payload) => dispatch(updateQuantity(payload)),
   };
 };
 

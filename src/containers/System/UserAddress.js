@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { 
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import {
   getUserAddresses,
   addUserAddress,
   updateUserAddress,
   deleteUserAddress,
-  setDefaultAddress
-} from '../../store/actions/userAddressAction';
-import { toast } from 'react-toastify';
-import './UserAddress.scss';
-import { get } from 'lodash';
+  setDefaultAddress,
+} from "../../store/actions/userAddressAction";
+import { toast } from "react-toastify";
+import "./UserAddress.scss";
+import { get } from "lodash";
 
 class UserAddress extends Component {
   constructor(props) {
@@ -19,18 +19,18 @@ class UserAddress extends Component {
       editMode: false,
       currentAddress: null,
       formData: {
-        address_infor: '',
-        type: 'home'
+        address_infor: "",
+        type: "home",
       },
       errors: {},
       showDeleteModal: false,
-       addressToDelete: null,
+      addressToDelete: null,
     };
   }
   openDeleteModal = (address) => {
     this.setState({ showDeleteModal: true, addressToDelete: address });
   };
-  
+
   closeDeleteModal = () => {
     this.setState({ showDeleteModal: false, addressToDelete: null });
   };
@@ -49,12 +49,12 @@ class UserAddress extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        [e.target.name]: e.target.value
+        [e.target.name]: e.target.value,
       },
       errors: {
         ...this.state.errors,
-        [e.target.name]: ''
-      }
+        [e.target.name]: "",
+      },
     });
   };
 
@@ -62,19 +62,19 @@ class UserAddress extends Component {
     this.setState({
       formData: {
         ...this.state.formData,
-        type
-      }
+        type,
+      },
     });
   };
 
   validateForm = () => {
     const { formData } = this.state;
     const errors = {};
-    
+
     if (!formData.address_infor.trim()) {
-      errors.address_infor = 'Vui lòng nhập địa chỉ';
+      errors.address_infor = "Vui lòng nhập địa chỉ";
     }
-    
+
     this.setState({ errors });
     return Object.keys(errors).length === 0;
   };
@@ -93,14 +93,41 @@ class UserAddress extends Component {
           currentAddress.address_id,
           formData
         );
-        toast.success('Cập nhật địa chỉ thành công',{ autoClose: 1000 });
+        toast.success("Cập nhật địa chỉ thành công", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       } else {
         await this.props.addUserAddress(userInfo.userId, formData);
-        toast.success('Thêm địa chỉ thành công',{ autoClose: 1000 });
+        toast.success("Thêm địa chỉ thành công", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
       this.closeModal();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Lỗi hệ thống',{ autoClose: 500 });
+      toast.error(error.response?.data?.message || "Lỗi hệ thống", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
 
@@ -109,13 +136,15 @@ class UserAddress extends Component {
       showModal: true,
       editMode: !!address,
       currentAddress: address,
-      formData: address ? { 
-        address_infor: address.address_infor,
-        type: address.type
-      } : {
-        address_infor: '',
-        type: 'home'
-      }
+      formData: address
+        ? {
+            address_infor: address.address_infor,
+            type: address.type,
+          }
+        : {
+            address_infor: "",
+            type: "home",
+          },
     });
   };
 
@@ -124,18 +153,18 @@ class UserAddress extends Component {
       showModal: false,
       editMode: false,
       currentAddress: null,
-      formData: { address_infor: '', type: 'home' },
-      errors: {}
+      formData: { address_infor: "", type: "home" },
+      errors: {},
     });
   };
 
   renderTypeBadge = (type) => {
     const types = {
-      home: { label: 'Nhà riêng', color: 'home' },
-      office: { label: 'Văn phòng', color: 'office' },
-      other: { label: 'Khác' , color: 'other' }
+      home: { label: "Nhà riêng", color: "home" },
+      office: { label: "Văn phòng", color: "office" },
+      other: { label: "Khác", color: "other" },
     };
-    
+
     const { label, icon, color } = types[type] || types.other;
     return (
       <span className={`type-tag ${color}`}>
@@ -148,29 +177,48 @@ class UserAddress extends Component {
     const { addressToDelete } = this.state;
     if (!addressToDelete) return;
     try {
-      await this.props.deleteUserAddress(userInfo.userId, addressToDelete.address_id);
+      await this.props.deleteUserAddress(
+        userInfo.userId,
+        addressToDelete.address_id
+      );
       this.closeDeleteModal();
-      
-       toast.success('Xóa địa chỉ thành công', { autoClose: 500 });
+
+      toast.success("Xóa địa chỉ thành công", { autoClose: 500 });
     } catch (error) {
       this.closeDeleteModal();
-       toast.error(error.response?.data?.message || 'Lỗi hệ thống',{ autoClose: 500 });
+      toast.error(error.response?.data?.message || "Lỗi hệ thống", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
   render() {
     const { addresses, isLoading } = this.props.userAddress;
-    const { showModal, editMode, formData, errors,showDeleteModal,
-      addressToDelete, } = this.state;
+    const {
+      showModal,
+      editMode,
+      formData,
+      errors,
+      showDeleteModal,
+      addressToDelete,
+    } = this.state;
 
     return (
       <div className="user-address-container">
-          <div className="header-section"> 
+        <div className="header-section">
           <div className="title">Quản lý địa chỉ</div>
           <button
             className="btn btn-primary btn-add-new" // Thay đổi class ở đây
             onClick={() => this.openModal()}
           >
-             <i className="fas fa-plus"></i> Thêm địa chỉ mới {/* Thêm icon nếu muốn */}
+            <i className="fas fa-plus"></i> Thêm địa chỉ mới{" "}
+            {/* Thêm icon nếu muốn */}
           </button>
         </div>
 
@@ -179,7 +227,7 @@ class UserAddress extends Component {
             <div className="modal-overlay"></div>
             <div className="address-modal">
               <div className="modal-header">
-                <h3>{editMode ? 'Sửa địa chỉ' : 'Thêm địa chỉ mới'}</h3>
+                <h3>{editMode ? "Sửa địa chỉ" : "Thêm địa chỉ mới"}</h3>
                 <button className="close-btn" onClick={this.closeModal}>
                   &times;
                 </button>
@@ -194,29 +242,33 @@ class UserAddress extends Component {
                     rows={3}
                   />
                   {errors.address_infor && (
-                    <div className="error-message">
-                      {errors.address_infor}
-                    </div>
+                    <div className="error-message">{errors.address_infor}</div>
                   )}
                 </div>
                 <div className="form-group">
                   <label>Loại</label>
                   <div className="type-badges">
                     <span
-                      className={`type-badge${formData.type === 'home' ? ' active' : ''}`}
-                      onClick={() => this.handleTypeSelect('home')}
+                      className={`type-badge${
+                        formData.type === "home" ? " active" : ""
+                      }`}
+                      onClick={() => this.handleTypeSelect("home")}
                     >
                       Nhà riêng
                     </span>
                     <span
-                      className={`type-badge${formData.type === 'office' ? ' active' : ''}`}
-                      onClick={() => this.handleTypeSelect('office')}
+                      className={`type-badge${
+                        formData.type === "office" ? " active" : ""
+                      }`}
+                      onClick={() => this.handleTypeSelect("office")}
                     >
                       Văn phòng
                     </span>
                     <span
-                      className={`type-badge${formData.type === 'other' ? ' active' : ''}`}
-                      onClick={() => this.handleTypeSelect('other')}
+                      className={`type-badge${
+                        formData.type === "other" ? " active" : ""
+                      }`}
+                      onClick={() => this.handleTypeSelect("other")}
                     >
                       Khác
                     </span>
@@ -231,7 +283,7 @@ class UserAddress extends Component {
                     Hủy
                   </button>
                   <button type="submit" className="btn-save">
-                    {editMode ? 'Lưu' : 'Thêm'}
+                    {editMode ? "Lưu" : "Thêm"}
                   </button>
                 </div>
               </form>
@@ -241,26 +293,27 @@ class UserAddress extends Component {
 
         <div className="address-list">
           {addresses?.map((address, index) => (
-            <div 
+            <div
               key={address.address_id}
-              className={`address-item ${index === 0 ? 'default' : ''}`}
+              className={`address-item ${index === 0 ? "default" : ""}`}
             >
               <div className="address-header">
                 {this.renderTypeBadge(address.type)}
-                {index === 0 && (
-                  <span className="default-badge">Mặc định</span>
-                )}
+                {index === 0 && <span className="default-badge">Mặc định</span>}
               </div>
-              
-              <div className="address-text">
-                {address.address_infor}
-              </div>
+
+              <div className="address-text">{address.address_infor}</div>
 
               <div className="address-actions">
                 {index !== 0 && (
                   <button
                     className="btn-set-default"
-                    onClick={() => this.props.setDefaultAddress(this.props.userInfo.userId, address.address_id)}
+                    onClick={() =>
+                      this.props.setDefaultAddress(
+                        this.props.userInfo.userId,
+                        address.address_id
+                      )
+                    }
                   >
                     Đặt mặc định
                   </button>
@@ -272,15 +325,14 @@ class UserAddress extends Component {
                   Chỉnh sửa
                 </button>
                 <button
-                className="btn-delete"
-                onClick={() => this.openDeleteModal(address)}
->
-  Xóa
-</button>
+                  className="btn-delete"
+                  onClick={() => this.openDeleteModal(address)}
+                >
+                  Xóa
+                </button>
               </div>
             </div>
           ))}
-          
         </div>
         {/* Add delete modal */}
         {showDeleteModal && (
@@ -292,7 +344,8 @@ class UserAddress extends Component {
               </div>
               <div className="delete-title">Xác nhận xóa địa chỉ?</div>
               <div className="delete-message">
-                Bạn có chắc chắn muốn xóa địa chỉ này không?<br />
+                Bạn có chắc chắn muốn xóa địa chỉ này không?
+                <br />
                 <span style={{ color: "#e74c3c", fontWeight: 600 }}>
                   {addressToDelete?.address_infor}
                 </span>
@@ -312,14 +365,13 @@ class UserAddress extends Component {
           </>
         )}
       </div>
-      
     );
   }
 }
 
 const mapStateToProps = (state) => ({
   userInfo: state.admin.userInfo,
-  userAddress: state.userAddress
+  userAddress: state.userAddress,
 });
 
 export default connect(mapStateToProps, {
@@ -327,5 +379,5 @@ export default connect(mapStateToProps, {
   addUserAddress,
   updateUserAddress,
   deleteUserAddress,
-  setDefaultAddress
+  setDefaultAddress,
 })(UserAddress);

@@ -1,14 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { getCart, updateCartItem, removeCartItem, clearCart } from '../../services/cartService';
-import { getImageByPublicId } from '../../services/storeService';
-import { createOrder, getShippingMethods } from '../../services/orderService';
-import { getUserAddresses } from '../../store/actions/userAddressAction';
-import './CartPage.scss';
-import productImageNull from '../../assets/images/icons/product.png';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { toast, Slide } from "react-toastify";
+import {
+  getCart,
+  updateCartItem,
+  removeCartItem,
+  clearCart,
+} from "../../services/cartService";
+import { getImageByPublicId } from "../../services/storeService";
+import { createOrder, getShippingMethods } from "../../services/orderService";
+import { getUserAddresses } from "../../store/actions/userAddressAction";
+import "./CartPage.scss";
+import productImageNull from "../../assets/images/icons/product.png";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import {
+  addToCart,
+  updateQuantity,
+} from "../../store/actions/navbarCartActions";
 const CartPage = (props) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,12 +25,11 @@ const CartPage = (props) => {
   const [selectedShippingMethod, setSelectedShippingMethod] = useState(null);
   const [shippingAddress, setShippingAddress] = useState(null);
   const [userAddresses, setUserAddresses] = useState([]);
-  const [paymentMethod, setPaymentMethod] = useState('cod');
-  const [orderNote, setOrderNote] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [orderNote, setOrderNote] = useState("");
   const [checkoutStep, setCheckoutStep] = useState(1); // 1: Cart, 2: Shipping, 3: Payment, 4: Review
   const [processingOrder, setProcessingOrder] = useState(false);
   const history = useHistory();
-
   // Fetch cart data
   useEffect(() => {
     const fetchCart = async () => {
@@ -37,17 +44,41 @@ const CartPage = (props) => {
 
       try {
         const result = await getCart();
-        console.log('Cart data:', result);
+        console.log("Cart data:", result);
 
         if (result.success) {
           // The server now returns items directly in the result.data.items
           setCartItems(result.data.items || []);
         } else {
-          toast.error(result.error || 'Không thể tải giỏ hàng');
+          toast.error(result.error || "Không thể tải giỏ hàng", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
         }
+        // const totalQuantity = result.data.items.reduce(
+        //   (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
+        //   0
+        // );
+        // console.log(totalQuantity);
+        // props.updateQuantity({ quantity: totalQuantity });
       } catch (error) {
-        console.error('Error fetching cart:', error);
-        toast.error('Đã xảy ra lỗi khi tải giỏ hàng');
+        console.error("Error fetching cart:", error);
+        toast.error("Đã xảy ra lỗi khi tải giỏ hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       } finally {
         setLoading(false);
       }
@@ -55,6 +86,14 @@ const CartPage = (props) => {
 
     fetchCart();
   }, [props.userInfo]);
+  useEffect(() => {
+    const totalQuantity = cartItems.reduce(
+      (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
+      0
+    );
+    console.log(totalQuantity);
+    props.updateQuantity({ quantity: totalQuantity });
+  }, [cartItems]);
 
   // Load images for cart items
   useEffect(() => {
@@ -71,7 +110,10 @@ const CartPage = (props) => {
               cacheUpdated = true;
             }
           } catch (error) {
-            console.error(`Error loading image for item ${item.item_id}:`, error);
+            console.error(
+              `Error loading image for item ${item.item_id}:`,
+              error
+            );
           }
         }
       }
@@ -93,24 +135,53 @@ const CartPage = (props) => {
     // Check if user is logged in and has an access token
     const accessToken = props.userInfo?.accessToken;
     if (!accessToken) {
-      toast.warning('Vui lòng đăng nhập để cập nhật giỏ hàng');
+      toast.warning("Vui lòng đăng nhập để cập nhật giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
     const result = await updateCartItem({
       item_id: itemId,
-      quantity: newQuantity
+      quantity: newQuantity,
       // No need to include user_id, it will be extracted from the JWT token
     });
 
     if (result.success) {
       // Update local state
-      setCartItems(cartItems.map(item =>
-        item.item_id === itemId ? { ...item, quantity: newQuantity } : item
-      ));
-      toast.success('Cập nhật số lượng thành công');
+      setCartItems(
+        cartItems.map((item) =>
+          item.item_id === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+      toast.success("Cập nhật số lượng thành công", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } else {
-      toast.error(result.error || 'Không thể cập nhật số lượng');
+      toast.error(result.error || "Không thể cập nhật số lượng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
   };
 
@@ -119,24 +190,62 @@ const CartPage = (props) => {
     // Check if user is logged in and has an access token
     const accessToken = props.userInfo?.accessToken;
     if (!accessToken) {
-      toast.warning('Vui lòng đăng nhập để cập nhật giỏ hàng');
+      toast.warning("Vui lòng đăng nhập để cập nhật giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
-    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+    if (
+      window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?")
+    ) {
       try {
         const result = await removeCartItem(itemId);
 
         if (result.success) {
           // Update local state
-          setCartItems(cartItems.filter(item => item.item_id !== itemId));
-          toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
+          setCartItems(cartItems.filter((item) => item.item_id !== itemId));
+          toast.success("Đã xóa sản phẩm khỏi giỏ hàng", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
         } else {
-          toast.error(result.error || 'Không thể xóa sản phẩm');
+          toast.error(result.error || "Không thể xóa sản phẩm", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
         }
       } catch (error) {
-        console.error('Error removing item from cart:', error);
-        toast.error('Đã xảy ra lỗi khi xóa sản phẩm');
+        console.error("Error removing item from cart:", error);
+        toast.error("Đã xảy ra lỗi khi xóa sản phẩm", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     }
   };
@@ -146,23 +255,61 @@ const CartPage = (props) => {
     // Check if user is logged in and has an access token
     const accessToken = props.userInfo?.accessToken;
     if (!accessToken) {
-      toast.warning('Vui lòng đăng nhập để cập nhật giỏ hàng');
+      toast.warning("Vui lòng đăng nhập để cập nhật giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
-    if (window.confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?')) {
+    if (
+      window.confirm("Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?")
+    ) {
       try {
         const result = await clearCart();
 
         if (result.success) {
           setCartItems([]);
-          toast.success('Đã xóa tất cả sản phẩm khỏi giỏ hàng');
+          toast.success("Đã xóa tất cả sản phẩm khỏi giỏ hàng", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
         } else {
-          toast.error(result.error || 'Không thể xóa giỏ hàng');
+          toast.error(result.error || "Không thể xóa giỏ hàng", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
         }
       } catch (error) {
-        console.error('Error clearing cart:', error);
-        toast.error('Đã xảy ra lỗi khi xóa giỏ hàng');
+        console.error("Error clearing cart:", error);
+        toast.error("Đã xảy ra lỗi khi xóa giỏ hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     }
   };
@@ -171,7 +318,7 @@ const CartPage = (props) => {
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
       const price = item.sale_price || item.price || 0;
-      return total + (price * item.quantity);
+      return total + price * item.quantity;
     }, 0);
   };
 
@@ -188,12 +335,12 @@ const CartPage = (props) => {
     const fetchShippingMethods = async () => {
       try {
         const result = await getShippingMethods();
-        console.log('Shipping methods response:', result);
+        console.log("Shipping methods response:", result);
 
         if (result.success && result.data && result.data.success) {
           // Extract the methods array from the nested response
           const methods = result.data.methods || [];
-          console.log('Shipping methods:', methods);
+          console.log("Shipping methods:", methods);
 
           setShippingMethods(methods);
 
@@ -202,12 +349,33 @@ const CartPage = (props) => {
             setSelectedShippingMethod(parseInt(methods[0].shipping_method_id));
           }
         } else {
-          console.error('Error fetching shipping methods:', result.error || 'Unknown error');
-          toast.error('Không thể tải phương thức vận chuyển');
+          console.error(
+            "Error fetching shipping methods:",
+            result.error || "Unknown error"
+          );
+          toast.error("Không thể tải phương thức vận chuyển", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
         }
       } catch (error) {
-        console.error('Error fetching shipping methods:', error);
-        toast.error('Đã xảy ra lỗi khi tải phương thức vận chuyển');
+        console.error("Error fetching shipping methods:", error);
+        toast.error("Đã xảy ra lỗi khi tải phương thức vận chuyển", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     };
 
@@ -223,34 +391,70 @@ const CartPage = (props) => {
       try {
         // Make sure we have a userId
         if (!props.userInfo || !props.userInfo.userId) {
-          console.error('No userId available');
-          toast.error('Không thể tải địa chỉ giao hàng: Không có thông tin người dùng');
+          console.error("No userId available");
+          toast.error(
+            "Không thể tải địa chỉ giao hàng: Không có thông tin người dùng",
+            {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeButton: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            }
+          );
           return;
         }
 
-        console.log('Fetching addresses for userId:', props.userInfo.userId);
+        console.log("Fetching addresses for userId:", props.userInfo.userId);
 
         // Use the getUserAddresses action to fetch addresses with userId
         const result = await props.getUserAddresses(props.userInfo.userId);
-        console.log('User addresses response:', result);
+        console.log("User addresses response:", result);
 
         if (result && result.data && result.data.length > 0) {
-          console.log('User addresses:', result.data);
+          console.log("User addresses:", result.data);
           setUserAddresses(result.data);
 
           // Always set the first address as default
           setShippingAddress(parseInt(result.data[0].address_id));
 
           // Log the selected address for debugging
-          console.log('Selected shipping address ID:', result.data[0].address_id);
+          console.log(
+            "Selected shipping address ID:",
+            result.data[0].address_id
+          );
         } else {
           // If no addresses found, show a message
-          console.warn('No addresses found or error in response:', result);
-          toast.warning('Bạn chưa có địa chỉ giao hàng. Vui lòng thêm địa chỉ mới.');
+          console.warn("No addresses found or error in response:", result);
+          toast.warning(
+            "Bạn chưa có địa chỉ giao hàng. Vui lòng thêm địa chỉ mới.",
+            {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeButton: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            }
+          );
         }
       } catch (error) {
-        console.error('Error fetching user addresses:', error);
-        toast.error('Đã xảy ra lỗi khi tải địa chỉ giao hàng');
+        console.error("Error fetching user addresses:", error);
+        toast.error("Đã xảy ra lỗi khi tải địa chỉ giao hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     };
 
@@ -262,12 +466,12 @@ const CartPage = (props) => {
 
   // Handle moving to next checkout step
   const handleNextStep = () => {
-    setCheckoutStep(prevStep => prevStep + 1);
+    setCheckoutStep((prevStep) => prevStep + 1);
   };
 
   // Handle moving to previous checkout step
   const handlePrevStep = () => {
-    setCheckoutStep(prevStep => prevStep - 1);
+    setCheckoutStep((prevStep) => prevStep - 1);
   };
 
   // Handle shipping method selection
@@ -278,7 +482,7 @@ const CartPage = (props) => {
   // Handle shipping address selection
   const handleShippingAddressChange = (e) => {
     const addressId = parseInt(e.target.value);
-    console.log('Selected shipping address ID:', addressId);
+    console.log("Selected shipping address ID:", addressId);
     setShippingAddress(addressId);
   };
 
@@ -301,17 +505,44 @@ const CartPage = (props) => {
   // Handle place order
   const handlePlaceOrder = async () => {
     if (!shippingAddress) {
-      toast.error('Vui lòng chọn địa chỉ giao hàng');
+      toast.error("Vui lòng chọn địa chỉ giao hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
     if (!selectedShippingMethod) {
-      toast.error('Vui lòng chọn phương thức vận chuyển');
+      toast.error("Vui lòng chọn phương thức vận chuyển", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
     if (!paymentMethod) {
-      toast.error('Vui lòng chọn phương thức thanh toán');
+      toast.error("Vui lòng chọn phương thức thanh toán", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
@@ -321,14 +552,14 @@ const CartPage = (props) => {
       shipping_method_id: selectedShippingMethod,
       payment_method: paymentMethod,
       note: orderNote,
-      items: cartItems.map(item => ({
+      items: cartItems.map((item) => ({
         item_id: item.item_id,
-        quantity: item.quantity
+        quantity: item.quantity,
       })),
-      clear_cart: true // Clear cart after order is created
+      clear_cart: true, // Clear cart after order is created
     };
 
-    console.log('Placing order with data:', orderData);
+    console.log("Placing order with data:", orderData);
 
     setProcessingOrder(true);
 
@@ -336,15 +567,42 @@ const CartPage = (props) => {
       const result = await createOrder(orderData);
 
       if (result.success) {
-        toast.success('Đặt hàng thành công!');
+        toast.success("Đặt hàng thành công!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
         // Redirect to order details page
         history.push(`/orders/${result.data.order.order_id}`);
       } else {
-        toast.error(result.error || 'Đặt hàng thất bại. Vui lòng thử lại.');
+        toast.error(result.error || "Đặt hàng thất bại. Vui lòng thử lại.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (error) {
-      console.error('Error placing order:', error);
-      toast.error('Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.');
+      console.error("Error placing order:", error);
+      toast.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } finally {
       setProcessingOrder(false);
     }
@@ -357,12 +615,12 @@ const CartPage = (props) => {
         return (
           <>
             <div className="cart-items">
-              {cartItems.map(item => (
+              {cartItems.map((item) => (
                 <div key={item.item_id} className="cart-item">
                   <div className="item-image">
                     <img
                       src={imageCache[item.image_url] || productImageNull}
-                      alt={item.product_title || 'Product'}
+                      alt={item.product_title || "Product"}
                     />
                   </div>
 
@@ -386,7 +644,7 @@ const CartPage = (props) => {
                     {item.attributes && (
                       <div className="item-attributes">
                         {Object.entries(
-                          typeof item.attributes === 'string'
+                          typeof item.attributes === "string"
                             ? JSON.parse(item.attributes)
                             : item.attributes
                         ).map(([key, value], idx) => (
@@ -402,8 +660,12 @@ const CartPage = (props) => {
                   <div className="item-price">
                     {item.sale_price ? (
                       <>
-                        <span className="original-price">{formatPrice(item.price)} VNĐ</span>
-                        <span className="sale-price">{formatPrice(item.sale_price)} VNĐ</span>
+                        <span className="original-price">
+                          {formatPrice(item.price)} VNĐ
+                        </span>
+                        <span className="sale-price">
+                          {formatPrice(item.sale_price)} VNĐ
+                        </span>
                       </>
                     ) : (
                       <span>{formatPrice(item.price)} VNĐ</span>
@@ -413,7 +675,9 @@ const CartPage = (props) => {
                   <div className="item-quantity">
                     <button
                       className="quantity-btn decrease"
-                      onClick={() => handleQuantityChange(item.item_id, item.quantity - 1)}
+                      onClick={() =>
+                        handleQuantityChange(item.item_id, item.quantity - 1)
+                      }
                       disabled={item.quantity <= 1}
                     >
                       <i className="fas fa-minus"></i>
@@ -423,14 +687,19 @@ const CartPage = (props) => {
 
                     <button
                       className="quantity-btn increase"
-                      onClick={() => handleQuantityChange(item.item_id, item.quantity + 1)}
+                      onClick={() =>
+                        handleQuantityChange(item.item_id, item.quantity + 1)
+                      }
                     >
                       <i className="fas fa-plus"></i>
                     </button>
                   </div>
 
                   <div className="item-total">
-                    {formatPrice((item.sale_price || item.price) * item.quantity)} VNĐ
+                    {formatPrice(
+                      (item.sale_price || item.price) * item.quantity
+                    )}{" "}
+                    VNĐ
                   </div>
 
                   <button
@@ -446,14 +715,19 @@ const CartPage = (props) => {
             <div className="cart-summary">
               <div className="summary-row">
                 <span className="summary-label">Tổng tiền:</span>
-                <span className="summary-value">{formatPrice(calculateTotal())} VNĐ</span>
+                <span className="summary-value">
+                  {formatPrice(calculateTotal())} VNĐ
+                </span>
               </div>
 
               <button className="checkout-btn" onClick={handleCheckout}>
                 Tiến hành thanh toán
               </button>
 
-              <button className="continue-shopping-btn" onClick={() => history.push('/')}>
+              <button
+                className="continue-shopping-btn"
+                onClick={() => history.push("/")}
+              >
                 Tiếp tục mua sắm
               </button>
             </div>
@@ -469,25 +743,40 @@ const CartPage = (props) => {
               <h3>Địa chỉ giao hàng</h3>
               {userAddresses.length > 0 ? (
                 <div className="address-selection">
-                  {userAddresses.map(address => (
+                  {userAddresses.map((address) => (
                     <div
                       key={address.address_id}
-                      className={`address-option ${shippingAddress === parseInt(address.address_id) ? 'selected' : ''}`}
-                      onClick={() => setShippingAddress(parseInt(address.address_id))}
+                      className={`address-option ${
+                        shippingAddress === parseInt(address.address_id)
+                          ? "selected"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setShippingAddress(parseInt(address.address_id))
+                      }
                     >
                       <input
                         type="radio"
                         id={`address-${address.address_id}`}
                         name="shipping-address"
                         value={address.address_id}
-                        checked={shippingAddress === parseInt(address.address_id)}
+                        checked={
+                          shippingAddress === parseInt(address.address_id)
+                        }
                         onChange={handleShippingAddressChange}
                       />
                       <label htmlFor={`address-${address.address_id}`}>
                         <div className="address-details">
-                          <p className="address-type">{address.type === 'home' ? 'Nhà riêng' :
-                                                      address.type === 'office' ? 'Văn phòng' : 'Địa chỉ khác'}</p>
-                          <p className="address-line">{address.address_infor}</p>
+                          <p className="address-type">
+                            {address.type === "home"
+                              ? "Nhà riêng"
+                              : address.type === "office"
+                              ? "Văn phòng"
+                              : "Địa chỉ khác"}
+                          </p>
+                          <p className="address-line">
+                            {address.address_infor}
+                          </p>
                           {shippingAddress === parseInt(address.address_id) && (
                             <p className="address-selected">✓ Đã chọn</p>
                           )}
@@ -508,29 +797,47 @@ const CartPage = (props) => {
               <h3>Phương thức vận chuyển</h3>
               {shippingMethods.length > 0 ? (
                 <div className="shipping-method-selection">
-                  {shippingMethods.map(method => (
+                  {shippingMethods.map((method) => (
                     <div
                       key={method.shipping_method_id}
-                      className={`shipping-method-option ${selectedShippingMethod === parseInt(method.shipping_method_id) ? 'selected' : ''}`}
-                      onClick={() => setSelectedShippingMethod(parseInt(method.shipping_method_id))}
+                      className={`shipping-method-option ${
+                        selectedShippingMethod ===
+                        parseInt(method.shipping_method_id)
+                          ? "selected"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        setSelectedShippingMethod(
+                          parseInt(method.shipping_method_id)
+                        )
+                      }
                     >
                       <input
                         type="radio"
                         id={`method-${method.shipping_method_id}`}
                         name="shipping-method"
                         value={method.shipping_method_id}
-                        checked={selectedShippingMethod === parseInt(method.shipping_method_id)}
+                        checked={
+                          selectedShippingMethod ===
+                          parseInt(method.shipping_method_id)
+                        }
                         onChange={handleShippingMethodChange}
                       />
                       <label htmlFor={`method-${method.shipping_method_id}`}>
                         <div className="method-details">
                           <p className="method-name">{method.name}</p>
-                          <p className="method-description">{method.description}</p>
-                          <p className="method-delivery">
-                            Thời gian giao hàng: {method.min_delivery_days} - {method.max_delivery_days} ngày
+                          <p className="method-description">
+                            {method.description}
                           </p>
-                          <p className="method-cost">{formatPrice(method.cost)} VNĐ</p>
-                          {selectedShippingMethod === parseInt(method.shipping_method_id) && (
+                          <p className="method-delivery">
+                            Thời gian giao hàng: {method.min_delivery_days} -{" "}
+                            {method.max_delivery_days} ngày
+                          </p>
+                          <p className="method-cost">
+                            {formatPrice(method.cost)} VNĐ
+                          </p>
+                          {selectedShippingMethod ===
+                            parseInt(method.shipping_method_id) && (
                             <p className="method-selected">✓ Đã chọn</p>
                           )}
                         </div>
@@ -568,13 +875,17 @@ const CartPage = (props) => {
                   id="payment-cod"
                   name="payment-method"
                   value="cod"
-                  checked={paymentMethod === 'cod'}
+                  checked={paymentMethod === "cod"}
                   onChange={handlePaymentMethodChange}
                 />
                 <label htmlFor="payment-cod">
                   <div className="method-details">
-                    <p className="method-name">Thanh toán khi nhận hàng (COD)</p>
-                    <p className="method-description">Thanh toán bằng tiền mặt khi nhận hàng</p>
+                    <p className="method-name">
+                      Thanh toán khi nhận hàng (COD)
+                    </p>
+                    <p className="method-description">
+                      Thanh toán bằng tiền mặt khi nhận hàng
+                    </p>
                   </div>
                 </label>
               </div>
@@ -585,13 +896,15 @@ const CartPage = (props) => {
                   id="payment-credit-card"
                   name="payment-method"
                   value="credit_card"
-                  checked={paymentMethod === 'credit_card'}
+                  checked={paymentMethod === "credit_card"}
                   onChange={handlePaymentMethodChange}
                 />
                 <label htmlFor="payment-credit-card">
                   <div className="method-details">
                     <p className="method-name">Thẻ tín dụng/Ghi nợ</p>
-                    <p className="method-description">Thanh toán an toàn với thẻ của bạn</p>
+                    <p className="method-description">
+                      Thanh toán an toàn với thẻ của bạn
+                    </p>
                   </div>
                 </label>
               </div>
@@ -602,13 +915,15 @@ const CartPage = (props) => {
                   id="payment-e-wallet"
                   name="payment-method"
                   value="e_wallet"
-                  checked={paymentMethod === 'e_wallet'}
+                  checked={paymentMethod === "e_wallet"}
                   onChange={handlePaymentMethodChange}
                 />
                 <label htmlFor="payment-e-wallet">
                   <div className="method-details">
                     <p className="method-name">Ví điện tử</p>
-                    <p className="method-description">Thanh toán qua ví điện tử (MoMo, ZaloPay, VNPay...)</p>
+                    <p className="method-description">
+                      Thanh toán qua ví điện tử (MoMo, ZaloPay, VNPay...)
+                    </p>
                   </div>
                 </label>
               </div>
@@ -619,13 +934,15 @@ const CartPage = (props) => {
                   id="payment-bank-transfer"
                   name="payment-method"
                   value="bank_transfer"
-                  checked={paymentMethod === 'bank_transfer'}
+                  checked={paymentMethod === "bank_transfer"}
                   onChange={handlePaymentMethodChange}
                 />
                 <label htmlFor="payment-bank-transfer">
                   <div className="method-details">
                     <p className="method-name">Chuyển khoản ngân hàng</p>
-                    <p className="method-description">Thanh toán bằng chuyển khoản ngân hàng</p>
+                    <p className="method-description">
+                      Thanh toán bằng chuyển khoản ngân hàng
+                    </p>
                   </div>
                 </label>
               </div>
@@ -659,12 +976,12 @@ const CartPage = (props) => {
             <div className="review-section">
               <h3>Sản phẩm</h3>
               <div className="review-items">
-                {cartItems.map(item => (
+                {cartItems.map((item) => (
                   <div key={item.item_id} className="review-item">
                     <div className="item-image">
                       <img
                         src={imageCache[item.image_url] || productImageNull}
-                        alt={item.product_title || 'Product'}
+                        alt={item.product_title || "Product"}
                       />
                     </div>
                     <div className="item-info">
@@ -673,7 +990,7 @@ const CartPage = (props) => {
                       {item.attributes && (
                         <div className="item-attributes">
                           {Object.entries(
-                            typeof item.attributes === 'string'
+                            typeof item.attributes === "string"
                               ? JSON.parse(item.attributes)
                               : item.attributes
                           ).map(([key, value], idx) => (
@@ -688,7 +1005,10 @@ const CartPage = (props) => {
                       <span>SL: {item.quantity}</span>
                     </div>
                     <div className="item-price">
-                      {formatPrice((item.sale_price || item.price) * item.quantity)} VNĐ
+                      {formatPrice(
+                        (item.sale_price || item.price) * item.quantity
+                      )}{" "}
+                      VNĐ
                     </div>
                   </div>
                 ))}
@@ -697,14 +1017,23 @@ const CartPage = (props) => {
 
             <div className="review-section">
               <h3>Địa chỉ giao hàng</h3>
-              {userAddresses.find(addr => parseInt(addr.address_id) === shippingAddress) && (
+              {userAddresses.find(
+                (addr) => parseInt(addr.address_id) === shippingAddress
+              ) && (
                 <div className="review-address">
                   {(() => {
-                    const address = userAddresses.find(addr => parseInt(addr.address_id) === shippingAddress);
+                    const address = userAddresses.find(
+                      (addr) => parseInt(addr.address_id) === shippingAddress
+                    );
                     return (
                       <>
-                        <p className="address-type">{address.type === 'home' ? 'Nhà riêng' :
-                                                address.type === 'office' ? 'Văn phòng' : 'Địa chỉ khác'}</p>
+                        <p className="address-type">
+                          {address.type === "home"
+                            ? "Nhà riêng"
+                            : address.type === "office"
+                            ? "Văn phòng"
+                            : "Địa chỉ khác"}
+                        </p>
                         <p className="address-line">{address.address_infor}</p>
                       </>
                     );
@@ -715,17 +1044,27 @@ const CartPage = (props) => {
 
             <div className="review-section">
               <h3>Phương thức vận chuyển</h3>
-              {shippingMethods.find(method => parseInt(method.shipping_method_id) === selectedShippingMethod) && (
+              {shippingMethods.find(
+                (method) =>
+                  parseInt(method.shipping_method_id) === selectedShippingMethod
+              ) && (
                 <div className="review-shipping-method">
                   {(() => {
-                    const method = shippingMethods.find(m => parseInt(m.shipping_method_id) === selectedShippingMethod);
+                    const method = shippingMethods.find(
+                      (m) =>
+                        parseInt(m.shipping_method_id) ===
+                        selectedShippingMethod
+                    );
                     return (
                       <>
                         <p className="method-name">{method.name}</p>
                         <p className="method-delivery">
-                          Thời gian giao hàng: {method.min_delivery_days} - {method.max_delivery_days} ngày
+                          Thời gian giao hàng: {method.min_delivery_days} -{" "}
+                          {method.max_delivery_days} ngày
                         </p>
-                        <p className="method-cost">{formatPrice(method.cost)} VNĐ</p>
+                        <p className="method-cost">
+                          {formatPrice(method.cost)} VNĐ
+                        </p>
                       </>
                     );
                   })()}
@@ -738,13 +1077,13 @@ const CartPage = (props) => {
               <div className="review-payment-method">
                 {(() => {
                   switch (paymentMethod) {
-                    case 'cod':
+                    case "cod":
                       return <p>Thanh toán khi nhận hàng (COD)</p>;
-                    case 'credit_card':
+                    case "credit_card":
                       return <p>Thẻ tín dụng/Ghi nợ</p>;
-                    case 'e_wallet':
+                    case "e_wallet":
                       return <p>Ví điện tử</p>;
-                    case 'bank_transfer':
+                    case "bank_transfer":
                       return <p>Chuyển khoản ngân hàng</p>;
                     default:
                       return <p>Chưa chọn phương thức thanh toán</p>;
@@ -765,15 +1104,28 @@ const CartPage = (props) => {
             <div className="review-summary">
               <div className="summary-row">
                 <span className="summary-label">Tổng tiền hàng:</span>
-                <span className="summary-value">{formatPrice(calculateTotal())} VNĐ</span>
+                <span className="summary-value">
+                  {formatPrice(calculateTotal())} VNĐ
+                </span>
               </div>
 
               <div className="summary-row">
                 <span className="summary-label">Phí vận chuyển:</span>
                 <span className="summary-value">
-                  {shippingMethods.find(method => parseInt(method.shipping_method_id) === selectedShippingMethod)
-                    ? formatPrice(shippingMethods.find(method => parseInt(method.shipping_method_id) === selectedShippingMethod).cost)
-                    : '0'} VNĐ
+                  {shippingMethods.find(
+                    (method) =>
+                      parseInt(method.shipping_method_id) ===
+                      selectedShippingMethod
+                  )
+                    ? formatPrice(
+                        shippingMethods.find(
+                          (method) =>
+                            parseInt(method.shipping_method_id) ===
+                            selectedShippingMethod
+                        ).cost
+                      )
+                    : "0"}{" "}
+                  VNĐ
                 </span>
               </div>
 
@@ -782,10 +1134,21 @@ const CartPage = (props) => {
                 <span className="summary-value">
                   {formatPrice(
                     calculateTotal() +
-                    (shippingMethods.find(method => parseInt(method.shipping_method_id) === selectedShippingMethod)
-                      ? parseFloat(shippingMethods.find(method => parseInt(method.shipping_method_id) === selectedShippingMethod).cost)
-                      : 0)
-                  )} VNĐ
+                      (shippingMethods.find(
+                        (method) =>
+                          parseInt(method.shipping_method_id) ===
+                          selectedShippingMethod
+                      )
+                        ? parseFloat(
+                            shippingMethods.find(
+                              (method) =>
+                                parseInt(method.shipping_method_id) ===
+                                selectedShippingMethod
+                            ).cost
+                          )
+                        : 0)
+                  )}{" "}
+                  VNĐ
                 </span>
               </div>
             </div>
@@ -799,7 +1162,7 @@ const CartPage = (props) => {
                 onClick={handlePlaceOrder}
                 disabled={processingOrder}
               >
-                {processingOrder ? 'Đang xử lý...' : 'Đặt hàng'}
+                {processingOrder ? "Đang xử lý..." : "Đặt hàng"}
               </button>
             </div>
           </div>
@@ -814,10 +1177,10 @@ const CartPage = (props) => {
     <div className="cart-page-container">
       <div className="cart-header">
         <h1>
-          {checkoutStep === 1 && 'Giỏ hàng của bạn'}
-          {checkoutStep === 2 && 'Thông tin giao hàng'}
-          {checkoutStep === 3 && 'Phương thức thanh toán'}
-          {checkoutStep === 4 && 'Xác nhận đơn hàng'}
+          {checkoutStep === 1 && "Giỏ hàng của bạn"}
+          {checkoutStep === 2 && "Thông tin giao hàng"}
+          {checkoutStep === 3 && "Phương thức thanh toán"}
+          {checkoutStep === 4 && "Xác nhận đơn hàng"}
         </h1>
         {checkoutStep === 1 && cartItems.length > 0 && (
           <button className="clear-cart-btn" onClick={handleClearCart}>
@@ -835,7 +1198,10 @@ const CartPage = (props) => {
         <div className="empty-cart">
           <i className="fas fa-shopping-cart"></i>
           <p>Giỏ hàng của bạn đang trống</p>
-          <button className="continue-shopping-btn" onClick={() => history.push('/')}>
+          <button
+            className="continue-shopping-btn"
+            onClick={() => history.push("/")}
+          >
             Tiếp tục mua sắm
           </button>
         </div>
@@ -847,11 +1213,14 @@ const CartPage = (props) => {
 };
 
 const mapStateToProps = (state) => ({
-  userInfo: state.admin.userInfo
+  userInfo: state.admin.userInfo,
+  cart: state.navbarCart.carts,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  getUserAddresses: (userId) => dispatch(getUserAddresses(userId))
+  getUserAddresses: (userId) => dispatch(getUserAddresses(userId)),
+  addToCart: (payload) => dispatch(addToCart(payload)),
+  updateQuantity: (payload) => dispatch(updateQuantity(payload)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CartPage);

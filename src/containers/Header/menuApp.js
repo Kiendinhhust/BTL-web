@@ -35,7 +35,7 @@ export const sellerMenu = [
     link: "/seller/shop-manage",
   },
   {
-    name: "Quản lý đơn hàng",
+    name: "Đơn hàng cửa hàng",
     link: "/seller/orders",
   },
 ];

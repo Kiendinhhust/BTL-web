@@ -1,12 +1,15 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { updateShopInfo, fetchAllShopsStart } from '../../store/actions/shopAction';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { toast } from "react-toastify";
+import {
+  updateShopInfo,
+  fetchAllShopsStart,
+} from "../../store/actions/shopAction";
 
-import Lightbox from 'react-image-lightbox';
-import 'react-image-lightbox/style.css';
-import CommonUtils from '../../utils/CommonUtils';
-import '../System/UserManage.scss';
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
+import CommonUtils from "../../utils/CommonUtils";
+import "../System/UserManage.scss";
 
 class ModalEditShop extends Component {
   constructor(props) {
@@ -14,17 +17,17 @@ class ModalEditShop extends Component {
     const { shopData } = props;
     this.state = {
       shopId: shopData.shop_id,
-      name: shopData.shop_name || '',
-      address: shopData.address || '',
-      phone: shopData.phone || '',
-      previewImgURL: '',
+      name: shopData.shop_name || "",
+      address: shopData.address || "",
+      phone: shopData.phone || "",
+      previewImgURL: "",
       isOpen: false,
-      avatar: '',
+      avatar: "",
       errors: {
-        name: '',
-        address: '',
-        phone: ''
-      }
+        name: "",
+        address: "",
+        phone: "",
+      },
     };
 
     // Nếu có ảnh, hiển thị ảnh
@@ -40,40 +43,40 @@ class ModalEditShop extends Component {
 
     // Clear error when user types
     if (copyState.errors[id]) {
-      copyState.errors[id] = '';
+      copyState.errors[id] = "";
     }
 
     this.setState({
-      ...copyState
+      ...copyState,
     });
-  }
+  };
 
   validateForm = () => {
     let isValid = true;
     let errors = {
-      name: '',
-      address: '',
-      phone: ''
+      name: "",
+      address: "",
+      phone: "",
     };
 
     if (!this.state.name) {
-      errors.name = 'Tên shop không được để trống';
+      errors.name = "Tên shop không được để trống";
       isValid = false;
     }
 
     if (!this.state.address) {
-      errors.address = 'Địa chỉ không được để trống';
+      errors.address = "Địa chỉ không được để trống";
       isValid = false;
     }
 
     if (!this.state.phone) {
-      errors.phone = 'Số điện thoại không được để trống';
+      errors.phone = "Số điện thoại không được để trống";
       isValid = false;
     }
 
     this.setState({ errors });
     return isValid;
-  }
+  };
 
   handleOnChangeImage = async (event) => {
     let data = event.target.files;
@@ -81,26 +84,26 @@ class ModalEditShop extends Component {
     if (file) {
       let objectUrl = URL.createObjectURL(file);
       this.setState({
-        previewImgURL: objectUrl
+        previewImgURL: objectUrl,
       });
 
       try {
         let base64String = await CommonUtils.fileToBase64(file);
         this.setState({
-          avatar: base64String
+          avatar: base64String,
         });
       } catch (error) {
         console.error("Error converting file to base64:", error);
       }
     }
-  }
+  };
 
   openPreviewImage = () => {
     if (!this.state.previewImgURL) return;
     this.setState({
-      isOpen: true
+      isOpen: true,
     });
-  }
+  };
 
   handleUpdateShop = async () => {
     if (!this.validateForm()) return;
@@ -121,15 +124,42 @@ class ModalEditShop extends Component {
         this.props.toggleModal();
         // Cập nhật lại danh sách shop
         this.props.fetchAllShops();
-        toast.success(res.message,{ autoClose: 1500 });
+        toast.success(res.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       } else {
-        toast.error(res.message,{ autoClose: 1500 });
+        toast.error(res.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (e) {
-      console.error('Error updating shop:', e);
-      toast.error('Lỗi hệ thống',{ autoClose: 1500 });
+      console.error("Error updating shop:", e);
+      toast.error("Lỗi hệ thống", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     }
-  }
+  };
 
   render() {
     const { isOpen, toggleModal } = this.props;
@@ -148,17 +178,23 @@ class ModalEditShop extends Component {
           </div>
           <div className="modal-user-body">
             {this.state.errorMessage && (
-              <div className="alert alert-danger">{this.state.errorMessage}</div>
+              <div className="alert alert-danger">
+                {this.state.errorMessage}
+              </div>
             )}
 
             <div className="input-container">
-              <label>Tên Shop: <span className="required">*</span></label>
+              <label>
+                Tên Shop: <span className="required">*</span>
+              </label>
               <input
                 type="text"
                 value={this.state.name}
-                onChange={(event) => this.handleOnChangeInput(event, 'name')}
+                onChange={(event) => this.handleOnChangeInput(event, "name")}
               />
-              {errors.name && <span className="error-message">{errors.name}</span>}
+              {errors.name && (
+                <span className="error-message">{errors.name}</span>
+              )}
             </div>
 
             <div className="input-container">
@@ -170,47 +206,52 @@ class ModalEditShop extends Component {
                   hidden
                   onChange={(event) => this.handleOnChangeImage(event)}
                 />
-                <label className="label-upload" htmlFor="previewImg">Tải ảnh <i className="fas fa-upload"></i></label>
+                <label className="label-upload" htmlFor="previewImg">
+                  Tải ảnh <i className="fas fa-upload"></i>
+                </label>
                 <div
                   className="preview-image"
-                  style={{ backgroundImage: `url(${this.state.previewImgURL})` }}
+                  style={{
+                    backgroundImage: `url(${this.state.previewImgURL})`,
+                  }}
                   onClick={() => this.openPreviewImage()}
-                >
-                </div>
+                ></div>
               </div>
             </div>
 
             <div className="input-container">
-              <label>Địa chỉ: <span className="required">*</span></label>
+              <label>
+                Địa chỉ: <span className="required">*</span>
+              </label>
               <input
                 type="text"
                 value={this.state.address}
-                onChange={(event) => this.handleOnChangeInput(event, 'address')}
+                onChange={(event) => this.handleOnChangeInput(event, "address")}
               />
-              {errors.address && <span className="error-message">{errors.address}</span>}
+              {errors.address && (
+                <span className="error-message">{errors.address}</span>
+              )}
             </div>
 
             <div className="input-container">
-              <label>Số điện thoại: <span className="required">*</span></label>
+              <label>
+                Số điện thoại: <span className="required">*</span>
+              </label>
               <input
                 type="text"
                 value={this.state.phone}
-                onChange={(event) => this.handleOnChangeInput(event, 'phone')}
+                onChange={(event) => this.handleOnChangeInput(event, "phone")}
               />
-              {errors.phone && <span className="error-message">{errors.phone}</span>}
+              {errors.phone && (
+                <span className="error-message">{errors.phone}</span>
+              )}
             </div>
           </div>
           <div className="modal-footer">
-            <button
-              className="btn btn-secondary"
-              onClick={toggleModal}
-            >
+            <button className="btn btn-secondary" onClick={toggleModal}>
               Hủy
             </button>
-            <button
-              className="btn btn-primary"
-              onClick={this.handleUpdateShop}
-            >
+            <button className="btn btn-primary" onClick={this.handleUpdateShop}>
               Lưu
             </button>
           </div>
@@ -222,11 +263,11 @@ class ModalEditShop extends Component {
             onCloseRequest={() => this.setState({ isOpen: false })}
             reactModalStyle={{
               overlay: {
-                zIndex: 1050
+                zIndex: 1050,
               },
               content: {
-                zIndex: 1060
-              }
+                zIndex: 1060,
+              },
             }}
           />
         )}
@@ -235,10 +276,10 @@ class ModalEditShop extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     updateShop: (shopId, data) => dispatch(updateShopInfo(shopId, data)),
-    fetchAllShops: () => dispatch(fetchAllShopsStart())
+    fetchAllShops: () => dispatch(fetchAllShopsStart()),
   };
 };
 

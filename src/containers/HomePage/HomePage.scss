@@ -82,14 +82,14 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     }
 
-    .product-image-container {
-      height: 280px;
+    // .product-image-container {
+    //   height: 280px;
 
-      .product-image {
-        height: 100%;
-        object-fit: cover;
-      }
-    }
+    //   .product-image {
+    //     height: 100%;
+    //     object-fit: cover;
+    //   }
+    // }
 
     .product-info-container {
       padding: 20px;
@@ -120,8 +120,12 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .homepage-container {
   display: flex;

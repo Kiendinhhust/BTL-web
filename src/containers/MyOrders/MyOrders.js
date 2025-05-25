@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { getUserOrders } from '../../services/orderService';
-import { getImageByPublicId } from '../../services/storeService';
-import './MyOrders.scss';
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { getUserOrders } from "../../services/orderService";
+import { getImageByPublicId } from "../../services/storeService";
+import "./MyOrders.scss";
 
 const MyOrders = (props) => {
   const [orders, setOrders] = useState([]);
@@ -24,24 +24,42 @@ const MyOrders = (props) => {
     setLoading(true);
     try {
       const result = await getUserOrders({ page, size: itemsPerPage });
-      console.log('Orders result:', result);
+      console.log("Orders result:", result);
 
       if (result.success && result.data) {
         setOrders(result.data.products || []);
         setTotalPages(result.data.totalPages || 0);
 
         // Fetch images for the first item of each order
-        const ordersWithItems = result.data.products.filter(order =>
-          order.orderItems && order.orderItems.length > 0
+        const ordersWithItems = result.data.products.filter(
+          (order) => order.orderItems && order.orderItems.length > 0
         );
 
         fetchOrderImages(ordersWithItems);
       } else {
-        toast.error(result.error || 'Không thể tải danh sách đơn hàng');
+        toast.error(result.error || "Không thể tải danh sách đơn hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (error) {
-      console.error('Error fetching orders:', error);
-      toast.error('Đã xảy ra lỗi khi tải danh sách đơn hàng');
+      console.error("Error fetching orders:", error);
+      toast.error("Đã xảy ra lỗi khi tải danh sách đơn hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } finally {
       setLoading(false);
     }
@@ -53,14 +71,20 @@ const MyOrders = (props) => {
 
     for (const order of ordersWithItems) {
       const firstItem = order.orderItems[0];
-      if (firstItem && firstItem.item_image_url && !newImageCache[firstItem.item_image_url]) {
+      if (
+        firstItem &&
+        firstItem.item_image_url &&
+        !newImageCache[firstItem.item_image_url]
+      ) {
         try {
-          const imageResult = await getImageByPublicId(firstItem.item_image_url);
+          const imageResult = await getImageByPublicId(
+            firstItem.item_image_url
+          );
           if (imageResult.success) {
             newImageCache[firstItem.item_image_url] = imageResult.url;
           }
         } catch (error) {
-          console.error('Error fetching image:', error);
+          console.error("Error fetching image:", error);
         }
       }
     }
@@ -75,8 +99,14 @@ const MyOrders = (props) => {
 
   // Format date
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return new Date(dateString).toLocaleDateString('vi-VN', options);
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("vi-VN", options);
   };
 
   // Format price
@@ -84,24 +114,24 @@ const MyOrders = (props) => {
     if (price === undefined || price === null || isNaN(Number(price))) {
       return "0";
     }
-    return Number(price).toLocaleString('vi-VN');
+    return Number(price).toLocaleString("vi-VN");
   };
 
   // Get status class and text
   const getStatusInfo = (status) => {
     switch (status) {
-      case 'pending':
-        return { class: 'status-pending', text: 'Chờ xác nhận' };
-      case 'processing':
-        return { class: 'status-processing', text: 'Đang xử lý' };
-      case 'shipped':
-        return { class: 'status-shipped', text: 'Đang giao hàng' };
-      case 'delivered':
-        return { class: 'status-delivered', text: 'Đã giao hàng' };
-      case 'canceled':
-        return { class: 'status-canceled', text: 'Đã hủy' };
+      case "pending":
+        return { class: "status-pending", text: "Chờ xác nhận" };
+      case "processing":
+        return { class: "status-processing", text: "Đang xử lý" };
+      case "shipped":
+        return { class: "status-shipped", text: "Đang giao hàng" };
+      case "delivered":
+        return { class: "status-delivered", text: "Đã giao hàng" };
+      case "canceled":
+        return { class: "status-canceled", text: "Đã hủy" };
       default:
-        return { class: 'status-unknown', text: status };
+        return { class: "status-unknown", text: status };
     }
   };
 
@@ -120,26 +150,38 @@ const MyOrders = (props) => {
         <div className="no-orders">
           <i className="fas fa-shopping-bag"></i>
           <p>Bạn chưa có đơn hàng nào</p>
-          <Link to="/" className="shop-now-btn">Mua sắm ngay</Link>
+          <Link to="/" className="shop-now-btn">
+            Mua sắm ngay
+          </Link>
         </div>
       ) : (
         <>
           <div className="orders-list">
-            {orders.map(order => (
+            {orders.map((order) => (
               <div key={order.order_id} className="order-card">
                 <div className="order-header">
                   <div className="order-info">
-                    <span className="order-id">Mã đơn hàng: {order.order_code}</span>
-                    <span className="order-date">Ngày đặt: {formatDate(order.created_at)}</span>
+                    <span className="order-id">
+                      Mã đơn hàng: {order.order_code}
+                    </span>
+                    <span className="order-date">
+                      Ngày đặt: {formatDate(order.created_at)}
+                    </span>
                   </div>
-                  <div className={`order-status ${getStatusInfo(order.status).class}`}>
+                  <div
+                    className={`order-status ${
+                      getStatusInfo(order.status).class
+                    }`}
+                  >
                     {getStatusInfo(order.status).text}
                   </div>
                 </div>
 
                 <div className="order-shop">
                   <i className="fas fa-store"></i>
-                  <span>{order.shop?.shop_name || 'Cửa hàng không xác định'}</span>
+                  <span>
+                    {order.shop?.shop_name || "Cửa hàng không xác định"}
+                  </span>
                 </div>
 
                 <div className="order-content">
@@ -147,13 +189,20 @@ const MyOrders = (props) => {
                     <div className="order-item-preview">
                       <div className="item-image">
                         <img
-                          src={imageCache[order.orderItems[0].item_image_url] || '/images/product-placeholder.png'}
-                          alt={order.orderItems[0].item_name || 'Sản phẩm'}
+                          src={
+                            imageCache[order.orderItems[0].item_image_url] ||
+                            "/images/product-placeholder.png"
+                          }
+                          alt={order.orderItems[0].item_name || "Sản phẩm"}
                         />
                       </div>
                       <div className="item-info">
-                        <p className="item-name">{order.orderItems[0].item_name}</p>
-                        <p className="item-quantity">x{order.orderItems[0].quantity}</p>
+                        <p className="item-name">
+                          {order.orderItems[0].item_name}
+                        </p>
+                        <p className="item-quantity">
+                          x{order.orderItems[0].quantity}
+                        </p>
                       </div>
                       {order.orderItems.length > 1 && (
                         <div className="more-items">
@@ -169,9 +218,14 @@ const MyOrders = (props) => {
                 <div className="order-footer">
                   <div className="order-total">
                     <span>Tổng tiền:</span>
-                    <span className="total-price">{formatPrice(order.total_price)} VNĐ</span>
+                    <span className="total-price">
+                      {formatPrice(order.total_price)} VNĐ
+                    </span>
                   </div>
-                  <Link to={`/buyer/my-orders/${order.order_id}`} className="view-detail-btn">
+                  <Link
+                    to={`/buyer/my-orders/${order.order_id}`}
+                    className="view-detail-btn"
+                  >
                     Xem chi tiết
                   </Link>
                 </div>
@@ -182,25 +236,32 @@ const MyOrders = (props) => {
           {totalPages > 1 && (
             <div className="pagination">
               <button
-                onClick={() => currentPage > 0 && setCurrentPage(currentPage - 1)}
+                onClick={() =>
+                  currentPage > 0 && setCurrentPage(currentPage - 1)
+                }
                 disabled={currentPage === 0}
                 className="page-item"
               >
                 <span className="page-link">Trước</span>
               </button>
 
-              {[...Array(totalPages).keys()].map(page => (
+              {[...Array(totalPages).keys()].map((page) => (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`page-item ${currentPage === page ? 'active' : ''}`}
+                  className={`page-item ${
+                    currentPage === page ? "active" : ""
+                  }`}
                 >
                   <span className="page-link">{page + 1}</span>
                 </button>
               ))}
 
               <button
-                onClick={() => currentPage < totalPages - 1 && setCurrentPage(currentPage + 1)}
+                onClick={() =>
+                  currentPage < totalPages - 1 &&
+                  setCurrentPage(currentPage + 1)
+                }
                 disabled={currentPage === totalPages - 1}
                 className="page-item"
               >
@@ -215,7 +276,7 @@ const MyOrders = (props) => {
 };
 
 const mapStateToProps = (state) => ({
-  userInfo: state.admin.userInfo
+  userInfo: state.admin.userInfo,
 });
 
 export default connect(mapStateToProps)(MyOrders);

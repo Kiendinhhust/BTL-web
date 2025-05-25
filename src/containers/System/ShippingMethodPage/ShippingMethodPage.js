@@ -1,51 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import './ShippingMethodPage.scss';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { toast } from "react-toastify";
+import "./ShippingMethodPage.scss";
+import axios from "axios";
 
 const ShippingMethodPage = (props) => {
   const [loading, setLoading] = useState(false);
   const [shippingMethods, setShippingMethods] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchName, setSearchName] = useState('');
-  const [filterActive, setFilterActive] = useState('');
+  const [searchName, setSearchName] = useState("");
+  const [filterActive, setFilterActive] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('create'); // 'create' or 'edit'
+  const [modalMode, setModalMode] = useState("create"); // 'create' or 'edit'
   const [currentMethod, setCurrentMethod] = useState({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     min_delivery_days: 1,
     max_delivery_days: 7,
     cost: 0,
-    is_active: true
+    is_active: true,
   });
 
   // API URL
-  const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3434';
+  const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3434";
 
   // Fetch shipping methods
-  const fetchShippingMethods = async (page = 1, name = searchName, is_active = filterActive) => {
+  const fetchShippingMethods = async (
+    page = 1,
+    name = searchName,
+    is_active = filterActive
+  ) => {
     setLoading(true);
     try {
       const response = await axios.get(`${API_URL}/api/shipping-methods`, {
         params: { page, size: 10, name, is_active },
         headers: {
-          'Authorization': `Bearer ${props.userInfo.accessToken}`
-        }
+          Authorization: `Bearer ${props.userInfo.accessToken}`,
+        },
       });
-      console.log('Shipping methods response:', response.data);
+      console.log("Shipping methods response:", response.data);
       if (response.data.success) {
         setShippingMethods(response.data.methods);
         setTotalPages(response.data.totalPages);
         setCurrentPage(response.data.currentPage);
       } else {
-        toast.error(response.data.message || 'Không thể tải danh sách phương thức vận chuyển');
+        toast.error(
+          response.data.message ||
+            "Không thể tải danh sách phương thức vận chuyển",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          }
+        );
       }
     } catch (error) {
-      console.error('Error fetching shipping methods:', error);
-      toast.error('Đã xảy ra lỗi khi tải danh sách phương thức vận chuyển');
+      console.error("Error fetching shipping methods:", error);
+      toast.error("Đã xảy ra lỗi khi tải danh sách phương thức vận chuyển", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } finally {
       setLoading(false);
     }
@@ -55,8 +81,6 @@ const ShippingMethodPage = (props) => {
   useEffect(() => {
     fetchShippingMethods();
   }, []);
-
-
 
   // Handle search
   const handleSearch = (e) => {
@@ -76,21 +100,21 @@ const ShippingMethodPage = (props) => {
     const { name, value, type, checked } = e.target;
     setCurrentMethod({
       ...currentMethod,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     });
   };
 
   // Open modal for creating new method
   const openCreateModal = () => {
     setCurrentMethod({
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       min_delivery_days: 1,
       max_delivery_days: 7,
       cost: 0,
-      is_active: true
+      is_active: true,
     });
-    setModalMode('create');
+    setModalMode("create");
     setShowModal(true);
   };
 
@@ -98,9 +122,9 @@ const ShippingMethodPage = (props) => {
   const openEditModal = (method) => {
     setCurrentMethod({
       ...method,
-      cost: parseFloat(method.cost)
+      cost: parseFloat(method.cost),
     });
-    setModalMode('edit');
+    setModalMode("edit");
     setShowModal(true);
   };
 
@@ -113,32 +137,62 @@ const ShippingMethodPage = (props) => {
   const saveShippingMethod = async () => {
     // Validate inputs
     if (!currentMethod.name) {
-      toast.error('Vui lòng nhập tên phương thức vận chuyển');
+      toast.error("Vui lòng nhập tên phương thức vận chuyển", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
-    if (currentMethod.cost === undefined || currentMethod.cost === null || isNaN(currentMethod.cost)) {
-      toast.error('Vui lòng nhập chi phí vận chuyển hợp lệ');
+    if (
+      currentMethod.cost === undefined ||
+      currentMethod.cost === null ||
+      isNaN(currentMethod.cost)
+    ) {
+      toast.error("Vui lòng nhập chi phí vận chuyển hợp lệ", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       return;
     }
 
     setLoading(true);
     try {
       let response;
-      if (modalMode === 'create') {
+      if (modalMode === "create") {
         // Create new shipping method
-        response = await axios.post(`${API_URL}/api/shipping-methods`, currentMethod, {
-          headers: {
-            'Authorization': `Bearer ${props.userInfo.accessToken}`
+        response = await axios.post(
+          `${API_URL}/api/shipping-methods`,
+          currentMethod,
+          {
+            headers: {
+              Authorization: `Bearer ${props.userInfo.accessToken}`,
+            },
           }
-        });
+        );
       } else {
         // Update existing shipping method
-        response = await axios.put(`${API_URL}/api/shipping-methods/${currentMethod.shipping_method_id}`, currentMethod, {
-          headers: {
-            'Authorization': `Bearer ${props.userInfo.accessToken}`
+        response = await axios.put(
+          `${API_URL}/api/shipping-methods/${currentMethod.shipping_method_id}`,
+          currentMethod,
+          {
+            headers: {
+              Authorization: `Bearer ${props.userInfo.accessToken}`,
+            },
           }
-        });
+        );
       }
 
       if (response.data.success) {
@@ -146,11 +200,32 @@ const ShippingMethodPage = (props) => {
         closeModal();
         fetchShippingMethods(currentPage);
       } else {
-        toast.error(response.data.message || 'Không thể lưu phương thức vận chuyển');
+        toast.error(
+          response.data.message || "Không thể lưu phương thức vận chuyển",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          }
+        );
       }
     } catch (error) {
-      console.error('Error saving shipping method:', error);
-      toast.error('Đã xảy ra lỗi khi lưu phương thức vận chuyển');
+      console.error("Error saving shipping method:", error);
+      toast.error("Đã xảy ra lỗi khi lưu phương thức vận chuyển", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } finally {
       setLoading(false);
     }
@@ -160,21 +235,50 @@ const ShippingMethodPage = (props) => {
   const toggleStatus = async (id) => {
     setLoading(true);
     try {
-      const response = await axios.patch(`${API_URL}/api/shipping-methods/${id}/toggle-status`, {}, {
-        headers: {
-          'Authorization': `Bearer ${props.userInfo.accessToken}`
+      const response = await axios.patch(
+        `${API_URL}/api/shipping-methods/${id}/toggle-status`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${props.userInfo.accessToken}`,
+          },
         }
-      });
+      );
 
       if (response.data.success) {
         toast.success(response.data.message);
         fetchShippingMethods(currentPage);
       } else {
-        toast.error(response.data.message || 'Không thể thay đổi trạng thái phương thức vận chuyển');
+        toast.error(
+          response.data.message ||
+            "Không thể thay đổi trạng thái phương thức vận chuyển",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          }
+        );
       }
     } catch (error) {
-      console.error('Error toggling shipping method status:', error);
-      toast.error('Đã xảy ra lỗi khi thay đổi trạng thái phương thức vận chuyển');
+      console.error("Error toggling shipping method status:", error);
+      toast.error(
+        "Đã xảy ra lỗi khi thay đổi trạng thái phương thức vận chuyển",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        }
+      );
     } finally {
       setLoading(false);
     }
@@ -196,21 +300,54 @@ const ShippingMethodPage = (props) => {
 
     setLoading(true);
     try {
-      const response = await axios.delete(`${API_URL}/api/shipping-methods/${deleteId}`, {
-        headers: {
-          'Authorization': `Bearer ${props.userInfo.accessToken}`
+      const response = await axios.delete(
+        `${API_URL}/api/shipping-methods/${deleteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${props.userInfo.accessToken}`,
+          },
         }
-      });
+      );
 
       if (response.data.success) {
-        toast.success(response.data.message);
+        toast.success(response.data.message, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
         fetchShippingMethods(currentPage);
       } else {
-        toast.error(response.data.message || 'Không thể xóa phương thức vận chuyển');
+        toast.error(
+          response.data.message || "Không thể xóa phương thức vận chuyển",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeButton: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          }
+        );
       }
     } catch (error) {
-      console.error('Error deleting shipping method:', error);
-      toast.error('Đã xảy ra lỗi khi xóa phương thức vận chuyển');
+      console.error("Error deleting shipping method:", error);
+      toast.error("Đã xảy ra lỗi khi xóa phương thức vận chuyển", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } finally {
       setLoading(false);
       setShowConfirmDialog(false);
@@ -249,19 +386,23 @@ const ShippingMethodPage = (props) => {
     // Add first page and ellipsis if needed
     if (startPage > 1) {
       pages.push(
-        <li key="1" className={currentPage === 1 ? 'active' : ''}>
+        <li key="1" className={currentPage === 1 ? "active" : ""}>
           <button onClick={() => fetchShippingMethods(1)}>1</button>
         </li>
       );
       if (startPage > 2) {
-        pages.push(<li key="ellipsis1" className="ellipsis">...</li>);
+        pages.push(
+          <li key="ellipsis1" className="ellipsis">
+            ...
+          </li>
+        );
       }
     }
 
     // Add page numbers
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
-        <li key={i} className={currentPage === i ? 'active' : ''}>
+        <li key={i} className={currentPage === i ? "active" : ""}>
           <button onClick={() => fetchShippingMethods(i)}>{i}</button>
         </li>
       );
@@ -270,11 +411,20 @@ const ShippingMethodPage = (props) => {
     // Add last page and ellipsis if needed
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
-        pages.push(<li key="ellipsis2" className="ellipsis">...</li>);
+        pages.push(
+          <li key="ellipsis2" className="ellipsis">
+            ...
+          </li>
+        );
       }
       pages.push(
-        <li key={totalPages} className={currentPage === totalPages ? 'active' : ''}>
-          <button onClick={() => fetchShippingMethods(totalPages)}>{totalPages}</button>
+        <li
+          key={totalPages}
+          className={currentPage === totalPages ? "active" : ""}
+        >
+          <button onClick={() => fetchShippingMethods(totalPages)}>
+            {totalPages}
+          </button>
         </li>
       );
     }
@@ -282,7 +432,7 @@ const ShippingMethodPage = (props) => {
     return (
       <div className="custom-pagination">
         <ul>
-          <li className={currentPage === 1 ? 'disabled' : ''}>
+          <li className={currentPage === 1 ? "disabled" : ""}>
             <button
               onClick={() => fetchShippingMethods(currentPage - 1)}
               disabled={currentPage === 1}
@@ -291,7 +441,7 @@ const ShippingMethodPage = (props) => {
             </button>
           </li>
           {pages}
-          <li className={currentPage === totalPages ? 'disabled' : ''}>
+          <li className={currentPage === totalPages ? "disabled" : ""}>
             <button
               onClick={() => fetchShippingMethods(currentPage + 1)}
               disabled={currentPage === totalPages}
@@ -355,30 +505,50 @@ const ShippingMethodPage = (props) => {
           </thead>
           <tbody>
             {shippingMethods.length > 0 ? (
-              shippingMethods.map(method => (
+              shippingMethods.map((method) => (
                 <tr key={method.shipping_method_id}>
                   <td>{method.shipping_method_id}</td>
                   <td>{method.name}</td>
-                  <td>{method.description || 'N/A'}</td>
-                  <td>{method.min_delivery_days} - {method.max_delivery_days}</td>
+                  <td>{method.description || "N/A"}</td>
+                  <td>
+                    {method.min_delivery_days} - {method.max_delivery_days}
+                  </td>
                   <td>{formatPrice(method.cost)} VNĐ</td>
                   <td>
-                    <span className={`status ${method.is_active ? 'active' : 'inactive'}`}>
-                      {method.is_active ? 'Hoạt động' : 'Vô hiệu hóa'}
+                    <span
+                      className={`status ${
+                        method.is_active ? "active" : "inactive"
+                      }`}
+                    >
+                      {method.is_active ? "Hoạt động" : "Vô hiệu hóa"}
                     </span>
                   </td>
                   <td>
                     <div className="actions">
-                      <button className="edit-btn" onClick={() => openEditModal(method)}>
+                      <button
+                        className="edit-btn"
+                        onClick={() => openEditModal(method)}
+                      >
                         <i className="fas fa-edit"></i>
                       </button>
                       <button
-                        className={`toggle-btn ${method.is_active ? 'deactivate' : 'activate'}`}
+                        className={`toggle-btn ${
+                          method.is_active ? "deactivate" : "activate"
+                        }`}
                         onClick={() => toggleStatus(method.shipping_method_id)}
                       >
-                        <i className={`fas ${method.is_active ? 'fa-toggle-off' : 'fa-toggle-on'}`}></i>
+                        <i
+                          className={`fas ${
+                            method.is_active ? "fa-toggle-off" : "fa-toggle-on"
+                          }`}
+                        ></i>
                       </button>
-                      <button className="delete-btn" onClick={() => deleteShippingMethod(method.shipping_method_id)}>
+                      <button
+                        className="delete-btn"
+                        onClick={() =>
+                          deleteShippingMethod(method.shipping_method_id)
+                        }
+                      >
                         <i className="fas fa-trash-alt"></i>
                       </button>
                     </div>
@@ -387,7 +557,9 @@ const ShippingMethodPage = (props) => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="no-data">Không có dữ liệu</td>
+                <td colSpan="7" className="no-data">
+                  Không có dữ liệu
+                </td>
               </tr>
             )}
           </tbody>
@@ -402,7 +574,11 @@ const ShippingMethodPage = (props) => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h2>{modalMode === 'create' ? 'Thêm phương thức vận chuyển mới' : 'Chỉnh sửa phương thức vận chuyển'}</h2>
+              <h2>
+                {modalMode === "create"
+                  ? "Thêm phương thức vận chuyển mới"
+                  : "Chỉnh sửa phương thức vận chuyển"}
+              </h2>
               <button className="close-btn" onClick={closeModal}>
                 <i className="fas fa-times"></i>
               </button>
@@ -425,7 +601,7 @@ const ShippingMethodPage = (props) => {
                 <label>Mô tả</label>
                 <textarea
                   name="description"
-                  value={currentMethod.description || ''}
+                  value={currentMethod.description || ""}
                   onChange={handleInputChange}
                   placeholder="Nhập mô tả phương thức vận chuyển"
                 />
@@ -478,13 +654,19 @@ const ShippingMethodPage = (props) => {
                   checked={currentMethod.is_active}
                   onChange={handleInputChange}
                 />
-                <label htmlFor="is_active">Kích hoạt phương thức vận chuyển</label>
+                <label htmlFor="is_active">
+                  Kích hoạt phương thức vận chuyển
+                </label>
               </div>
             </div>
 
             <div className="modal-footer">
-              <button className="cancel-btn" onClick={closeModal}>Hủy</button>
-              <button className="save-btn" onClick={saveShippingMethod}>Lưu</button>
+              <button className="cancel-btn" onClick={closeModal}>
+                Hủy
+              </button>
+              <button className="save-btn" onClick={saveShippingMethod}>
+                Lưu
+              </button>
             </div>
           </div>
         </div>
@@ -501,8 +683,12 @@ const ShippingMethodPage = (props) => {
               <p>Bạn có chắc chắn muốn xóa phương thức vận chuyển này?</p>
             </div>
             <div className="confirm-dialog-footer">
-              <button className="cancel-btn" onClick={cancelDelete}>Không</button>
-              <button className="confirm-btn" onClick={confirmDelete}>Có</button>
+              <button className="cancel-btn" onClick={cancelDelete}>
+                Không
+              </button>
+              <button className="confirm-btn" onClick={confirmDelete}>
+                Có
+              </button>
             </div>
           </div>
         </div>
@@ -513,7 +699,7 @@ const ShippingMethodPage = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    userInfo: state.admin.userInfo
+    userInfo: state.admin.userInfo,
   };
 };
 

@@ -88,7 +88,9 @@ const Product = (props) => {
 
       <div className="product-shop">
         <i className="fas fa-store"></i>
-        <span>{props.product.Shop?.shop_name || "Cửa hàng không xác định"}</span>
+        <span>
+          {props.product.Shop?.shop_name || "Cửa hàng không xác định"}
+        </span>
       </div>
 
       <div className="product-rating-container">
@@ -96,7 +98,9 @@ const Product = (props) => {
           {[...Array(5)].map((_, index) => (
             <i
               key={index}
-              className={`fas fa-star ${index < Math.round(props.product.rating || 0) ? 'filled' : ''}`}
+              className={`fas fa-star ${
+                index < Math.round(props.product.rating || 0) ? "filled" : ""
+              }`}
             ></i>
           ))}
           <span className="rating-value">({props.product.rating || 0})</span>
@@ -105,11 +109,20 @@ const Product = (props) => {
       <div className="product-price">
         {info?.sale_price ? (
           <>
-            <span className="original-price">{formatPrice(info.price)} VNĐ</span>
-            <span className="sale-price">{formatPrice(info.sale_price)} VNĐ</span>
+            <span className="original-price">
+              {formatPrice(info.price)} VNĐ
+            </span>
+            <span className="sale-price">
+              {formatPrice(info.sale_price)} VNĐ
+            </span>
           </>
         ) : (
-          <span>{formatPrice(info?.price)} VNĐ</span>
+          <>
+            <span className="original-price">
+              <div></div>
+            </span>
+            <span>{formatPrice(info?.price)} VNĐ</span>
+          </>
         )}
       </div>
       <div className="product-stock">
@@ -132,10 +145,6 @@ const Product = (props) => {
       <div className="product-variant-info">
         {info && (
           <div className="variant-details">
-            <div className="variant-sku">
-              <span className="label">SKU:</span>
-              <span className="value">{info.sku || "N/A"}</span>
-            </div>
             {info.attributes && Object.keys(info.attributes).length > 0 && (
               <div className="variant-attributes">
                 {Object.entries(info.attributes).map(([key, value], idx) => (
@@ -154,14 +163,14 @@ const Product = (props) => {
         <div className="attributes-title">Chọn biến thể:</div>
         <div className="attributes-buttons">
           {Array.isArray(items) && items.length > 0 ? (
-            items.map((item, index) => {
+            items.slice(0, 2).map((item, index) => {
               // Get attribute values for display
               let displayText = item.sku || `Biến thể ${index + 1}`;
 
               if (item.attributes && Object.keys(item.attributes).length > 0) {
                 const attributeValues = Object.values(item.attributes);
                 if (attributeValues.length > 0) {
-                  displayText = attributeValues.join(' - ');
+                  displayText = attributeValues.join(" - ");
                 }
               }
 
@@ -170,9 +179,13 @@ const Product = (props) => {
               return (
                 <button
                   key={index}
-                  className={`product-attributes-button ${isSelected ? "selected" : ""}`}
+                  className={`product-attributes-button ${
+                    isSelected ? "selected" : ""
+                  }`}
                   onClick={() => setInfo(item)}
-                  title={`${item.sku || ''} - ${formatPrice(item.price)} VNĐ - SL: ${item.stock || 0}`}
+                  title={`${item.sku || ""} - ${formatPrice(
+                    item.price
+                  )} VNĐ - SL: ${item.stock || 0}`}
                 >
                   {displayText}
                 </button>
@@ -181,6 +194,10 @@ const Product = (props) => {
           ) : (
             <div className="no-variants">Không có biến thể</div>
           )}
+          {items.length === 0 && <div style={{ height: "48px" }} />}
+          {items.length > 2 ? (
+            <button className="product-etc">...</button>
+          ) : null}
         </div>
       </div>
       {state.checkCheckMark === true ? (
@@ -195,12 +212,14 @@ const Product = (props) => {
           className={`added-to-cart js-added-to-cart-${props.product.product_id}`}
         />
       )}
-      <button
-        className={`addToCart-button button-primary js-add-to-cart`}
-        onClick={() => handleAddToCart()}
-      >
-        Add to Cart
-      </button>
+      <div className="addToCart-container">
+        <button
+          className={`addToCart-button button-primary js-add-to-cart`}
+          onClick={() => handleAddToCart()}
+        >
+          Add to Cart
+        </button>
+      </div>
     </div>
   );
 };

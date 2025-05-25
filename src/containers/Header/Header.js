@@ -147,15 +147,24 @@ class Header extends Component {
             currentPath={location.pathname}
           />
         </div>
-        <Link to="/home">
+        {/* <Link to="/home">
           <img className="header-home" src={homeImage} alt="Header Cart"></img>
-        </Link>
-        <Link to="/cart">
-          <img className="header2-cart" src={cartImage} alt="Header Cart"></img>
-          <div className="header2-nav-cart-count">
-            {this.props.cartQuantity}
-          </div>
-        </Link>
+        </Link> */}
+        <div>
+          <Link to="/cart">
+            <div className="header2-cart-container">
+              <img
+                className="header2-cart"
+                src={cartImage}
+                alt="Header Cart"
+              ></img>
+              <div className="header2-nav-cart-count">
+                {this.props.cartQuantity}
+              </div>
+            </div>
+          </Link>
+        </div>
+
         <div className="header-search-container">
           <input
             value={this.props.search || ""}

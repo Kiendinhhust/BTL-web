@@ -49,7 +49,7 @@
             "system-administrator": {
                 "header": "Quản trị hệ thống",
                 "user-manage": "Quản lý người sử dụng",
-                
+                "shipping-method":"Quản lý phương thức vận chuyển",
                 "user-address": "Quản lý địa chỉ",
                 "system-manage": "Quản lý hệ thống",
                 "register-package-group-or-account": "Đăng ký gói dịch vụ cho nhóm/tài khoản"
