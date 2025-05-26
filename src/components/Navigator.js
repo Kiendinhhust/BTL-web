@@ -206,15 +206,14 @@ class Navigator extends Component {
   }
 
   render() {
-    const { menus, children, link, location, onLinkClick, currentPath } =
-      this.props;
+    const { menus, location, onLinkClick, currentPath } = this.props;
     const pathname = currentPath || (location && location.pathname);
-    const isActive = link
-      ? location.pathname === link
-      : children &&
-        children.some(
-          (child) => child.link && location.pathname.startsWith(child.link)
-        );
+    // const isActive = link
+    //   ? location.pathname === link
+    //   : children &&
+    //     children.some(
+    //       (child) => child.link && location.pathname.startsWith(child.link)
+    //     );
     return (
       <ul className="navigator-menu list-unstyled">
         {menus.map((group, groupIndex) => (

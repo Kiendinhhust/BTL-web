@@ -39,7 +39,7 @@ const ShippingMethodPage = (props) => {
           Authorization: `Bearer ${props.userInfo.accessToken}`,
         },
       });
-      console.log("Shipping methods response:", response.data);
+      // console.log("Shipping methods response:", response.data);
       if (response.data.success) {
         setShippingMethods(response.data.methods);
         setTotalPages(response.data.totalPages);

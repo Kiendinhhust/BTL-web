@@ -13,7 +13,7 @@ const productReducer = async (state = initialState, action) => {
         url: `${process.env.REACT_APP_BACKEND_URL}/api/products?page=1`,
         responseType: "stream",
       }).then(function (response) {
-        console.log(response.data);
+        // console.log(response.data);
         products = response.data.products;
       });
       return {

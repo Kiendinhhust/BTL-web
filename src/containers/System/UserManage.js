@@ -1,13 +1,16 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
-import { toast } from 'react-toastify';
-import { fetchAllUsersStart, deleteUser } from '../../store/actions/userActions';
-import './UserManage.scss';
-import ModalUser from './ModalUser.js';
-import ModalEditUser from './ModalEditUser.js';
-import Lightbox from 'react-image-lightbox';
-import 'react-image-lightbox/style.css';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
+import { toast } from "react-toastify";
+import {
+  fetchAllUsersStart,
+  deleteUser,
+} from "../../store/actions/userActions";
+import "./UserManage.scss";
+import ModalUser from "./ModalUser.js";
+import ModalEditUser from "./ModalEditUser.js";
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
 
 class UserManage extends Component {
   constructor(props) {
@@ -18,10 +21,10 @@ class UserManage extends Component {
       userEdit: {},
       isOpenLightbox: false,
       photoIndex: 0,
-      currentImageUrl: '',
+      currentImageUrl: "",
       isLoading: false,
       isShowConfirmModal: false,
-      userToDelete: {}
+      userToDelete: {},
     };
   }
 
@@ -40,42 +43,42 @@ class UserManage extends Component {
 
   handleAddNewUser = () => {
     this.setState({
-      isOpenModalUser: true
+      isOpenModalUser: true,
     });
-  }
+  };
 
   toggleUserModal = () => {
     this.setState({
-      isOpenModalUser: !this.state.isOpenModalUser
+      isOpenModalUser: !this.state.isOpenModalUser,
     });
-  }
+  };
 
   toggleUserEditModal = () => {
     this.setState({
-      isOpenModalEditUser: !this.state.isOpenModalEditUser
+      isOpenModalEditUser: !this.state.isOpenModalEditUser,
     });
-  }
+  };
 
   handleEditUser = (user) => {
     this.setState({
       isOpenModalEditUser: true,
-      userEdit: user
+      userEdit: user,
     });
-  }
+  };
 
   handleConfirmDeleteUser = (user) => {
     this.setState({
       isShowConfirmModal: true,
-      userToDelete: user
+      userToDelete: user,
     });
-  }
+  };
 
   toggleConfirmModal = () => {
     this.setState({
       isShowConfirmModal: !this.state.isShowConfirmModal,
-      userToDelete: {}
+      userToDelete: {},
     });
-  }
+  };
 
   handleDeleteUser = async () => {
     let user = this.state.userToDelete;
@@ -113,33 +116,45 @@ class UserManage extends Component {
         });
       }
     }, 600);
-  }
+  };
 
   openLightbox = (imageUrl) => {
-    if (imageUrl && imageUrl !== 'https://via.placeholder.com/40?text=User') {
+    if (imageUrl && imageUrl !== "https://via.placeholder.com/40?text=User") {
       this.setState({
         isOpenLightbox: true,
-        currentImageUrl: imageUrl
+        currentImageUrl: imageUrl,
       });
     }
-  }
+  };
 
   render() {
     let { users } = this.props;
-    let { isOpenModalUser, isOpenModalEditUser, userEdit, isOpenLightbox, currentImageUrl, isLoading, isShowConfirmModal,userToDelete } = this.state;
-    
-    console.log('userAddressusermanage', this.props.userAddress);
+    let {
+      isOpenModalUser,
+      isOpenModalEditUser,
+      userEdit,
+      isOpenLightbox,
+      currentImageUrl,
+      isLoading,
+      isShowConfirmModal,
+      userToDelete,
+    } = this.state;
+
+    // console.log('userAddressusermanage', this.props.userAddress);
     return (
       <div className="users-container">
         {isLoading ? (
           <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Đang tải thông tin...</p>
+            <div className="loading-spinner"></div>
+            <p>Đang tải thông tin...</p>
           </div>
         ) : (
           <>
             <div className="title">
-              <FormattedMessage id="manage-user.title" defaultMessage="Quản lý người dùng" />
+              <FormattedMessage
+                id="manage-user.title"
+                defaultMessage="Quản lý người dùng"
+              />
             </div>
 
             <div className="mx-1">
@@ -166,25 +181,32 @@ class UserManage extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {users && users.length > 0 &&
+                  {users &&
+                    users.length > 0 &&
                     users.map((item, index) => {
                       // Lấy thông tin từ các đối tượng lồng nhau
                       const userInfo = item.UserInfo ? item.UserInfo : {};
-                      const address = item.UserAddresses && item.UserAddresses.length > 0
-                        ? item.UserAddresses[0].address_infor
-                        : '';
+                      const address =
+                        item.UserAddresses && item.UserAddresses.length > 0
+                          ? item.UserAddresses[0].address_infor
+                          : "";
 
                       // Tạo URL ảnh từ base64 nếu có
-                      let imageUrl = 'https://avatar.iran.liara.run/public';
+                      let imageUrl = "https://avatar.iran.liara.run/public";
                       try {
-                        if (userInfo && userInfo.img && userInfo.img.data.length > 0) {
-
-                          imageUrl = Buffer.from(userInfo.img, 'base64').toString('binary');
+                        if (
+                          userInfo &&
+                          userInfo.img &&
+                          userInfo.img.data.length > 0
+                        ) {
+                          imageUrl = Buffer.from(
+                            userInfo.img,
+                            "base64"
+                          ).toString("binary");
                         } else {
-
                         }
                       } catch (error) {
-                        console.error('Lỗi xử lý ảnh:', error);
+                        console.error("Lỗi xử lý ảnh:", error);
                       }
 
                       return (
@@ -195,12 +217,12 @@ class UserManage extends Component {
                               className="user-image"
                               style={{
                                 backgroundImage: `url(${imageUrl})`,
-                                width: '40px',
-                                height: '40px',
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                borderRadius: '50%',
-                                cursor: 'pointer'
+                                width: "40px",
+                                height: "40px",
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                borderRadius: "50%",
+                                cursor: "pointer",
                               }}
                               onClick={() => this.openLightbox(imageUrl)}
                             ></div>
@@ -226,8 +248,7 @@ class UserManage extends Component {
                           </td>
                         </tr>
                       );
-                    })
-                  }
+                    })}
                 </tbody>
               </table>
             </div>
@@ -237,13 +258,13 @@ class UserManage extends Component {
               toggleFromParent={this.toggleUserModal}
             />
 
-            {isOpenModalEditUser &&
+            {isOpenModalEditUser && (
               <ModalEditUser
                 isOpen={isOpenModalEditUser}
                 toggleFromParent={this.toggleUserEditModal}
                 currentUser={userEdit}
               />
-            }
+            )}
 
             {isOpenLightbox && (
               <Lightbox
@@ -251,64 +272,92 @@ class UserManage extends Component {
                 onCloseRequest={() => this.setState({ isOpenLightbox: false })}
                 reactModalStyle={{
                   overlay: {
-                    zIndex: 1050
+                    zIndex: 1050,
                   },
                   content: {
-                    zIndex: 1060
-                  }
+                    zIndex: 1060,
+                  },
                 }}
               />
             )}
 
-{isShowConfirmModal && (
-  <>
-    <div className="confirm-modal" tabIndex="-1" role="dialog">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title">
-            <i className="fas fa-exclamation-triangle"></i>
-            Xác nhận xóa người dùng
-          </h5>
-          <button type="button" className="close" onClick={this.toggleConfirmModal}>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div className="modal-body">
-          <p>Bạn có chắc chắn muốn xóa người dùng <strong>{userToDelete.username}</strong>?</p>
-          <p>Hành động này không thể hoàn tác.</p>
+            {isShowConfirmModal && (
+              <>
+                <div className="confirm-modal" tabIndex="-1" role="dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title">
+                        <i className="fas fa-exclamation-triangle"></i>
+                        Xác nhận xóa người dùng
+                      </h5>
+                      <button
+                        type="button"
+                        className="close"
+                        onClick={this.toggleConfirmModal}
+                      >
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div className="modal-body">
+                      <p>
+                        Bạn có chắc chắn muốn xóa người dùng{" "}
+                        <strong>{userToDelete.username}</strong>?
+                      </p>
+                      <p>Hành động này không thể hoàn tác.</p>
 
-          <div className="user-info-preview">
-            {userToDelete.UserInfo && userToDelete.UserInfo.img ? (
-              <img
-                src={Buffer.from(userToDelete.UserInfo.img, 'base64').toString('binary')}
-                alt={userToDelete.username}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://avatar.iran.liara.run/public';
-                }}
-              />
-            ) : (
-              <img src="https://avatar.iran.liara.run/public" alt="Default avatar" />
+                      <div className="user-info-preview">
+                        {userToDelete.UserInfo && userToDelete.UserInfo.img ? (
+                          <img
+                            src={Buffer.from(
+                              userToDelete.UserInfo.img,
+                              "base64"
+                            ).toString("binary")}
+                            alt={userToDelete.username}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "https://avatar.iran.liara.run/public";
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src="https://avatar.iran.liara.run/public"
+                            alt="Default avatar"
+                          />
+                        )}
+                        <div className="user-info-text">
+                          <p>
+                            <strong>Email:</strong>{" "}
+                            {userToDelete.UserInfo?.email || "N/A"}
+                          </p>
+                          <p>
+                            <strong>Vai trò:</strong>{" "}
+                            {userToDelete.role || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={this.toggleConfirmModal}
+                      >
+                        <i className="fas fa-times"></i> Hủy
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={this.handleDeleteUser}
+                      >
+                        <i className="fas fa-trash"></i> Xóa
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-backdrop fade show"></div>
+              </>
             )}
-            <div className="user-info-text">
-              <p><strong>Email:</strong> {userToDelete.UserInfo?.email || 'N/A'}</p>
-              <p><strong>Vai trò:</strong> {userToDelete.role || 'N/A'}</p>
-            </div>
-          </div>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={this.toggleConfirmModal}>
-            <i className="fas fa-times"></i> Hủy
-          </button>
-          <button type="button" className="btn btn-danger" onClick={this.handleDeleteUser}>
-            <i className="fas fa-trash"></i> Xóa
-          </button>
-        </div>
-      </div>
-    </div>
-    <div className="modal-backdrop fade show"></div>
-  </>
-)}
           </>
         )}
       </div>
@@ -316,18 +365,17 @@ class UserManage extends Component {
   }
 }
 
-
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     userAddress: state.userAddress,
-    users: state.user.users
+    users: state.user.users,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     fetchAllUsers: () => dispatch(fetchAllUsersStart()),
-    deleteUser: (userId) => dispatch(deleteUser(userId))
+    deleteUser: (userId) => dispatch(deleteUser(userId)),
   };
 };
 

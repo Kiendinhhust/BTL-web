@@ -1,14 +1,14 @@
 import "./SellerOrders.scss";
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   getShopOrders,
   getOrderDetails,
   updateOrderStatus,
 } from "../../services/orderService";
-import { getImageByPublicId } from "../../services/storeService";
+// import { getImageByPublicId } from "../../services/storeService";
 
 const SellerOrders = (props) => {
   const [orders, setOrders] = useState([]);
@@ -31,8 +31,8 @@ const SellerOrders = (props) => {
     try {
       // Get shop_id from userInfo
       const shopId = props.userInfo?.shop;
-      console.log("User Info:", props.userInfo);
-      console.log("Shop ID:", shopId);
+      // console.log("User Info:", props.userInfo);
+      // console.log("Shop ID:", shopId);
       if (!shopId) {
         toast.error("Không tìm thấy thông tin cửa hàng", {
           position: "top-right",
@@ -49,7 +49,7 @@ const SellerOrders = (props) => {
       }
 
       const result = await getShopOrders(shopId, { page, size: itemsPerPage });
-      console.log("Shop orders result:", result);
+      // console.log("Shop orders result:", result);
 
       if (result.success && result.data) {
         setOrders(result.data.products || []);
@@ -102,9 +102,7 @@ const SellerOrders = (props) => {
         !newImageCache[firstItem.item_image_url]
       ) {
         try {
-          const imageResult = await getImageByPublicId(
-            firstItem.item_image_url
-          );
+          const imageResult = firstItem.item_image_url;
           if (imageResult.success) {
             newImageCache[firstItem.item_image_url] = imageResult.url;
           }

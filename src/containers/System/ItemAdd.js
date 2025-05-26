@@ -26,7 +26,7 @@ const ItemAdd = (props) => {
     const formData = new FormData();
     let image_url;
     formData.append("image", file);
-    console.log(file);
+    // console.log(file);
     await LoginHack;
     await axios
       .post(
@@ -45,7 +45,7 @@ const ItemAdd = (props) => {
       .catch(function (error) {
         console.log(error);
       });
-    console.log("Public ID:", image_url);
+    // console.log("Public ID:", image_url);
     await axios
       .post(
         `${process.env.REACT_APP_BACKEND_URL}/api/products/add-item/${props.product_id}`,
@@ -63,7 +63,7 @@ const ItemAdd = (props) => {
         }
       )
       .then(function (response) {
-        console.log(response);
+        // console.log(response);
       })
       .catch(function (error) {
         console.log(error);

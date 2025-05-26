@@ -52,7 +52,7 @@ class Login extends Component {
         this.state.username,
         this.state.password
       );
-      console.log("check", response.data.accessToken);
+      // console.log("check", response.data.accessToken);
       if (response && response.data.accessToken) {
         // Tạo đối tượng userInfo  từ phản hồi API
         let userInfo = {
@@ -64,7 +64,7 @@ class Login extends Component {
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
         };
-        console.log("check", userInfo);
+        // console.log("check", userInfo);
 
         // Lưu thông tin đăng nhập vào Redux
         this.props.adminLoginSuccess(userInfo);

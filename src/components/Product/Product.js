@@ -17,9 +17,9 @@ const Product = (props) => {
 
   // Use items passed from HomePage
   const items = Array.isArray(props.items) ? props.items : [];
-  console.log("Items:", items);
+  // console.log("Items:", items);
   useEffect(() => {
-    console.log("Product items:", items);
+    // console.log("Product items:", items);
 
     // Set the first item as default if available
     if (items && items.length > 0 && !info) {
@@ -213,12 +213,14 @@ const Product = (props) => {
         />
       )}
       <div className="addToCart-container">
-        <button
-          className={`addToCart-button button-primary js-add-to-cart`}
-          onClick={() => handleAddToCart()}
-        >
-          Add to Cart
-        </button>
+        {items.length > 0 && (
+          <button
+            className={`addToCart-button button-primary js-add-to-cart`}
+            onClick={() => handleAddToCart()}
+          >
+            Add to Cart
+          </button>
+        )}
       </div>
     </div>
   );

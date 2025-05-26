@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getUserOrders } from "../../services/orderService";
-import { getImageByPublicId } from "../../services/storeService";
+// import { getImageByPublicId } from "../../services/storeService";
 import "./MyOrders.scss";
 
 const MyOrders = (props) => {
@@ -24,7 +24,7 @@ const MyOrders = (props) => {
     setLoading(true);
     try {
       const result = await getUserOrders({ page, size: itemsPerPage });
-      console.log("Orders result:", result);
+      // console.log("Orders result:", result);
 
       if (result.success && result.data) {
         setOrders(result.data.products || []);
@@ -77,9 +77,8 @@ const MyOrders = (props) => {
         !newImageCache[firstItem.item_image_url]
       ) {
         try {
-          const imageResult = await getImageByPublicId(
-            firstItem.item_image_url
-          );
+          const imageResult = firstItem.item_image_url;
+          // console.log(firstItem);
           if (imageResult.success) {
             newImageCache[firstItem.item_image_url] = imageResult.url;
           }
@@ -165,7 +164,7 @@ const MyOrders = (props) => {
                       Mã đơn hàng: {order.order_code}
                     </span>
                     <span className="order-date">
-                      Ngày đặt: {formatDate(order.created_at)}
+                      Ngày đặt: {formatDate(order.createdAt)}
                     </span>
                   </div>
                   <div
@@ -190,8 +189,8 @@ const MyOrders = (props) => {
                       <div className="item-image">
                         <img
                           src={
-                            imageCache[order.orderItems[0].item_image_url] ||
-                            "/images/product-placeholder.png"
+                            order.orderItems[0].item_image_url ||
+                            "https://placehold.co/400x400?text=Item"
                           }
                           alt={order.orderItems[0].item_name || "Sản phẩm"}
                         />

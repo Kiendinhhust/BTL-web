@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import upload_area from "../../assets/images/upload_area.svg";
+// import upload_area from "../../assets/images/upload_area.svg";
 import { addProduct } from "../../store/actions/productActions";
 import "./ProductAdd.scss";
 import checkmark from "../../assets/images/icons/checkmark.png";
 import axios from "axios";
-import {
-  useHistory,
-  useLocation,
-} from "react-router-dom/cjs/react-router-dom.min";
-import { accessToken, LoginHack, loginHack } from "./LoginHack";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { accessToken, LoginHack } from "./LoginHack";
 const ProductAdd = (props) => {
   const history = useHistory();
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
   const [productDetails, setProductDetails] = useState({
     title: "",
     description: "",
     category: "Quần áo",
   });
-  const [keywords, setKeywords] = useState([]);
+  // const [keywords, setKeywords] = useState([]);
   const [added, setAdded] = useState({
     checkCheckMark: false,
     timeOut: null,
@@ -40,7 +37,7 @@ const ProductAdd = (props) => {
         }
       )
       .then(function (response) {
-        console.log(response);
+        // console.log(response);
       })
       .catch(function (error) {
         console.log(error);
@@ -67,25 +64,25 @@ const ProductAdd = (props) => {
       clearTimeout(added.timeOut);
     };
   }, [added.timeOut]);
-  const imageHandler = (e) => {
-    const file = e.target.files[0];
-    setImage(file);
-    setProductDetails({ ...productDetails, image: file });
-  };
+  // const imageHandler = (e) => {
+  //   const file = e.target.files[0];
+  //   setImage(file);
+  //   setProductDetails({ ...productDetails, image: file });
+  // };
 
   const changeHandler = (e) => {
     setProductDetails({ ...productDetails, [e.target.name]: e.target.value });
   };
 
-  const addKeyword = () => {
-    setKeywords([...keywords, ""]);
-  };
+  // const addKeyword = () => {
+  //   setKeywords([...keywords, ""]);
+  // };
 
-  const handleKeywordChange = (index, value) => {
-    const newKeywords = [...keywords];
-    newKeywords[index] = value;
-    setKeywords(newKeywords);
-  };
+  // const handleKeywordChange = (index, value) => {
+  //   const newKeywords = [...keywords];
+  //   newKeywords[index] = value;
+  //   setKeywords(newKeywords);
+  // };
 
   return (
     <div className="productadd-container">

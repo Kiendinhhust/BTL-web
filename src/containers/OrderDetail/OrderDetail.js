@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Link, useParams, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getOrderDetails } from "../../services/orderService";
-import { getImageByPublicId } from "../../services/storeService";
+// import { getImageByPublicId } from "../../services/storeService";
 
 const OrderDetail = (props) => {
   const { orderId } = useParams();
@@ -17,13 +17,13 @@ const OrderDetail = (props) => {
   useEffect(() => {
     fetchOrderDetails();
   }, [orderId]);
-
+  // console.log(order);
   // Fetch order details from API
   const fetchOrderDetails = async () => {
     setLoading(true);
     try {
       const result = await getOrderDetails(orderId);
-      console.log("Order details result:", result);
+      // console.log("Order details result:", result);
 
       if (result.success && result.data) {
         setOrder(result.data);
@@ -66,13 +66,14 @@ const OrderDetail = (props) => {
     const newImageCache = { ...imageCache };
 
     for (const item of orderItems) {
-      if (item.item_image_url && !newImageCache[item.item_image_url]) {
+      if (item.item_image_url && !newImageCache[item.image_url]) {
         try {
-          const imageResult = await getImageByPublicId(item.item_image_url);
-          console.log("Image result:", imageResult);
+          const imageResult = item.item_image_url;
+          // console.log("Image result:", imageResult);
           if (imageResult.success) {
-            newImageCache[item.item_image_url] = imageResult.url;
+            newImageCache[imageResult] = imageResult;
           }
+          // console.log(imageResult);
         } catch (error) {
           console.error("Error fetching image:", error);
         }
@@ -182,7 +183,7 @@ const OrderDetail = (props) => {
               <div className="order-basic-info">
                 <h2>Đơn hàng #{order.order_code}</h2>
                 <p className="order-date">
-                  Ngày đặt: {formatDate(order.created_at)}
+                  Ngày đặt: {formatDate(order.createdAt)}
                 </p>
               </div>
               <div
@@ -201,14 +202,14 @@ const OrderDetail = (props) => {
           <div className="order-items-section">
             <h3>Sản phẩm</h3>
             <div className="order-items-list">
-              {order.orderItems &&
-                order.orderItems.map((item) => (
+              {order?.orderItems &&
+                order?.orderItems.map((item) => (
                   <div key={item.order_item_id} className="order-item">
                     <div className="item-image">
                       <img
                         src={
-                          imageCache[item.item_image_url] ||
-                          "/images/product-placeholder.png"
+                          item.item_image_url ||
+                          "https://placehold.co/400x400?text=Item"
                         }
                         alt={item.item_name || "Sản phẩm"}
                       />
@@ -260,22 +261,22 @@ const OrderDetail = (props) => {
           <div className="order-details-grid">
             <div className="shipping-info-section">
               <h3>Thông tin giao hàng</h3>
-              {order.orderShipping ? (
+              {order?.orderShipping ? (
                 <div className="shipping-details">
                   <div className="shipping-address">
                     <h4>Địa chỉ giao hàng</h4>
-                    {order.orderShipping.shippingAddress ? (
+                    {order?.orderShipping.shippingAddress ? (
                       <div className="address-info">
                         <p className="address-type">
-                          {order.orderShipping.shippingAddress.type === "home"
+                          {order?.orderShipping.shippingAddress.type === "home"
                             ? "Nhà riêng"
-                            : order.orderShipping.shippingAddress.type ===
+                            : order?.orderShipping.shippingAddress.type ===
                               "office"
                             ? "Văn phòng"
                             : "Địa chỉ khác"}
                         </p>
                         <p className="address-line">
-                          {order.orderShipping.shippingAddress.address_infor}
+                          {order?.orderShipping.shippingAddress.address_infor}
                         </p>
                       </div>
                     ) : (
@@ -285,20 +286,26 @@ const OrderDetail = (props) => {
 
                   <div className="shipping-method">
                     <h4>Phương thức vận chuyển</h4>
-                    {order.orderShipping.shippingMethod ? (
+                    {order?.orderShipping.shippingMethod ? (
                       <div className="method-info">
                         <p className="method-name">
-                          {order.orderShipping.shippingMethod.name}
+                          {order?.orderShipping.shippingMethod.name}
                         </p>
                         <p className="method-delivery">
                           Thời gian giao hàng:{" "}
-                          {order.orderShipping.shippingMethod.min_delivery_days}{" "}
+                          {
+                            order?.orderShipping.shippingMethod
+                              .min_delivery_days
+                          }{" "}
                           -{" "}
-                          {order.orderShipping.shippingMethod.max_delivery_days}{" "}
+                          {
+                            order?.orderShipping.shippingMethod
+                              .max_delivery_days
+                          }{" "}
                           ngày
                         </p>
                         <p className="method-cost">
-                          {formatPrice(order.orderShipping.shipping_cost)} VNĐ
+                          {formatPrice(order?.orderShipping.shipping_cost)} VNĐ
                         </p>
                       </div>
                     ) : (
@@ -308,11 +315,11 @@ const OrderDetail = (props) => {
                     )}
                   </div>
 
-                  {order.orderShipping.tracking_number && (
+                  {order?.orderShipping.tracking_number && (
                     <div className="tracking-info">
                       <h4>Mã vận đơn</h4>
                       <p className="tracking-number">
-                        {order.orderShipping.tracking_number}
+                        {order?.orderShipping.tracking_number}
                       </p>
                     </div>
                   )}
@@ -321,23 +328,23 @@ const OrderDetail = (props) => {
                     <h4>Trạng thái vận chuyển</h4>
                     <div
                       className={`status-badge ${
-                        getStatusInfo(order.orderShipping.status).class
+                        getStatusInfo(order?.orderShipping.status).class
                       }`}
                     >
-                      {getStatusInfo(order.orderShipping.status).text}
+                      {getStatusInfo(order?.orderShipping.status).text}
                     </div>
 
-                    {order.orderShipping.shipped_at && (
+                    {order?.orderShipping.shipped_at && (
                       <p className="shipped-date">
                         Ngày gửi hàng:{" "}
-                        {formatDate(order.orderShipping.shipped_at)}
+                        {formatDate(order?.orderShipping.shipped_at)}
                       </p>
                     )}
 
-                    {order.orderShipping.delivered_at && (
+                    {order?.orderShipping.delivered_at && (
                       <p className="delivered-date">
                         Ngày nhận hàng:{" "}
-                        {formatDate(order.orderShipping.delivered_at)}
+                        {formatDate(order?.orderShipping.delivered_at)}
                       </p>
                     )}
                   </div>
@@ -349,7 +356,7 @@ const OrderDetail = (props) => {
 
             <div className="payment-info-section">
               <h3>Thông tin thanh toán</h3>
-              {order.payments ? (
+              {order?.payments ? (
                 <div className="payment-details">
                   <div className="payment-method">
                     <h4>Phương thức thanh toán</h4>
@@ -361,7 +368,7 @@ const OrderDetail = (props) => {
                     <p>{getPaymentStatusText(order.payments.status)}</p>
                   </div>
 
-                  {order.payments.paid_at && (
+                  {order?.payments.paid_at && (
                     <div className="payment-date">
                       <h4>Ngày thanh toán</h4>
                       <p>{formatDate(order.payments.paid_at)}</p>

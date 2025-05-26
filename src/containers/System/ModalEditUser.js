@@ -1,27 +1,27 @@
-import React, { Component } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { updateUser } from '../../store/actions/userActions';
-import Lightbox from 'react-image-lightbox';
-import 'react-image-lightbox/style.css';
-import CommonUtils from '../../utils/CommonUtils';
+import React, { Component } from "react";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { connect } from "react-redux";
+import { toast } from "react-toastify";
+import { updateUser } from "../../store/actions/userActions";
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
+import CommonUtils from "../../utils/CommonUtils";
 
 class ModalEditUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: '',
-      username: '',
-      password: '',
-      email: '',
-      phone_number: '',
-      role: '',
-      address_infor: '',
-      errorMessage: '',
-      previewImgURL: '',
+      userId: "",
+      username: "",
+      password: "",
+      email: "",
+      phone_number: "",
+      role: "",
+      address_infor: "",
+      errorMessage: "",
+      previewImgURL: "",
       isOpen: false,
-      avatar: ''
+      avatar: "",
     };
   }
 
@@ -31,25 +31,26 @@ class ModalEditUser extends Component {
       // Lấy thông tin từ các đối tượng lồng nhau
       const userInfo = currentUser.UserInfo || {};
 
-      const address = currentUser.UserAddresses && currentUser.UserAddresses.length > 0
-        ? currentUser.UserAddresses[0].address_infor
-        : '';
+      const address =
+        currentUser.UserAddresses && currentUser.UserAddresses.length > 0
+          ? currentUser.UserAddresses[0].address_infor
+          : "";
 
       // Nếu có ảnh, tạo URL để hiển thị
-      let imageUrl = '';
+      let imageUrl = "";
       if (userInfo.img) {
-        imageUrl = new Buffer(userInfo.img, 'base64').toString('binary');
+        imageUrl = new Buffer(userInfo.img, "base64").toString("binary");
       }
 
       this.setState({
         userId: currentUser.user_id,
         username: currentUser.username,
-        email: userInfo.email || '',
-        phone_number: userInfo.phone_number || '',
+        email: userInfo.email || "",
+        phone_number: userInfo.phone_number || "",
         role: currentUser.role,
         address_infor: address,
         previewImgURL: imageUrl,
-        avatar: userInfo.img || ''
+        avatar: userInfo.img || "",
       });
     }
   }
@@ -58,40 +59,39 @@ class ModalEditUser extends Component {
     let copyState = { ...this.state };
     copyState[id] = event.target.value;
     this.setState({
-      ...copyState
+      ...copyState,
     });
-  }
+  };
 
   handleOnChangeImage = async (event) => {
     let data = event.target.files;
     let file = data[0];
-    
-    console.log("File selected:", file);
+
+    // console.log("File selected:", file);
 
     if (file) {
-      
       let objectUrl = URL.createObjectURL(file);
       this.setState({
-        previewImgURL: objectUrl
+        previewImgURL: objectUrl,
       });
 
       try {
         let base64String = await CommonUtils.fileToBase64(file);
         this.setState({
-          avatar: base64String
+          avatar: base64String,
         });
       } catch (error) {
         console.error("Error converting file to base64:", error);
       }
     }
-  }
+  };
 
   openPreviewImage = () => {
     if (!this.state.previewImgURL) return;
     this.setState({
-      isOpen: true
+      isOpen: true,
     });
-  }
+  };
 
   handleSaveUser = async () => {
     let { currentUser } = this.props;
@@ -100,7 +100,6 @@ class ModalEditUser extends Component {
       phone_number: this.state.phone_number,
       role: this.state.role,
       address_infor: this.state.address_infor,
-      
     };
 
     // Chỉ thêm ảnh nếu người dùng đã nhập khác với ảnh cũ
@@ -119,7 +118,7 @@ class ModalEditUser extends Component {
       this.props.toggleFromParent();
 
       // Hiển thị thông báo thành công với Toast
-      toast.success('Cập nhật người dùng thành công!', {
+      toast.success("Cập nhật người dùng thành công!", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -129,7 +128,7 @@ class ModalEditUser extends Component {
       });
     } else {
       // Hiển thị thông báo lỗi với Toast
-      toast.error(res && res.message ? res.message : 'Có lỗi xảy ra!', {
+      toast.error(res && res.message ? res.message : "Có lỗi xảy ra!", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -139,33 +138,33 @@ class ModalEditUser extends Component {
       });
 
       this.setState({
-        errorMessage: res && res.message ? res.message : 'Có lỗi xảy ra!'
+        errorMessage: res && res.message ? res.message : "Có lỗi xảy ra!",
       });
     }
-  }
+  };
 
   render() {
     return (
       <Modal
         isOpen={this.props.isOpen}
         toggle={this.props.toggleFromParent}
-        className={'modal-user-container'}
+        className={"modal-user-container"}
         size="lg"
       >
-        <ModalHeader toggle={this.props.toggleFromParent}>Sửa thông tin người dùng</ModalHeader>
+        <ModalHeader toggle={this.props.toggleFromParent}>
+          Sửa thông tin người dùng
+        </ModalHeader>
         <ModalBody>
           <div className="modal-user-body">
             {this.state.errorMessage && (
-              <div className="alert alert-danger">{this.state.errorMessage}</div>
+              <div className="alert alert-danger">
+                {this.state.errorMessage}
+              </div>
             )}
 
             <div className="input-container">
               <label>Username</label>
-              <input
-                type="text"
-                value={this.state.username}
-                disabled
-              />
+              <input type="text" value={this.state.username} disabled />
             </div>
 
             <div className="input-container">
@@ -177,13 +176,16 @@ class ModalEditUser extends Component {
                   hidden
                   onChange={(event) => this.handleOnChangeImage(event)}
                 />
-                <label className="label-upload" htmlFor="previewImg">Tải ảnh <i className="fas fa-upload"></i></label>
+                <label className="label-upload" htmlFor="previewImg">
+                  Tải ảnh <i className="fas fa-upload"></i>
+                </label>
                 <div
                   className="preview-image"
-                  style={{ backgroundImage: `url(${this.state.previewImgURL})` }}
+                  style={{
+                    backgroundImage: `url(${this.state.previewImgURL})`,
+                  }}
                   onClick={() => this.openPreviewImage()}
-                >
-                </div>
+                ></div>
               </div>
             </div>
 
@@ -191,7 +193,9 @@ class ModalEditUser extends Component {
               <label>Password</label>
               <input
                 type="password"
-                onChange={(event) => { this.handleOnChangeInput(event, "password") }}
+                onChange={(event) => {
+                  this.handleOnChangeInput(event, "password");
+                }}
                 value={this.state.password}
                 placeholder="Để trống nếu không muốn thay đổi"
               />
@@ -199,18 +203,16 @@ class ModalEditUser extends Component {
 
             <div className="input-container">
               <label>Email</label>
-              <input
-                type="email"
-                value={this.state.email}
-                disabled
-              />
+              <input type="email" value={this.state.email} disabled />
             </div>
 
             <div className="input-container">
               <label>Số điện thoại</label>
               <input
                 type="text"
-                onChange={(event) => { this.handleOnChangeInput(event, "phone_number") }}
+                onChange={(event) => {
+                  this.handleOnChangeInput(event, "phone_number");
+                }}
                 value={this.state.phone_number}
               />
             </div>
@@ -218,7 +220,9 @@ class ModalEditUser extends Component {
             <div className="input-container">
               <label>Vai trò</label>
               <select
-                onChange={(event) => { this.handleOnChangeInput(event, "role") }}
+                onChange={(event) => {
+                  this.handleOnChangeInput(event, "role");
+                }}
                 value={this.state.role}
               >
                 <option value="buyer">Buyer</option>
@@ -231,7 +235,9 @@ class ModalEditUser extends Component {
               <label>Địa chỉ</label>
               <input
                 type="text"
-                onChange={(event) => { this.handleOnChangeInput(event, "address_infor") }}
+                onChange={(event) => {
+                  this.handleOnChangeInput(event, "address_infor");
+                }}
                 value={this.state.address_infor}
               />
             </div>
@@ -260,11 +266,11 @@ class ModalEditUser extends Component {
             onCloseRequest={() => this.setState({ isOpen: false })}
             reactModalStyle={{
               overlay: {
-                zIndex: 1050
+                zIndex: 1050,
               },
               content: {
-                zIndex: 1060
-              }
+                zIndex: 1060,
+              },
             }}
           />
         )}
@@ -273,9 +279,9 @@ class ModalEditUser extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    updateUser: (userId, userData) => dispatch(updateUser(userId, userData))
+    updateUser: (userId, userData) => dispatch(updateUser(userId, userData)),
   };
 };
 

@@ -4,7 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { toast } from "react-toastify";
 import "./ModalProduct.scss";
 import { createProduct, updateProduct } from "../../services/productService";
-import { uploadImage, getImageByPublicId } from "../../services/storeService";
+import { uploadImage } from "../../services/storeService";
 
 class ModalProduct extends Component {
   constructor(props) {
@@ -48,7 +48,7 @@ class ModalProduct extends Component {
 
             if (imagePublicId) {
               try {
-                const imageResult = await getImageByPublicId(imagePublicId);
+                const imageResult = imagePublicId;
                 if (imageResult.success) {
                   imagePreviewUrl = imageResult.url;
                 }
@@ -148,7 +148,7 @@ class ModalProduct extends Component {
 
             if (imagePublicId) {
               try {
-                const imageResult = await getImageByPublicId(imagePublicId);
+                const imageResult = imagePublicId;
                 if (imageResult.success) {
                   imagePreviewUrl = imageResult.url;
                 }
@@ -288,7 +288,7 @@ class ModalProduct extends Component {
           ...items[index],
           image_url: result.public_id, // Store public_id
         };
-        console.log("Image uploaded successfully:", result);
+        // console.log("Image uploaded successfully:", result);
         this.setState({ items });
         toast.success("Tải ảnh lên thành công", {
           position: "top-right",

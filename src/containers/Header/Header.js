@@ -12,7 +12,7 @@ import defaultAvatar from "../../assets/images/user.svg";
 import { fetchUserDetail } from "../../store/actions/userDetailAction";
 import "./Header.scss";
 import cartImage from "../../assets/images/icons/cart.png";
-import homeImage from "../../assets/images/icons/home.png";
+// import homeImage from "../../assets/images/icons/home.png";
 import searchImage from "../../assets/images/icons/search.png";
 import { getUserById } from "../../services/userService";
 class Header extends Component {
@@ -104,7 +104,7 @@ class Header extends Component {
         // Kiểm tra xem có ảnh không
         if (userData.UserInfo && userData.UserInfo.img) {
           try {
-            console.log("userData.UserInfo.img", userData.UserInfo.img);
+            // console.log("userData.UserInfo.img", userData.UserInfo.img);
             // Chuyển đổi buffer thành binary
             const imageUrl = new Buffer(
               userData.UserInfo.img,

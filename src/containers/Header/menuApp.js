@@ -19,7 +19,10 @@ export const adminMenu = [
             name: "menu.system.system-administrator.shipping-method",
             link: "/system/shipping-method",
           },
-          { name: "Quản lý người bán hàng", link: "/system/shop-admin" },
+          {
+            name: "menu.system.system-administrator.shop-admin",
+            link: "/system/shop-admin",
+          },
         ],
       },
     ],

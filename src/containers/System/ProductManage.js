@@ -6,7 +6,7 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom/cjs/react-router-dom.min";
-import productImageNull from "../../assets/images/icons/product.png";
+// import productImageNull from "../../assets/images/icons/product.png";
 import axios from "axios";
 import ProductAdd from "./ProductAdd";
 import ProductShop from "../../components/Product/ProductShop";
@@ -36,7 +36,7 @@ const ProductManage = (props) => {
           : `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}`,
     }).then((response) => {
       setProducts(response.data.products);
-      console.log(response);
+      // console.log(response);
     });
   }, [page, title]);
   const renderProductList = () => {

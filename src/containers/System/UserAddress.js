@@ -9,7 +9,7 @@ import {
 } from "../../store/actions/userAddressAction";
 import { toast } from "react-toastify";
 import "./UserAddress.scss";
-import { get } from "lodash";
+// import { get } from "lodash";
 
 class UserAddress extends Component {
   constructor(props) {
@@ -199,7 +199,7 @@ class UserAddress extends Component {
     }
   };
   render() {
-    const { addresses, isLoading } = this.props.userAddress;
+    const { addresses } = this.props.userAddress;
     const {
       showModal,
       editMode,

@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { toast, Slide } from "react-toastify";
+import { toast } from "react-toastify";
 import {
   getCart,
   updateCartItem,
   removeCartItem,
   clearCart,
 } from "../../services/cartService";
-import { getImageByPublicId } from "../../services/storeService";
 import { createOrder, getShippingMethods } from "../../services/orderService";
 import { getUserAddresses } from "../../store/actions/userAddressAction";
 import "./CartPage.scss";
@@ -44,7 +43,7 @@ const CartPage = (props) => {
 
       try {
         const result = await getCart();
-        console.log("Cart data:", result);
+        // console.log("Cart data:", result);
 
         if (result.success) {
           // The server now returns items directly in the result.data.items
@@ -91,7 +90,7 @@ const CartPage = (props) => {
       (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
       0
     );
-    console.log(totalQuantity);
+    // console.log(totalQuantity);
     props.updateQuantity({ quantity: totalQuantity });
   }, [cartItems]);
 
@@ -104,7 +103,7 @@ const CartPage = (props) => {
       for (const item of cartItems) {
         if (item.image_url && !newImageCache[item.image_url]) {
           try {
-            const imageResult = await getImageByPublicId(item.image_url);
+            const imageResult = item.image_url;
             if (imageResult.success) {
               newImageCache[item.image_url] = imageResult.url;
               cacheUpdated = true;
@@ -335,12 +334,12 @@ const CartPage = (props) => {
     const fetchShippingMethods = async () => {
       try {
         const result = await getShippingMethods();
-        console.log("Shipping methods response:", result);
+        // console.log("Shipping methods response:", result);
 
         if (result.success && result.data && result.data.success) {
           // Extract the methods array from the nested response
           const methods = result.data.methods || [];
-          console.log("Shipping methods:", methods);
+          // console.log("Shipping methods:", methods);
 
           setShippingMethods(methods);
 
@@ -408,24 +407,24 @@ const CartPage = (props) => {
           return;
         }
 
-        console.log("Fetching addresses for userId:", props.userInfo.userId);
+        // console.log("Fetching addresses for userId:", props.userInfo.userId);
 
         // Use the getUserAddresses action to fetch addresses with userId
         const result = await props.getUserAddresses(props.userInfo.userId);
-        console.log("User addresses response:", result);
+        // console.log("User addresses response:", result);
 
         if (result && result.data && result.data.length > 0) {
-          console.log("User addresses:", result.data);
+          // console.log("User addresses:", result.data);
           setUserAddresses(result.data);
 
           // Always set the first address as default
           setShippingAddress(parseInt(result.data[0].address_id));
 
           // Log the selected address for debugging
-          console.log(
-            "Selected shipping address ID:",
-            result.data[0].address_id
-          );
+          // console.log(
+          //   "Selected shipping address ID:",
+          //   result.data[0].address_id
+          // );
         } else {
           // If no addresses found, show a message
           console.warn("No addresses found or error in response:", result);
@@ -482,7 +481,7 @@ const CartPage = (props) => {
   // Handle shipping address selection
   const handleShippingAddressChange = (e) => {
     const addressId = parseInt(e.target.value);
-    console.log("Selected shipping address ID:", addressId);
+    // console.log("Selected shipping address ID:", addressId);
     setShippingAddress(addressId);
   };
 
@@ -559,7 +558,7 @@ const CartPage = (props) => {
       clear_cart: true, // Clear cart after order is created
     };
 
-    console.log("Placing order with data:", orderData);
+    // console.log("Placing order with data:", orderData);
 
     setProcessingOrder(true);
 

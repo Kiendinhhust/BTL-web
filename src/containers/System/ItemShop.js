@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import checkmark from "../../assets/images/icons/checkmark.png";
 import { connect } from "react-redux";
 import { addToCart } from "../../store/actions/navbarCartActions";
@@ -21,7 +21,7 @@ const ItemShop = (props) => {
     checkCheckMark: false,
     timeOut: null,
   });
-  console.log(props.item);
+  // console.log(props.item);
   const imageHandler = (e) => {
     setFile(e.target.files[0]);
   };
@@ -48,7 +48,7 @@ const ItemShop = (props) => {
     const formData = new FormData();
     let image_url;
     formData.append("image", file);
-    console.log(file);
+    // console.log(file);
     await LoginHack;
     await axios
       .post(
@@ -66,7 +66,7 @@ const ItemShop = (props) => {
       .catch(function (error) {
         console.log(error);
       });
-    console.log(image_url);
+    // console.log(image_url);
     await axios
       .post(
         `${process.env.REACT_APP_BACKEND_URL}/api/products/add-item/${props.product_id}`,
@@ -84,7 +84,7 @@ const ItemShop = (props) => {
         }
       )
       .then(function (response) {
-        console.log(response);
+        // console.log(response);
       })
       .catch(function (error) {
         console.log(error);

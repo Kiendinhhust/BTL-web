@@ -25,7 +25,7 @@ const MyOrder = (props) => {
           console.log(error);
         });
       props.fetchOrder({ orders: fetchOrder });
-      console.log("FETCH", props.orders);
+      // console.log("FETCH", props.orders);
     };
     if (!hasCalledAPI.current) {
       fetchOrderFun();

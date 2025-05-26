@@ -8,7 +8,7 @@ import {
 } from "react-router-dom/cjs/react-router-dom.min";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { getImageByPublicId } from "../../services/storeService";
+// import { getImageByPublicId } from "../../services/storeService";
 
 const HomePage = (props) => {
   const [products, setProducts] = useState([]);
@@ -58,10 +58,10 @@ const HomePage = (props) => {
 
               // Check if the response has the expected structure
               let items = [];
-              console.log(
-                `Items response for product ${product.product_id}:`,
-                itemsResponse.data
-              );
+              // console.log(
+              //   `Items response for product ${product.product_id}:`,
+              //   itemsResponse.data
+              // );
 
               if (
                 itemsResponse.data &&
@@ -69,24 +69,24 @@ const HomePage = (props) => {
                 Array.isArray(itemsResponse.data.data.items)
               ) {
                 items = itemsResponse.data.data.items;
-                console.log(
-                  `Using data.data.items for product ${product.product_id}`
-                );
+                // console.log(
+                //   `Using data.data.items for product ${product.product_id}`
+                // );
               } else if (
                 itemsResponse.data &&
                 itemsResponse.data.data &&
                 itemsResponse.data.data.items
               ) {
                 // Handle case where items might be an object instead of array
-                console.log(
-                  `Items is not an array, converting for product ${product.product_id}`
-                );
+                // console.log(
+                //   `Items is not an array, converting for product ${product.product_id}`
+                // );
                 items = [itemsResponse.data.data.items];
               } else if (Array.isArray(itemsResponse.data)) {
                 items = itemsResponse.data;
-                console.log(
-                  `Using direct array for product ${product.product_id}`
-                );
+                // console.log(
+                //   `Using direct array for product ${product.product_id}`
+                // );
               } else if (
                 itemsResponse.data &&
                 typeof itemsResponse.data === "object"
@@ -97,21 +97,21 @@ const HomePage = (props) => {
                   Array.isArray(itemsResponse.data.data)
                 ) {
                   items = itemsResponse.data.data;
-                  console.log(
-                    `Using data array for product ${product.product_id}`
-                  );
+                  // console.log(
+                  //   `Using data array for product ${product.product_id}`
+                  // );
                 }
               } else {
-                console.log(
-                  `Unexpected items response format for product ${product.product_id}:`,
-                  itemsResponse.data
-                );
+                // console.log(
+                //   `Unexpected items response format for product ${product.product_id}:`,
+                //   itemsResponse.data
+                // );
               }
 
-              console.log(
-                `Final items for product ${product.product_id}:`,
-                items
-              );
+              // console.log(
+              //   `Final items for product ${product.product_id}:`,
+              //   items
+              // );
 
               // Process each item to get image URL from public_id
               let processedItems = [];
@@ -126,9 +126,7 @@ const HomePage = (props) => {
 
                       if (item.image_url) {
                         try {
-                          const imageResult = await getImageByPublicId(
-                            item.image_url
-                          );
+                          const imageResult = item.image_url;
                           if (imageResult.success) {
                             imageUrl = imageResult.url;
                           }
@@ -156,9 +154,9 @@ const HomePage = (props) => {
                   processedItems = [];
                 }
               } else {
-                console.log(
-                  `No valid items to process for product ${product.product_id}`
-                );
+                // console.log(
+                //   `No valid items to process for product ${product.product_id}`
+                // );
               }
 
               // Store processed items in the map
@@ -167,9 +165,7 @@ const HomePage = (props) => {
               // If product has a main image, process it too
               if (product.image_url) {
                 try {
-                  const imageResult = await getImageByPublicId(
-                    product.image_url
-                  );
+                  const imageResult = await product.image_url;
                   if (imageResult.success) {
                     return {
                       ...product,
@@ -215,8 +211,8 @@ const HomePage = (props) => {
   }, [page, title]);
 
   const renderProductList = () => {
-    console.log("Products:", products);
-    console.log("Product Items:", productItems);
+    // console.log("Products:", products);
+    // console.log("Product Items:", productItems);
     if (loading) {
       return (
         <div className="loading-container">

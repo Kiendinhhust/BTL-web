@@ -3,13 +3,12 @@ import checkmark from "../../assets/images/icons/checkmark.png";
 import { connect } from "react-redux";
 import {
   addToCart,
-  updateCart,
   updateQuantity,
 } from "../../store/actions/navbarCartActions";
 import "./ProductDetail.scss";
 import { useLocation } from "react-router-dom/cjs/react-router-dom.min";
 import productImageNull from "../../assets/images/icons/product.png";
-import { getImageByPublicId } from "../../services/storeService";
+// import { getImageByPublicId } from "../../services/storeService";
 import { addItemToCart, getCart } from "../../services/cartService";
 import { toast } from "react-toastify";
 
@@ -48,7 +47,7 @@ const ProductDetail = (props) => {
 
             if (item.image_url) {
               try {
-                const imageResult = await getImageByPublicId(item.image_url);
+                const imageResult = item.item_image_url;
                 if (imageResult.success) {
                   imageUrl = imageResult.url;
                 }
@@ -187,7 +186,7 @@ const ProductDetail = (props) => {
       (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
       0
     );
-    console.log(totalQuantity);
+    // console.log(totalQuantity);
     props.updateQuantity({ quantity: totalQuantity });
   };
 

@@ -108,7 +108,7 @@ class ModalShop extends Component {
     if (!this.validateForm()) return;
 
     const ownerId = this.state.buyer?.user_id;
-    console.log("ownerId:", ownerId);
+    // console.log("ownerId:", ownerId);
     if (!ownerId) {
       toast.error("Vui lòng chọn người dùng hoặc đăng nhập để tạo shop", {
         position: "top-right",

@@ -7,7 +7,7 @@ import {
   deleteProduct,
   getItemsByProduct,
 } from "../../services/productService";
-import { getImageByPublicId } from "../../services/storeService";
+// import { getImageByPublicId } from "../../services/storeService";
 import CommonUtils from "../../utils/CommonUtils";
 import { toast } from "react-toastify";
 import { withRouter } from "react-router-dom";
@@ -16,6 +16,7 @@ import ModalProduct from "./ModalProduct";
 class ShopManage extends Component {
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       shopInfo: null,
       products: [],
@@ -36,6 +37,7 @@ class ShopManage extends Component {
   }
 
   async componentDidMount() {
+    this._isMounted = true;
     try {
       await this.fetchShopInfo();
       if (this.state.shopInfo) {
@@ -57,34 +59,39 @@ class ShopManage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this._isMounted = false; // Set flag khi component unmount
+  }
   fetchShopInfo = async () => {
     try {
       // Lấy thông tin shop từ API
       if (this.props.userInfo && this.props.userInfo.userId) {
         const res = await getShopByUserId(this.props.userInfo.userId);
-        console.log("Shop info response:", res);
+        // console.log("Shop info response:", res);
         if (res && res.data && res.data.success) {
           const shopData = res.data.data;
 
           // Cập nhật state với thông tin shop
-          this.setState({
-            shopInfo: {
-              id: shopData.shop_id,
-              name: shopData.shop_name,
-              description: shopData.description || "Chưa có mô tả",
-              address: shopData.address || "Chưa có địa chỉ",
-              phone: shopData.phone || "Chưa có số điện thoại",
-              email: this.props.userInfo.email || "Chưa có email",
-              rating: shopData.rating || 0,
-              totalSales: shopData.total_orders || 0,
-              totalRevenue: shopData.total_revenue || 0,
-              status: shopData.status,
-              rejectionReason: shopData.rejection_reason,
-              image: shopData.img
-                ? CommonUtils.getBase64Image(shopData.img)
-                : null,
-            },
-          });
+          if (this._isMounted) {
+            this.setState({
+              shopInfo: {
+                id: shopData.shop_id,
+                name: shopData.shop_name,
+                description: shopData.description || "Chưa có mô tả",
+                address: shopData.address || "Chưa có địa chỉ",
+                phone: shopData.phone || "Chưa có số điện thoại",
+                email: this.props.userInfo.email || "Chưa có email",
+                rating: shopData.rating || 0,
+                totalSales: shopData.total_orders || 0,
+                totalRevenue: shopData.total_revenue || 0,
+                status: shopData.status,
+                rejectionReason: shopData.rejection_reason,
+                image: shopData.img
+                  ? CommonUtils.getBase64Image(shopData.img)
+                  : null,
+              },
+            });
+          }
           return true;
         } else {
           toast.error("Không thể lấy thông tin shop", {
@@ -137,7 +144,7 @@ class ShopManage extends Component {
       const shopId = this.state.shopInfo.id;
 
       const res = await getProductsByShop(shopId, currentPage, pageSize);
-      console.log("Products response:", res);
+      // console.log("Products response:", res);
       if (res.data && res.data.success) {
         // Lấy danh sách sản phẩm
         const products = res.data.products || [];
@@ -151,7 +158,7 @@ class ShopManage extends Component {
             // Lấy danh sách items cho sản phẩm
             try {
               const itemsRes = await getItemsByProduct(product.product_id);
-              console.log("Items response:", itemsRes);
+              // console.log("Items response:", itemsRes);
               if (itemsRes.data && itemsRes.data.success) {
                 const items = itemsRes.data.data.items || [];
 
@@ -164,9 +171,8 @@ class ShopManage extends Component {
                     if (item.image_url) {
                       try {
                         // Lấy URL ảnh từ public_id
-                        const imageResult = await getImageByPublicId(
-                          item.image_url
-                        );
+                        const imageResult = item.image_url;
+
                         if (imageResult.success) {
                           return {
                             ...item,
@@ -198,7 +204,8 @@ class ShopManage extends Component {
             // Fallback: Nếu không có items hoặc có lỗi, sử dụng ảnh từ product nếu có
             if (product.image_url) {
               try {
-                const imageResult = await getImageByPublicId(product.image_url);
+                const imageResult = product.item_image_url;
+                console.log(product);
                 if (imageResult.success) {
                   return {
                     ...product,
@@ -588,7 +595,7 @@ class ShopManage extends Component {
       selectedProduct,
       isEdit,
     } = this.state;
-    console.log("products:", products);
+    // console.log("products:", products);
     if (loading) {
       return (
         <div className="shop-manage-container">
@@ -849,6 +856,10 @@ class ShopManage extends Component {
           isEdit={isEdit}
           shopId={shopInfo?.id}
           fetchProducts={this.fetchProducts}
+          headerStyle={{
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            color: "white",
+          }}
         />
 
         {/* Variant Details Modal */}

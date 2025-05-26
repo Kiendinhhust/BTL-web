@@ -79,7 +79,7 @@ const navbarCartReducer = (state = initialState, action) => {
       //   (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
       //   0
       // );
-      console.log(action.payload);
+      // console.log(action.payload);
       const newState4 = {
         ...state,
         quantity: Number(action.payload.quantity),

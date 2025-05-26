@@ -5,7 +5,7 @@ import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
 import OneOrder from "./OneOrder";
 const Order = (props) => {
   const order = props.orders[props.match.params.id];
-  console.log(order);
+  // console.log(order);
   return (
     <div className="order">
       <h1 className="order-title">Payment Successful</h1>
