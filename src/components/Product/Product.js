@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import checkmark from "../../assets/images/icons/checkmark.png";
 import { connect } from "react-redux";
-import { addToCart } from "../../store/actions/navbarCartActions";
+import {
+  addToCart,
+  updateQuantity,
+} from "../../store/actions/navbarCartActions";
 import "./Product.scss";
 import productImageNull from "../../assets/images/icons/product.png";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { toast } from "react-toastify";
+import { addItemToCart, getCart } from "../../services/cartService";
 
 const Product = (props) => {
   const history = useHistory();
@@ -34,7 +39,7 @@ const Product = (props) => {
     }
     return Number(price).toLocaleString("vi-VN");
   };
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     setState((prevState) => {
       // Clear previous timeout if exists
       if (prevState.timeOut) {
@@ -51,11 +56,105 @@ const Product = (props) => {
         timeOut,
       };
     });
-    props.addToCart({
-      quantity: cartQuantity,
-      info,
-      title: props.product.title,
+    if (!info || !info.item_id) {
+      toast.error("Không thể thêm sản phẩm vào giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+    }
+    // Check if user is logged in and has an access token
+    const accessToken = props.userInfo?.accessToken;
+    if (!accessToken) {
+      toast.warning("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      return;
+    }
+
+    // Show visual feedback
+    setState((prevState) => {
+      if (prevState.timeOut) {
+        clearTimeout(prevState.timeOut);
+      }
+      const timeOut = setTimeout(() => {
+        setState(() => ({ checkCheckMark: false, timeOut: null }));
+      }, 1000);
+      return {
+        checkCheckMark: true,
+        timeOut,
+      };
     });
+
+    // Add to Redux store for UI updates
+    // props.addToCart({ quantity: cartQuantity, info, title: product.title });
+
+    // Add to server-side cart using cartService
+    try {
+      const cartItem = {
+        item_id: info.item_id,
+        quantity: parseInt(cartQuantity),
+        // No need to include user_id, it will be extracted from the JWT token
+      };
+
+      const result = await addItemToCart(cartItem);
+
+      if (result.success) {
+        toast.success("Đã thêm sản phẩm vào giỏ hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      } else {
+        toast.error(result.error || "Không thể thêm sản phẩm vào giỏ hàng", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeButton: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      toast.error("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeButton: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+    const cartRes = await getCart();
+    const totalQuantity = cartRes.data.items.reduce(
+      (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
+      0
+    );
+    // console.log(totalQuantity);
+    props.updateQuantity({ quantity: totalQuantity });
   };
   useEffect(() => {
     return () => {
@@ -229,12 +328,14 @@ const Product = (props) => {
 const mapStateToProps = (state) => {
   return {
     cartQuantity: state.navbarCart.quantity,
+    userInfo: state.admin.userInfo,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     addToCart: (payload) => dispatch(addToCart(payload)),
+    updateQuantity: (payload) => dispatch(updateQuantity(payload)),
   };
 };
 

@@ -618,7 +618,7 @@ const CartPage = (props) => {
                 <div key={item.item_id} className="cart-item">
                   <div className="item-image">
                     <img
-                      src={imageCache[item.image_url] || productImageNull}
+                      src={item.image_url || productImageNull}
                       alt={item.product_title || "Product"}
                     />
                   </div>
@@ -787,7 +787,14 @@ const CartPage = (props) => {
               ) : (
                 <div className="no-addresses">
                   <p>Bạn chưa có địa chỉ giao hàng nào.</p>
-                  <button className="add-address-btn">Thêm địa chỉ mới</button>
+                  <button
+                    className="add-address-btn"
+                    onClick={() => {
+                      history.push("/system/user-address");
+                    }}
+                  >
+                    Thêm địa chỉ mới
+                  </button>
                 </div>
               )}
             </div>
@@ -975,42 +982,44 @@ const CartPage = (props) => {
             <div className="review-section">
               <h3>Sản phẩm</h3>
               <div className="review-items">
-                {cartItems.map((item) => (
-                  <div key={item.item_id} className="review-item">
-                    <div className="item-image">
-                      <img
-                        src={imageCache[item.image_url] || productImageNull}
-                        alt={item.product_title || "Product"}
-                      />
+                {cartItems.map((item) => {
+                  return (
+                    <div key={item.item_id} className="review-item">
+                      <div className="item-image">
+                        <img
+                          src={item.image_url || productImageNull}
+                          alt={item.product_title || "Product"}
+                        />
+                      </div>
+                      <div className="item-info">
+                        <p className="item-title">{item.product_title}</p>
+                        <p className="item-sku">SKU: {item.sku}</p>
+                        {item.attributes && (
+                          <div className="item-attributes">
+                            {Object.entries(
+                              typeof item.attributes === "string"
+                                ? JSON.parse(item.attributes)
+                                : item.attributes
+                            ).map(([key, value], idx) => (
+                              <span key={idx} className="attribute-item">
+                                {key}: {value}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="item-quantity">
+                        <span>SL: {item.quantity}</span>
+                      </div>
+                      <div className="item-price">
+                        {formatPrice(
+                          (item.sale_price || item.price) * item.quantity
+                        )}{" "}
+                        VNĐ
+                      </div>
                     </div>
-                    <div className="item-info">
-                      <p className="item-title">{item.product_title}</p>
-                      <p className="item-sku">SKU: {item.sku}</p>
-                      {item.attributes && (
-                        <div className="item-attributes">
-                          {Object.entries(
-                            typeof item.attributes === "string"
-                              ? JSON.parse(item.attributes)
-                              : item.attributes
-                          ).map(([key, value], idx) => (
-                            <span key={idx} className="attribute-item">
-                              {key}: {value}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className="item-quantity">
-                      <span>SL: {item.quantity}</span>
-                    </div>
-                    <div className="item-price">
-                      {formatPrice(
-                        (item.sale_price || item.price) * item.quantity
-                      )}{" "}
-                      VNĐ
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

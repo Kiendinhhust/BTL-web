@@ -2,15 +2,16 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 30px 20px;
-  min-height: calc(100vh - 200px);
-
+  min-height: calc(100vh - 100px);
+  overflow-y: scroll;
+  scrollbar-width: none;
   .my-orders-header {
     margin-bottom: 30px;
 
     h1 {
       font-size: 28px;
       font-weight: 700;
-      color: #0a1f44;               // navy-dark
+      color: #0a1f44; // navy-dark
     }
   }
 
@@ -20,27 +21,27 @@
     align-items: center;
     justify-content: center;
     padding: 60px 0;
-    background-color: #ffffff;   // white
-    border-radius: 6px;          // border-radius
+    background-color: #ffffff; // white
+    border-radius: 6px; // border-radius
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); // box-shadow
 
     i {
       font-size: 60px;
-      color: #888888;            // medium-gray
+      color: #888888; // medium-gray
       margin-bottom: 20px;
     }
 
     p {
       font-size: 18px;
-      color: #0a1f44;            // navy-dark
+      color: #0a1f44; // navy-dark
       margin-bottom: 30px;
     }
 
     .shop-now-btn {
       background-color: #1a3f6d; // navy-medium
-      color: #ffffff;            // white
+      color: #ffffff; // white
       padding: 12px 25px;
-      border-radius: 6px;        // border-radius
+      border-radius: 6px; // border-radius
       font-size: 16px;
       font-weight: 500;
       text-decoration: none;
@@ -60,8 +61,8 @@
     margin-bottom: 30px;
 
     .order-card {
-      background-color: #ffffff;   // white
-      border-radius: 6px;          // border-radius
+      background-color: #ffffff; // white
+      border-radius: 6px; // border-radius
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); // box-shadow
       overflow: hidden;
 
@@ -79,13 +80,13 @@
 
           .order-id {
             font-weight: 600;
-            color: #0a1f44;      // navy-dark
+            color: #0a1f44; // navy-dark
             margin-bottom: 5px;
           }
 
           .order-date {
             font-size: 14px;
-            color: #555555;      // dark-gray
+            color: #555555; // dark-gray
           }
         }
 
@@ -112,11 +113,11 @@
             color: #2ecc71;
           }
           &.status-canceled {
-            background-color: rgba(231, 76, 60, 0.1);  // red
+            background-color: rgba(231, 76, 60, 0.1); // red
             color: #e74c3c;
           }
           &.status-unknown {
-            background-color: rgba(85, 85, 85, 0.1);    // dark-gray
+            background-color: rgba(85, 85, 85, 0.1); // dark-gray
             color: #555555;
           }
         }
@@ -126,17 +127,17 @@
         display: flex;
         align-items: center;
         padding: 10px 20px;
-        background-color: #ffffff;    // white
+        background-color: #ffffff; // white
         border-bottom: 1px solid #dddddd; // light-gray
 
         i {
-          color: #1a3f6d;            // navy-medium
+          color: #1a3f6d; // navy-medium
           margin-right: 10px;
         }
 
         span {
           font-size: 14px;
-          color: #0a1f44;            // navy-dark
+          color: #0a1f44; // navy-dark
           font-weight: 500;
         }
       }
@@ -167,12 +168,12 @@
 
             .item-name {
               font-weight: 500;
-              color: #0a1f44;      // navy-dark
+              color: #0a1f44; // navy-dark
               margin-bottom: 5px;
             }
             .item-quantity {
               font-size: 14px;
-              color: #555555;      // dark-gray
+              color: #555555; // dark-gray
             }
           }
 
@@ -181,13 +182,13 @@
             padding: 5px 10px;
             border-radius: 4px;
             font-size: 14px;
-            color: #1a3f6d;        // navy-medium
+            color: #1a3f6d; // navy-medium
           }
         }
 
         .no-items {
           text-align: center;
-          color: #555555;          // dark-gray
+          color: #555555; // dark-gray
           padding: 20px 0;
         }
       }
@@ -205,27 +206,27 @@
 
           span {
             font-size: 16px;
-            color: #0a1f44;      // navy-dark
+            color: #0a1f44; // navy-dark
           }
 
           .total-price {
             font-weight: 700;
-            color: #ff5722;      // accent-color
+            color: #ff5722; // accent-color
           }
         }
 
         .view-detail-btn {
           background-color: #3b5f8f; // navy-light
-          color: #0a1f44;            // navy-dark
+          color: #0a1f44; // navy-dark
           padding: 8px 15px;
-          border-radius: 6px;        // border-radius
+          border-radius: 6px; // border-radius
           font-size: 14px;
           text-decoration: none;
           transition: all 0.3s ease; // transition
 
           &:hover {
             background-color: #1a3f6d; // navy-medium
-            color: #ffffff;            // white
+            color: #ffffff; // white
           }
         }
       }
@@ -242,7 +243,7 @@
     .loading-spinner {
       width: 50px;
       height: 50px;
-      border: 5px solid #dddddd;   // light-gray
+      border: 5px solid #dddddd; // light-gray
       border-top: 5px solid #1a3f6d; // navy-medium
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -251,12 +252,16 @@
 
     p {
       font-size: 16px;
-      color: #0a1f44;              // navy-dark
+      color: #0a1f44; // navy-dark
     }
 
     @keyframes spin {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
   }
 
@@ -269,17 +274,17 @@
     .page-item {
       margin: 0 5px;
       background: none;
-      border: 1px solid #888888;   // medium-gray
+      border: 1px solid #888888; // medium-gray
       border-radius: 4px;
       padding: 0;
       cursor: pointer;
 
       &.active {
-        background-color: #1a3f6d;  // navy-medium
+        background-color: #1a3f6d; // navy-medium
         border-color: #1a3f6d;
 
         .page-link {
-          color: #ffffff;           // white
+          color: #ffffff; // white
         }
       }
 
@@ -294,14 +299,14 @@
         justify-content: center;
         width: 40px;
         height: 40px;
-        color: #0a1f44;            // navy-dark
+        color: #0a1f44; // navy-dark
         text-decoration: none;
         transition: all 0.3s ease; // transition
       }
 
       &:hover:not(:disabled):not(.active) {
         background-color: #dddddd; // light-gray
-        border-color: #3b5f8f;     // navy-light
+        border-color: #3b5f8f; // navy-light
       }
     }
   }
