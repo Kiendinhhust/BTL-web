@@ -9,6 +9,8 @@ import "./Login.scss";
 import { FormattedMessage } from "react-intl";
 import { handleLoginApi } from "../services/userService";
 import { Link } from "react-router-dom";
+import { getCart } from "../services/cartService";
+import reduxStore from "../redux";
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -71,6 +73,15 @@ class Login extends Component {
 
         // Chuyển hướng đến trang hệ thống
         // this.redirectToSystemPage();
+        const cartRes = await getCart();
+        const totalQuantity = cartRes.data.items.reduce(
+          (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
+          0
+        );
+        // console.log(totalQuantity);
+        reduxStore.dispatch(
+          actions.updateQuantity({ quantity: totalQuantity })
+        );
       }
     } catch (error) {
       console.error("Login failed:", error.response);

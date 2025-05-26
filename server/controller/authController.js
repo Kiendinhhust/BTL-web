@@ -142,8 +142,8 @@ const refreshAccessToken = (req, res) => {
 
   // If not in cookies, try to get it from the Authorization header
   if (!refreshToken) {
-    const authHeader = req.headers['authorization'];
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    const authHeader = req.headers["authorization"];
+    if (authHeader && authHeader.startsWith("Bearer ")) {
       refreshToken = authHeader.substring(7);
     }
   }
@@ -156,7 +156,7 @@ const refreshAccessToken = (req, res) => {
   if (!refreshToken) {
     return res.status(401).json({
       success: false,
-      error: "Chưa đăng nhập! Không tìm thấy refresh token."
+      error: "Chưa đăng nhập! Không tìm thấy refresh token.",
     });
   }
 
@@ -166,21 +166,21 @@ const refreshAccessToken = (req, res) => {
 
     res.json({
       success: true,
-      accessToken: newAccessToken
+      accessToken: newAccessToken,
     });
   } catch (error) {
     console.error("Error refreshing token:", error);
 
-    if (error.name === 'TokenExpiredError') {
+    if (error.name === "TokenExpiredError") {
       return res.status(403).json({
         success: false,
-        error: "Refresh Token đã hết hạn. Vui lòng đăng nhập lại."
+        error: "Refresh Token đã hết hạn. Vui lòng đăng nhập lại.",
       });
     }
 
     res.status(403).json({
       success: false,
-      error: "Refresh Token không hợp lệ!"
+      error: "Refresh Token không hợp lệ!",
     });
   }
 };

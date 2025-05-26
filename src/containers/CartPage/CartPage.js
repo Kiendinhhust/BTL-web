@@ -605,6 +605,13 @@ const CartPage = (props) => {
     } finally {
       setProcessingOrder(false);
     }
+    const cartRes = await getCart();
+    const totalQuantity = cartRes.data.items.reduce(
+      (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
+      0
+    );
+    // console.log(totalQuantity);
+    props.updateQuantity({ quantity: totalQuantity });
   };
 
   // Render different content based on checkout step
