@@ -7,6 +7,7 @@ const {
   getTempUser,
   deleteTempUser,
   allTempUser,
+  isUsernameInTemp,
 } = require("../utils/tempUser");
 
 const generateOTP = () =>
@@ -16,9 +17,25 @@ const generateOTP = () =>
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (await User.findOne({ where: { username } })) {
+
+    // Kiểm tra username và email đã tồn tại
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
       return res.status(400).json({ error: "Username đã tồn tại!" });
     }
+
+    // Kiểm tra username có đang trong quá trình đăng ký không
+    if (isUsernameInTemp(username)) {
+      return res.status(400).json({
+        error: "Username đang được sử dụng trong quá trình đăng ký khác!",
+      });
+    }
+
+    const existingEmail = await UserInfo.findOne({ where: { email } });
+    if (existingEmail) {
+      return res.status(400).json({ error: "Email đã được sử dụng!" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
     saveTempUser(email, username, hashedPassword, otp);
@@ -26,6 +43,7 @@ const register = async (req, res) => {
     console.log("Kết quả gửi email:", result);
     res.json({ message: "OTP đã được gửi đến email của bạn!" });
   } catch (error) {
+    console.error("Lỗi đăng ký:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -39,19 +57,41 @@ const verifyOTP = async (req, res) => {
     const tempUser = getTempUser(email);
 
     if (!tempUser || tempUser.otp !== otp) {
+      await transaction.rollback();
       return res.status(400).json({ error: "Mã OTP không hợp lệ!" });
     }
 
+    // Kiểm tra lại username trước khi tạo user (tránh race condition)
+    const existingUser = await User.findOne({
+      where: { username: tempUser.username },
+      transaction,
+    });
+
+    if (existingUser) {
+      await transaction.rollback();
+      deleteTempUser(email);
+      return res.status(400).json({
+        error: "Username đã tồn tại! Vui lòng đăng ký lại với username khác.",
+      });
+    }
+
     // Tạo user
-    const user = await User.create({
-      username: tempUser.username,
-      password_hash: tempUser.password,
-      role: "admin",
-    });
-    await UserInfo.create({
-      user_id: user.user_id,
-      email: email,
-    });
+    const user = await User.create(
+      {
+        username: tempUser.username,
+        password_hash: tempUser.password,
+        role: "admin",
+      },
+      { transaction }
+    );
+
+    await UserInfo.create(
+      {
+        user_id: user.user_id,
+        email: email,
+      },
+      { transaction }
+    );
 
     console.log("User created:", user.user_id);
     deleteTempUser(email);
@@ -68,6 +108,25 @@ const verifyOTP = async (req, res) => {
     console.error("Lỗi xác thực OTP:", error);
 
     await transaction.rollback();
+
+    // Lấy email từ req.query để xóa tempUser
+    const { email } = req.query;
+    if (email) {
+      deleteTempUser(email); // Xóa tempUser khi có lỗi
+    }
+
+    // Xử lý lỗi duplicate key
+    if (
+      error.name === "SequelizeUniqueConstraintError" ||
+      error.original?.code === "23505" ||
+      error.message.includes("duplicate key value violates unique constraint")
+    ) {
+      return res.status(400).json({
+        error:
+          "Username hoặc email đã tồn tại! Vui lòng đăng ký lại với thông tin khác.",
+      });
+    }
+
     res.status(500).json({ error: "Lỗi xác thực OTP!" });
   }
 };

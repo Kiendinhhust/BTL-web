@@ -41,6 +41,7 @@ const Product = (props) => {
   };
   const handleAddToCart = async () => {
     setState((prevState) => {
+      console.log(items);
       // Clear previous timeout if exists
       if (prevState.timeOut) {
         clearTimeout(prevState.timeOut);
@@ -262,34 +263,40 @@ const Product = (props) => {
         <div className="attributes-title">Chọn biến thể:</div>
         <div className="attributes-buttons">
           {Array.isArray(items) && items.length > 0 ? (
-            items.slice(0, 2).map((item, index) => {
-              // Get attribute values for display
-              let displayText = item.sku || `Biến thể ${index + 1}`;
+            items
+              .slice(0, 2)
+              .filter((item) => item.stock > 0)
+              .map((item, index) => {
+                // Get attribute values for display
+                let displayText = item.sku || `Biến thể ${index + 1}`;
 
-              if (item.attributes && Object.keys(item.attributes).length > 0) {
-                const attributeValues = Object.values(item.attributes);
-                if (attributeValues.length > 0) {
-                  displayText = attributeValues.join(" - ");
+                if (
+                  item.attributes &&
+                  Object.keys(item.attributes).length > 0
+                ) {
+                  const attributeValues = Object.values(item.attributes);
+                  if (attributeValues.length > 0) {
+                    displayText = attributeValues.join(" - ");
+                  }
                 }
-              }
 
-              const isSelected = info?.item_id === item?.item_id;
+                const isSelected = info?.item_id === item?.item_id;
 
-              return (
-                <button
-                  key={index}
-                  className={`product-attributes-button ${
-                    isSelected ? "selected" : ""
-                  }`}
-                  onClick={() => setInfo(item)}
-                  title={`${item.sku || ""} - ${formatPrice(
-                    item.price
-                  )} VNĐ - SL: ${item.stock || 0}`}
-                >
-                  {displayText}
-                </button>
-              );
-            })
+                return (
+                  <button
+                    key={index}
+                    className={`product-attributes-button ${
+                      isSelected ? "selected" : ""
+                    }`}
+                    onClick={() => setInfo(item)}
+                    title={`${item.sku || ""} - ${formatPrice(
+                      item.price
+                    )} VNĐ - SL: ${item.stock || 0}`}
+                  >
+                    {displayText}
+                  </button>
+                );
+              })
           ) : (
             <div className="no-variants">Không có biến thể</div>
           )}
@@ -312,7 +319,7 @@ const Product = (props) => {
         />
       )}
       <div className="addToCart-container">
-        {items.length > 0 && (
+        {items.filter((item) => item.stock > 0).length > 0 && (
           <button
             className={`addToCart-button button-primary js-add-to-cart`}
             onClick={() => handleAddToCart()}

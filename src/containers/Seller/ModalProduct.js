@@ -18,6 +18,7 @@ class ModalProduct extends Component {
       currentItemIndex: 0, // Index of the currently edited item
       showItemForm: false, // Whether to show the item form
       isSubmitting: false,
+      uploadingImages: [], // Array to track which items are uploading images
       categories: [
         // THÊM: Danh sách categories cho sản phẩm
         "Thời Trang",
@@ -91,6 +92,7 @@ class ModalProduct extends Component {
 
         this.setState({
           items: itemsWithPreview,
+          uploadingImages: Array(itemsWithPreview.length).fill(false),
           errors: {
             ...this.state.errors,
             items: Array(itemsWithPreview.length).fill({}),
@@ -113,6 +115,7 @@ class ModalProduct extends Component {
               sku: "",
             },
           ],
+          uploadingImages: [false],
           errors: {
             ...this.state.errors,
             items: [{}],
@@ -136,6 +139,7 @@ class ModalProduct extends Component {
             sku: "",
           },
         ],
+        uploadingImages: [false],
         errors: {
           ...this.state.errors,
           items: [{}],
@@ -196,6 +200,7 @@ class ModalProduct extends Component {
 
         this.setState({
           items: itemsWithPreview,
+          uploadingImages: Array(itemsWithPreview.length).fill(false),
           errors: {
             ...this.state.errors,
             items: Array(itemsWithPreview.length).fill({}),
@@ -218,6 +223,7 @@ class ModalProduct extends Component {
               sku: "",
             },
           ],
+          uploadingImages: [false],
           errors: {
             ...this.state.errors,
             items: [{}],
@@ -291,6 +297,11 @@ class ModalProduct extends Component {
       return;
     }
 
+    // Set loading state for this item
+    const uploadingImages = [...this.state.uploadingImages];
+    uploadingImages[index] = true;
+    this.setState({ uploadingImages });
+
     // Create preview URL
     let objectUrl = URL.createObjectURL(file);
     const items = [...this.state.items];
@@ -351,6 +362,11 @@ class ModalProduct extends Component {
         progress: undefined,
         theme: "dark",
       });
+    } finally {
+      // Clear loading state for this item
+      const uploadingImages = [...this.state.uploadingImages];
+      uploadingImages[index] = false;
+      this.setState({ uploadingImages });
     }
   };
 
@@ -373,9 +389,13 @@ class ModalProduct extends Component {
     const errors = { ...this.state.errors };
     errors.items.push({});
 
+    const uploadingImages = [...this.state.uploadingImages];
+    uploadingImages.push(false); // Initialize loading state for new item
+
     this.setState({
       items,
       errors,
+      uploadingImages,
       currentItemIndex: items.length - 1, // Set focus to the new item
     });
   };
@@ -402,9 +422,12 @@ class ModalProduct extends Component {
     const errors = { ...this.state.errors };
     errors.items.splice(index, 1);
 
+    const uploadingImages = [...this.state.uploadingImages];
+    uploadingImages.splice(index, 1); // Remove loading state for removed item
+
     const currentItemIndex = Math.min(index, items.length - 1);
 
-    this.setState({ items, errors, currentItemIndex });
+    this.setState({ items, errors, uploadingImages, currentItemIndex });
   };
 
   validateForm = () => {
@@ -612,6 +635,7 @@ class ModalProduct extends Component {
       ],
       currentItemIndex: 0,
       showItemForm: false,
+      uploadingImages: [], // Reset upload loading states
       errors: {
         title: "",
         category: "", // THÊM: Reset error cho category
@@ -976,6 +1000,14 @@ class ModalProduct extends Component {
                         </label>
 
                         <div className="preview-image">
+                          {this.state.uploadingImages[currentItemIndex] && (
+                            <div className="loading-overlay">
+                              <div className="loading-spinner"></div>
+                              <div className="loading-text">
+                                Đang tải ảnh...
+                              </div>
+                            </div>
+                          )}
                           {currentItem.previewImgURL ? (
                             <div
                               className="preview"
@@ -1003,13 +1035,18 @@ class ModalProduct extends Component {
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={toggleModal}>
+            <Button
+              color="secondary"
+              onClick={toggleModal}
+              style={{ height: "fit-content" }}
+            >
               Hủy
             </Button>
             <Button
               color="primary"
               onClick={this.handleSubmit}
               disabled={isSubmitting}
+              style={{ height: "fit-content" }}
             >
               {isSubmitting
                 ? "Đang xử lý..."

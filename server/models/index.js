@@ -37,13 +37,17 @@ UserInfo.belongsTo(UserAddress, {
 User.hasMany(Shop, { foreignKey: "owner_id", onDelete: "CASCADE" });
 Shop.belongsTo(User, { foreignKey: "owner_id" });
 
- // 1 Shop có nhiều Product
+// 1 Shop có nhiều Product
 Shop.hasMany(Product, { foreignKey: "shop_id", onDelete: "CASCADE" });
 Product.belongsTo(Shop, { foreignKey: "shop_id" });
 
- // 1 Product có nhiều Items
- Product.hasMany(Item, { foreignKey: "product_id", onDelete: "CASCADE", as: "items" });
- Item.belongsTo(Product, { foreignKey: "product_id", as: "product" });
+// 1 Product có nhiều Items
+Product.hasMany(Item, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+  as: "items",
+});
+Item.belongsTo(Product, { foreignKey: "product_id", as: "product" });
 
 // 1 Product có nhiều hình ảnh
 Product.hasMany(ProductImage, {
@@ -61,7 +65,11 @@ Shop.hasMany(Order, { foreignKey: "shop_id", onDelete: "CASCADE" });
 Order.belongsTo(Shop, { foreignKey: "shop_id", as: "shop" });
 
 // 1 Order có nhiều OrderItems
-Order.hasMany(OrderItem, { foreignKey: "order_id", onDelete: "CASCADE", as: "orderItems" });
+Order.hasMany(OrderItem, {
+  foreignKey: "order_id",
+  onDelete: "CASCADE",
+  as: "orderItems",
+});
 OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 
 // 1 OrderItem thuộc về 1 Item
@@ -69,7 +77,11 @@ Item.hasMany(OrderItem, { foreignKey: "item_id", onDelete: "CASCADE" });
 OrderItem.belongsTo(Item, { foreignKey: "item_id", as: "item" });
 
 // 1 Order có 1 Payment
-Order.hasOne(Payment, { foreignKey: "order_id", onDelete: "CASCADE", as: "payments" });
+Order.hasOne(Payment, {
+  foreignKey: "order_id",
+  onDelete: "CASCADE",
+  as: "payments",
+});
 Payment.belongsTo(Order, { foreignKey: "order_id" });
 
 // 1 User có nhiều Payments
@@ -77,7 +89,11 @@ User.hasMany(Payment, { foreignKey: "user_id", onDelete: "CASCADE" });
 Payment.belongsTo(User, { foreignKey: "user_id" });
 
 // 1 Order có 1 OrderShipping
-Order.hasOne(OrderShipping, { foreignKey: "order_id", onDelete: "CASCADE", as: "orderShipping" });
+Order.hasOne(OrderShipping, {
+  foreignKey: "order_id",
+  onDelete: "CASCADE",
+  as: "orderShipping",
+});
 OrderShipping.belongsTo(Order, { foreignKey: "order_id" });
 
 // 1 ShippingMethod có nhiều OrderShipping
@@ -85,14 +101,20 @@ ShippingMethod.hasMany(OrderShipping, {
   foreignKey: "shipping_method_id",
   onDelete: "CASCADE",
 });
-OrderShipping.belongsTo(ShippingMethod, { foreignKey: "shipping_method_id", as: "shippingMethod" });
+OrderShipping.belongsTo(ShippingMethod, {
+  foreignKey: "shipping_method_id",
+  as: "shippingMethod",
+});
 
 // 1 OrderShipping sử dụng 1 UserAddress
 UserAddress.hasMany(OrderShipping, {
   foreignKey: "shipping_address_id",
   onDelete: "CASCADE",
 });
-OrderShipping.belongsTo(UserAddress, { foreignKey: "shipping_address_id", as: "shippingAddress" });
+OrderShipping.belongsTo(UserAddress, {
+  foreignKey: "shipping_address_id",
+  as: "shippingAddress",
+});
 
 // 1 User có nhiều ProductReviews
 User.hasMany(ProductReview, { foreignKey: "user_id", onDelete: "CASCADE" });
@@ -136,10 +158,9 @@ Item.belongsToMany(User, {
   onDelete: "CASCADE",
 });
 
-
 // Cart - Item association (for eager loading item from cart)
-Cart.belongsTo(Item, { foreignKey: 'item_id', as: 'item' });
-Item.hasMany(Cart, { foreignKey: 'item_id' });
+Cart.belongsTo(Item, { foreignKey: "item_id", as: "item" });
+Item.hasMany(Cart, { foreignKey: "item_id" });
 
 // 1 Shop có nhiều bản ghi doanh thu theo ngày
 Shop.hasMany(ShopRevenue, { foreignKey: "shop_id", onDelete: "CASCADE" });

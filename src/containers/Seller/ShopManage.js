@@ -141,7 +141,7 @@ class ShopManage extends Component {
   fetchProducts = async () => {
     try {
       const { currentPage, pageSize } = this.state;
-      const shopId = this.state.shopInfo.id;
+      const shopId = this.state.shopInfo?.id;
 
       const res = await getProductsByShop(shopId, currentPage, pageSize);
       // console.log("Products response:", res);
@@ -636,45 +636,45 @@ class ShopManage extends Component {
         <div className="shop-info-card">
           <div className="shop-info-header">
             <div className="shop-header-left">
-              {shopInfo.image ? (
+              {shopInfo?.image ? (
                 <div className="shop-image">
-                  <img src={shopInfo.image} alt={shopInfo.name} />
+                  <img src={shopInfo?.image} alt={shopInfo?.name} />
                 </div>
               ) : (
                 <div className="shop-image no-image">
                   <i className="fas fa-store"></i>
                 </div>
               )}
-              <h2>{shopInfo.name}</h2>
+              <h2>{shopInfo?.name}</h2>
             </div>
             <div className="shop-rating">
-              <i className="fas fa-star"></i> {shopInfo.rating}
+              <i className="fas fa-star"></i> {shopInfo?.rating}
             </div>
           </div>
 
           {/* Hiển thị trạng thái shop */}
-          {shopInfo.status && (
-            <div className={`shop-status status-${shopInfo.status}`}>
+          {shopInfo?.status && (
+            <div className={`shop-status status-${shopInfo?.status}`}>
               <div className="status-icon">
-                {shopInfo.status === "pending" && (
+                {shopInfo?.status === "pending" && (
                   <i className="fas fa-clock"></i>
                 )}
-                {shopInfo.status === "accepted" && (
+                {shopInfo?.status === "accepted" && (
                   <i className="fas fa-check-circle"></i>
                 )}
-                {shopInfo.status === "rejected" && (
+                {shopInfo?.status === "rejected" && (
                   <i className="fas fa-times-circle"></i>
                 )}
               </div>
               <div className="status-text">
-                {shopInfo.status === "pending" && "Đang chờ duyệt"}
-                {shopInfo.status === "accepted" && "Đã được duyệt"}
-                {shopInfo.status === "rejected" && "Đã bị từ chối"}
+                {shopInfo?.status === "pending" && "Đang chờ duyệt"}
+                {shopInfo?.status === "accepted" && "Đã được duyệt"}
+                {shopInfo?.status === "rejected" && "Đã bị từ chối"}
               </div>
-              {shopInfo.status === "rejected" && shopInfo.rejectionReason && (
+              {shopInfo?.status === "rejected" && shopInfo?.rejectionReason && (
                 <div className="rejection-reason">
                   <p>
-                    <strong>Lý do:</strong> {shopInfo.rejectionReason}
+                    <strong>Lý do:</strong> {shopInfo?.rejectionReason}
                   </p>
                 </div>
               )}
@@ -684,24 +684,24 @@ class ShopManage extends Component {
           <div className="shop-info-content">
             <div className="info-item">
               <i className="fas fa-info-circle"></i>
-              <span>{shopInfo.description}</span>
+              <span>{shopInfo?.description}</span>
             </div>
             <div className="info-item">
               <i className="fas fa-map-marker-alt"></i>
-              <span>{shopInfo.address}</span>
+              <span>{shopInfo?.address}</span>
             </div>
             <div className="info-item">
               <i className="fas fa-phone"></i>
-              <span>{shopInfo.phone}</span>
+              <span>{shopInfo?.phone}</span>
             </div>
             <div className="info-item">
               <i className="fas fa-envelope"></i>
-              <span>{shopInfo.email}</span>
+              <span>{shopInfo?.email}</span>
             </div>
           </div>
           <div className="shop-stats">
             <div className="stat-item">
-              <div className="stat-value">{shopInfo.totalSales}</div>
+              <div className="stat-value">{shopInfo?.totalSales}</div>
               <div className="stat-label">Tổng đơn hàng</div>
             </div>
             <div className="stat-item">
@@ -717,10 +717,10 @@ class ShopManage extends Component {
               </div>
               <div className="stat-label">Đã bán</div>
             </div>
-            {shopInfo.totalRevenue !== undefined && (
+            {shopInfo?.totalRevenue !== undefined && (
               <div className="stat-item">
                 <div className="stat-value">
-                  {this.formatPrice(shopInfo.totalRevenue)}
+                  {this.formatPrice(shopInfo?.totalRevenue)}
                 </div>
                 <div className="stat-label">Doanh thu</div>
               </div>

@@ -21,6 +21,7 @@ class Register extends Component {
       confirmPassword: "",
       showPassword: false,
       errorMessage: "",
+      isLoading: false,
     };
   }
 
@@ -82,67 +83,114 @@ class Register extends Component {
   };
 
   handleRegister = async () => {
-    this.setState({ errorMessage: "" });
+    this.setState({ errorMessage: "", isLoading: true });
 
     // Validate form
     if (!this.state.username || !this.state.email || !this.state.password) {
-      this.setState({ errorMessage: "Vui lòng điền đầy đủ thông tin" });
+      this.setState({
+        errorMessage: "Vui lòng điền đầy đủ thông tin",
+        isLoading: false,
+      });
       return;
     }
 
     if (this.state.password !== this.state.confirmPassword) {
-      this.setState({ errorMessage: "Mật khẩu xác nhận không khớp" });
+      this.setState({
+        errorMessage: "Mật khẩu xác nhận không khớp",
+        isLoading: false,
+      });
       return;
     }
 
     try {
-      handleRegisterApi(
+      const res = await handleRegisterApi(
         this.state.username,
         this.state.email,
         this.state.password
       );
-
-      toast.success(
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ fontSize: "24px", marginRight: "10px" }}>📧</span>
-          <div>
-            <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
-              Đã gửi OTP!
+      if (res.statusText === "OK") {
+        toast.success(
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{ fontSize: "24px", marginRight: "10px" }}>📧</span>
+            <div>
+              <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+                Đã gửi OTP!
+              </div>
+              <div>OTP đang được gửi đến gmail của bạn, xin đợi một lát</div>
             </div>
-            <div>OTP đang được gửi đến gmail của bạn, xin đợi một lát</div>
-          </div>
-        </div>,
-        {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          className: "navy-toast",
-          progressClassName: "navy-toast-progress",
-          style: {
-            background: "#001f3f",
-            color: "white",
-            fontSize: "16px",
-            fontWeight: "500",
-            padding: "15px 20px",
-            borderRadius: "8px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            width: "380px",
-            minHeight: "80px",
-          },
-          progressStyle: {
-            background: "rgba(255, 255, 255, 0.7)",
-            height: "4px",
-          },
-        }
-      );
+          </div>,
+          {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            className: "navy-toast",
+            progressClassName: "navy-toast-progress",
+            style: {
+              background: "#001f3f",
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "500",
+              padding: "15px 20px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              width: "380px",
+              minHeight: "80px",
+            },
+            progressStyle: {
+              background: "rgba(255, 255, 255, 0.7)",
+              height: "4px",
+            },
+          }
+        );
 
-      setTimeout(() => {
-        this.props.navigate(`/verify-otp?email=${this.state.email}`);
-      }, 5000);
+        this.setState({ isLoading: false });
+        setTimeout(() => {
+          this.props.navigate(`/verify-otp?email=${this.state.email}`);
+        }, 5000);
+      } else {
+        this.setState({ isLoading: false });
+        toast.error(
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <span style={{ fontSize: "24px", marginRight: "10px" }}>📧</span>
+            <div>
+              <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+                Lỗi đăng ký
+              </div>
+              <div>Tên đăng nhập đã tồn tại hoặc không hợp lệ</div>
+            </div>
+          </div>,
+          {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            className: "navy-toast",
+            progressClassName: "navy-toast-progress",
+            style: {
+              background: "#001f3f",
+              color: "white",
+              fontSize: "16px",
+              fontWeight: "500",
+              padding: "15px 20px",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              width: "380px",
+              minHeight: "80px",
+            },
+            progressStyle: {
+              background: "rgba(255, 255, 255, 0.7)",
+              height: "4px",
+            },
+          }
+        );
+      }
     } catch (error) {
+      this.setState({ isLoading: false });
       if (error.response && error.response.data) {
         this.setState({
           errorMessage: error.response.data.error || "Đăng ký thất bại!",
@@ -185,11 +233,20 @@ class Register extends Component {
       confirmPassword,
       errorMessage,
       showPassword,
+      isLoading,
     } = this.state;
     const { lang } = this.props;
 
     return (
       <div className="register-background">
+        {isLoading && (
+          <div className="loading-overlay">
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p className="loading-text">Đang xử lý đăng ký...</p>
+            </div>
+          </div>
+        )}
         <div className="register-container">
           <div className="register-content row">
             <div className="text-register-container">
@@ -226,7 +283,7 @@ class Register extends Component {
                 <FormattedMessage id="register.email" defaultMessage="Email:" />
               </label>
               <div className="custom-input">
-                <img className="icon" />
+                <img className="icon" alt="Email Icon" />
                 <input
                   type="email"
                   className="form-control"
@@ -295,6 +352,7 @@ class Register extends Component {
                 ref={this.btnRegister}
                 className="btn-register"
                 onClick={this.handleRegister}
+                disabled={isLoading}
               >
                 <FormattedMessage
                   id="register.register"

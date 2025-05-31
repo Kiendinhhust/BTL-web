@@ -239,7 +239,7 @@ const HomePage = (props) => {
     };
 
     fetchProducts();
-  }, [page, title, category]);
+  }, [page, title, category, location.pathname]);
 
   const renderProductList = () => {
     // console.log("Products:", products);

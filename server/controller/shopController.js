@@ -58,24 +58,27 @@ const getAllShops = async (req, res) => {
     const shops = await Shop.findAll();
 
     // Fetch revenue data for all shops
-    const shopIds = shops.map(shop => shop.shop_id);
+    const shopIds = shops.map((shop) => shop.shop_id);
 
     // Get the latest revenue record for each shop
     const shopRevenues = await ShopRevenue.findAll({
       where: { shop_id: { [Op.in]: shopIds } },
-      order: [['shop_id', 'ASC'], ['date', 'DESC']],
+      order: [
+        ["shop_id", "ASC"],
+        ["date", "DESC"],
+      ],
     });
 
     // Create a map of shop_id to latest revenue record
     const revenueMap = {};
-    shopRevenues.forEach(revenue => {
+    shopRevenues.forEach((revenue) => {
       if (!revenueMap[revenue.shop_id]) {
         revenueMap[revenue.shop_id] = revenue;
       }
     });
 
     // Add revenue data to each shop
-    const shopsWithRevenue = shops.map(shop => {
+    const shopsWithRevenue = shops.map((shop) => {
       const shopData = shop.get({ plain: true });
       const revenue = revenueMap[shop.shop_id];
 
@@ -94,12 +97,12 @@ const getAllShops = async (req, res) => {
 
     res.json({
       success: true,
-      data: shopsWithRevenue
+      data: shopsWithRevenue,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -321,24 +324,27 @@ const getPendingShops = async (req, res) => {
     });
 
     // Fetch revenue data for all pending shops
-    const shopIds = pendingShops.map(shop => shop.shop_id);
+    const shopIds = pendingShops.map((shop) => shop.shop_id);
 
     // Get the latest revenue record for each shop
     const shopRevenues = await ShopRevenue.findAll({
       where: { shop_id: { [Op.in]: shopIds } },
-      order: [['shop_id', 'ASC'], ['date', 'DESC']],
+      order: [
+        ["shop_id", "ASC"],
+        ["date", "DESC"],
+      ],
     });
 
     // Create a map of shop_id to latest revenue record
     const revenueMap = {};
-    shopRevenues.forEach(revenue => {
+    shopRevenues.forEach((revenue) => {
       if (!revenueMap[revenue.shop_id]) {
         revenueMap[revenue.shop_id] = revenue;
       }
     });
 
     // Add revenue data to each shop
-    const shopsWithRevenue = pendingShops.map(shop => {
+    const shopsWithRevenue = pendingShops.map((shop) => {
       const shopData = shop.get({ plain: true });
       const revenue = revenueMap[shop.shop_id];
 
@@ -406,7 +412,7 @@ const getShopByUserId = async (req, res) => {
       // Thêm thông tin doanh thu
       total_orders: shopRevenue ? shopRevenue.total_orders : 0,
       total_revenue: shopRevenue ? shopRevenue.total_revenue : 0,
-      date: shopRevenue ? shopRevenue.date : null
+      date: shopRevenue ? shopRevenue.date : null,
     };
 
     res.json({

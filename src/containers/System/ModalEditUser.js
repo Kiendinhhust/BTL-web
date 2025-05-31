@@ -155,7 +155,14 @@ class ModalEditUser extends Component {
           Sửa thông tin người dùng
         </ModalHeader>
         <ModalBody>
-          <div className="modal-user-body">
+          <div
+            className="modal-user-body"
+            style={{
+              overflowY: "scroll",
+              maxHeight: "70vh",
+              padding: "10px",
+            }}
+          >
             {this.state.errorMessage && (
               <div className="alert alert-danger">
                 {this.state.errorMessage}
