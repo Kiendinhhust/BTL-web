@@ -1,29 +1,25 @@
 const express = require('express')
-const multer = require('multer');
-
+const { upload } = require('../config/multerConfig');
+const { listImages } = require('../utils/cloudinaryHelper') 
 const storeController = require('../controller/storeController')
+const auth = require('../middleware/authMiddleware')
+
 const router = express.Router()
 
-// Cấu hình multer để lưu file tạm thời trong RAM
-const storage = multer.memoryStorage();
-
-// Chỉ cho phép file ảnh (jpg, jpeg, png, gif, webp)
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === 'image/jpeg' ||
-    file.mimetype === 'image/png' ||
-    file.mimetype === 'image/gif' ||
-    file.mimetype === 'image/webp'
-  ) {
-    cb(null, true); // Accept file
-  } else {
-    cb(new Error('Chỉ chấp nhận các định dạng ảnh!'), false); // Reject file
-  }
-};
-const upload = multer({ storage, fileFilter });
-
-//router.get('/store/image/upload')
+//router.use(auth.authenticateToken)
+router.get('/', (req, res) => {
+  res.send("uitls api alive")
+})
 router.post('/store/image/upload', upload.single('image'), storeController.uploadSingleImage)
-router.post('/store/image/delete',storeController.deleteImageByUrl)
-
+router.post('/store/image/delete', storeController.deleteImageByPublicId)
+router.get('/store/image/list', async (req, res) => {
+  try {
+    const prefix = req.query.folder || 'uploads';
+    const images = await listImages(prefix);
+    res.json(images);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+router.get('/store/image/:public_id(*)', storeController.getImageByPublicId); // <-- route mới
 module.exports = router

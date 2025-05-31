@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý Ảnh với Cloudinary</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    img  { max-width: 150px; margin: 10px; display: block; }
+    .item { display: inline-block; position: relative; }
+    .del-btn {
+      position: absolute; top: 5px; right: 5px;
+      background: rgba(255,0,0,0.8); color: #fff;
+      border: none; padding: 2px 6px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upload Ảnh</h1>
+  <form id="uploadForm">
+    <input type="file" id="fileInput" accept="image/*" required>
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>Gallery</h2>
+  <div id="gallery"></div>
+
+  <script>
+    const uploadForm = document.getElementById('uploadForm');
+    const fileInput  = document.getElementById('fileInput');
+    const gallery    = document.getElementById('gallery');
+    const apiBase    = 'http://localhost:3434/api/utils/store/image/';
+
+    // Tải lại gallery
+    async function loadGallery() {
+      gallery.innerHTML = 'Đang tải...';
+      const res = await fetch(`http://localhost:3434/api/utils/store/image/list`, { method:'GET' });
+      const images = await res.json();
+      if (!Array.isArray(images) || images.length===0) {
+        gallery.innerHTML = 'Chưa có ảnh nào.';
+        return;
+      }
+      gallery.innerHTML = '';
+      images.forEach(img => {
+        const wrap = document.createElement('div');
+        wrap.className = 'item';
+        wrap.innerHTML = `
+          <img src="${img.url}" alt="${img.public_id}">
+          <button class="del-btn" data-id="${img.public_id}">✕</button>
+        `;
+        gallery.appendChild(wrap);
+      });
+    }
+
+    // Xử lý upload
+    uploadForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const file = fileInput.files[0];
+      if (!file) return alert('Chọn file trước khi upload.');
+      const fd = new FormData();
+      fd.append('image', file);
+      const res = await fetch(`http://localhost:3434/api/utils/store/image/upload`, { method:'POST', body: fd });
+      const data = await res.json();
+      if (data.url) {
+        alert('Upload thành công!');
+        fileInput.value = '';
+        loadGallery();
+      } else {
+        alert('Lỗi: ' + (data.error||''));
+      }
+    });
+
+    // Xử lý xóa ảnh
+    gallery.addEventListener('click', async e => {
+      if (!e.target.classList.contains('del-btn')) return;
+      const public_id = e.target.dataset.id;
+      if (!confirm('Xác nhận xóa ảnh này?')) return;
+      const res = await fetch(`http://localhost:3434/api/utils/store/image/delete`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ public_id })
+      });
+      const data = await res.json();
+      if (data.message) loadGallery();
+      else alert('Xóa thất bại: ' + (data.error||''));
+    });
+
+    // Khởi tạo
+    loadGallery();
+  </script>
+</body>
+</html>

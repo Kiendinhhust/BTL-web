@@ -75,13 +75,14 @@ const navbarCartReducer = (state = initialState, action) => {
         ...newState3,
       };
     case actionTypes.UPDATE_QUANTITY:
-      const totalQuantity = state.carts.reduce(
-        (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
-        0
-      );
+      // const totalQuantity = state.carts.reduce(
+      //   (sum, item) => sum + item.quantity, // `quantity` là giá trị của mỗi sản phẩm
+      //   0
+      // );
+      // console.log(action.payload);
       const newState4 = {
         ...state,
-        quantity: Number(totalQuantity),
+        quantity: Number(action.payload.quantity),
       };
       // localStorage.setItem("navbarCart", JSON.stringify(newState4));
       return {

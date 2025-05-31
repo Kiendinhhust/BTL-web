@@ -12,7 +12,7 @@ import defaultAvatar from "../../assets/images/user.svg";
 import { fetchUserDetail } from "../../store/actions/userDetailAction";
 import "./Header.scss";
 import cartImage from "../../assets/images/icons/cart.png";
-import homeImage from "../../assets/images/icons/home.png";
+// import homeImage from "../../assets/images/icons/home.png";
 import searchImage from "../../assets/images/icons/search.png";
 import { getUserById } from "../../services/userService";
 class Header extends Component {
@@ -104,7 +104,7 @@ class Header extends Component {
         // Kiểm tra xem có ảnh không
         if (userData.UserInfo && userData.UserInfo.img) {
           try {
-            console.log("userData.UserInfo.img", userData.UserInfo.img);
+            // console.log("userData.UserInfo.img", userData.UserInfo.img);
             // Chuyển đổi buffer thành binary
             const imageUrl = new Buffer(
               userData.UserInfo.img,
@@ -147,15 +147,24 @@ class Header extends Component {
             currentPath={location.pathname}
           />
         </div>
-        <Link to="/home">
+        {/* <Link to="/home">
           <img className="header-home" src={homeImage} alt="Header Cart"></img>
-        </Link>
-        <Link to="/cart">
-          <img className="header2-cart" src={cartImage} alt="Header Cart"></img>
-          <div className="header2-nav-cart-count">
-            {this.props.cartQuantity}
-          </div>
-        </Link>
+        </Link> */}
+        <div>
+          <Link to="/cart">
+            <div className="header2-cart-container">
+              <img
+                className="header2-cart"
+                src={cartImage}
+                alt="Header Cart"
+              ></img>
+              <div className="header2-nav-cart-count">
+                {this.props.cartQuantity}
+              </div>
+            </div>
+          </Link>
+        </div>
+
         <div className="header-search-container">
           <input
             value={this.props.search || ""}

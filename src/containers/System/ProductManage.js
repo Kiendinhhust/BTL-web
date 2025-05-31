@@ -1,30 +1,173 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import ProductAdmin from "../../components/Product/ProductAdmin";
 import "./ProductManage.scss";
-class ProductManage extends Component {
-  render() {
-    return (
-      <div className="productmanage-container">
-        {this.props.products.map((product) => (
-          <ProductAdmin
-            key={product.id}
-            id={product.id}
-            rating={product.rating}
-            name={product.name}
-            image={product.image}
-            priceCents={product.priceCents}
-            keywords={product.keywords}
-          />
-        ))}
-      </div>
-    );
+import { Modal, ModalHeader, ModalBody } from "reactstrap";
+import {
+  useHistory,
+  useLocation,
+} from "react-router-dom/cjs/react-router-dom.min";
+// import productImageNull from "../../assets/images/icons/product.png";
+import axios from "axios";
+import ProductAdd from "./ProductAdd";
+import ProductShop from "../../components/Product/ProductShop";
+const ProductManage = (props) => {
+  const [products, setProducts] = useState([]);
+  const location = useLocation();
+  const history = useHistory();
+  const query = new URLSearchParams(location.search);
+  let page = query.get("page");
+  if (page === null || page <= 0) {
+    page = 1;
   }
-}
+  let title = props.search;
+  if (title === null || title === undefined) {
+    title = "";
+  }
+  let shop_id = query.get("shop_id");
+  if (shop_id === null) {
+    shop_id = "";
+  }
+  useEffect(() => {
+    axios({
+      method: "get",
+      url:
+        title !== null
+          ? `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}&title=${title}`
+          : `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}`,
+    }).then((response) => {
+      setProducts(response.data.products);
+      // console.log(response);
+    });
+  }, [page, title]);
+  const renderProductList = () => {
+    return products.map((product) => (
+      <ProductShop
+        key={product.product_id}
+        product={product}
+        shop_id={shop_id}
+      />
+    ));
+  };
+  const [modal, setModal] = useState(false);
+
+  const toggle = () => setModal(!modal);
+  return (
+    <div className="productmanage-container">
+      <button className="productmanage-addproduct" onClick={toggle}>
+        Add Product
+      </button>
+      <Modal isOpen={modal} toggle={toggle} className="productmanage-modal">
+        <ModalHeader toggle={toggle}>Add Product</ModalHeader>
+        <ModalBody>
+          <ProductAdd toggle={toggle} shop_id={shop_id} />
+        </ModalBody>
+      </Modal>
+      <div className="productmanage-productscontainer">
+        {renderProductList()}
+      </div>
+      <hr className="productmanage-dash" />
+      <span className="productmanage-pagination">
+        {page > 3 ? (
+          <button
+            onClick={() =>
+              history.push(
+                `/seller/product-manage?page=${1}${
+                  title !== null && title !== "" ? `&title=${title}` : ""
+                }${
+                  shop_id !== null && shop_id !== ""
+                    ? `&shop_id=${shop_id}`
+                    : ""
+                }`
+              )
+            }
+          >
+            {1}
+          </button>
+        ) : null}
+        {page - 2 > 0 && (
+          <button
+            onClick={() =>
+              history.push(
+                `/seller/product-manage?page=${Number(page) - 2}${
+                  title !== null && title !== "" ? `&title=${title}` : ""
+                }${
+                  shop_id !== null && shop_id !== ""
+                    ? `&shop_id=${shop_id}`
+                    : ""
+                }`
+              )
+            }
+          >
+            {Number(page) - 2}
+          </button>
+        )}
+        {page - 1 > 0 && (
+          <button
+            onClick={() =>
+              history.push(
+                `/seller/product-manage?page=${Number(page) - 1}${
+                  title !== null && title !== "" ? `&title=${title}` : ""
+                }${
+                  shop_id !== null && shop_id !== ""
+                    ? `&shop_id=${shop_id}`
+                    : ""
+                }`
+              )
+            }
+          >
+            {Number(page) - 1}
+          </button>
+        )}
+
+        <button
+          className="productmanage-pagination-now"
+          onClick={() =>
+            history.push(
+              `/seller/product-manage?page=${Number(page)}${
+                title !== null && title !== "" ? `&title=${title}` : ""
+              }${
+                shop_id !== null && shop_id !== "" ? `&shop_id=${shop_id}` : ""
+              }`
+            )
+          }
+        >
+          {Number(page)}
+        </button>
+        <button
+          onClick={() =>
+            history.push(
+              `/seller/product-manage?page=${Number(page) + 1}${
+                title !== null && title !== "" ? `&title=${title}` : ""
+              }${
+                shop_id !== null && shop_id !== "" ? `&shop_id=${shop_id}` : ""
+              }`
+            )
+          }
+        >
+          {Number(page) + 1}
+        </button>
+        <button
+          onClick={() =>
+            history.push(
+              `/seller/product-manage?page=${Number(page) + 2}${
+                title !== null && title !== "" ? `&title=${title}` : ""
+              }${
+                shop_id !== null && shop_id !== "" ? `&shop_id=${shop_id}` : ""
+              }`
+            )
+          }
+        >
+          {Number(page) + 2}
+        </button>
+      </span>
+    </div>
+  );
+};
 
 const mapStateToProps = (state) => {
   return {
     products: state.productR.products,
+    search: state.navbarCart.search,
   };
 };
 

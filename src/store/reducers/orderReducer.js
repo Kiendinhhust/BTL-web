@@ -1,11 +1,18 @@
+import axios from "axios";
 import actionTypes from "../actions/actionTypes";
+import { accessToken, LoginHack } from "../../containers/System/LoginHack";
 // const { v4: uuidv4 } = require("uuid");
 const initialState = {
-  orders: {},
+  orders: [],
 };
 
 const orderReducer = (state = initialState, action) => {
   switch (action.type) {
+    case actionTypes.FETCH_ORDER:
+      return {
+        ...state,
+        orders: action.payload.orders,
+      };
     case actionTypes.MAKE_ORDER:
       // const newState1 = {
       //   ...state,
@@ -17,10 +24,7 @@ const orderReducer = (state = initialState, action) => {
       // );
       return {
         ...state,
-        orders: {
-          ...state.orders,
-          [action.payload.orderId]: { ...action.payload.orderProducts },
-        },
+        orders: [...state.orders, { ...action.payload.order }],
       };
 
     default:

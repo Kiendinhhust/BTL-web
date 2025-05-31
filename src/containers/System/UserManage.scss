@@ -24,18 +24,37 @@ $border-radius: 8px;
   position: relative;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-image:
-      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 50%, transparent 100%),
-      radial-gradient(1.2px 1.2px at 70% 30%, rgba(255,255,255,0.5) 50%, transparent 100%),
-      radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.6) 50%, transparent 100%),
-      radial-gradient(1.3px 1.3px at 80% 60%, rgba(255,255,255,0.5) 50%, transparent 100%),
-      radial-gradient(1.1px 1.1px at 50% 40%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    background-image: radial-gradient(
+        1px 1px at 10% 20%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1.2px 1.2px at 70% 30%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 30% 70%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1.3px 1.3px at 80% 60%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1.1px 1.1px at 50% 40%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 100%
+      );
     pointer-events: none;
     opacity: 0.3;
     animation: twinkle 5s infinite alternate;
@@ -62,7 +81,7 @@ $border-radius: 8px;
 
   // Navy gradient strip at top
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -83,7 +102,7 @@ $border-radius: 8px;
     padding-bottom: 12px;
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       bottom: 0;
       left: 50%;
@@ -122,7 +141,7 @@ $border-radius: 8px;
   }
 
   #customers {
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
@@ -141,7 +160,8 @@ $border-radius: 8px;
       }
     }
 
-    td, th {
+    td,
+    th {
       padding: 14px 16px;
       text-align: left;
     }
@@ -179,10 +199,27 @@ $border-radius: 8px;
 }
 
 .modal-user-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+
   .modal-content {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
     border-radius: $border-radius;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+
+    max-height: 90vh;
+    position: relative;
+    top: -50px; /* Đưa modal cao lên một chút */
 
     .modal-header {
       @include navy-gradient;
@@ -231,7 +268,8 @@ $border-radius: 8px;
         font-size: 14px;
       }
 
-      input, select {
+      input,
+      select {
         border-radius: $border-radius;
         border: 1px solid $medium-gray;
         height: 42px;
@@ -280,7 +318,9 @@ $border-radius: 8px;
           height: 150px;
           width: 100%;
           border: 1px solid $medium-gray;
-          background: #f8f8f8 url('https://via.placeholder.com/150?text=No+Image') center center no-repeat;
+          background: #f8f8f8
+            url("https://via.placeholder.com/150?text=No+Image") center center
+            no-repeat;
           background-size: contain;
           cursor: pointer;
           border-radius: $border-radius;
@@ -299,21 +339,29 @@ $border-radius: 8px;
 // Modern Confirm Modal
 .confirm-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 500px;
-  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1060;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  animation: modalFadeIn 0.3s ease-out;
+  animation: backdropFadeIn 0.3s ease-out;
 
   .modal-content {
-    border: none;
+    position: relative;
+    top: -50px; /* Đưa modal cao lên một chút */
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    animation: modalFadeIn 0.3s ease-out;
+    border: none;
   }
 
   .modal-header {
@@ -324,16 +372,27 @@ $border-radius: 8px;
     position: relative;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background-image:
-        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 50%, transparent 100%),
-        radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.3) 50%, transparent 100%),
-        radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.4) 50%, transparent 100%);
+      background-image: radial-gradient(
+          1px 1px at 10% 20%,
+          rgba(255, 255, 255, 0.4) 50%,
+          transparent 100%
+        ),
+        radial-gradient(
+          1px 1px at 70% 50%,
+          rgba(255, 255, 255, 0.3) 50%,
+          transparent 100%
+        ),
+        radial-gradient(
+          1px 1px at 30% 70%,
+          rgba(255, 255, 255, 0.4) 50%,
+          transparent 100%
+        );
       pointer-events: none;
       opacity: 0.2;
     }
@@ -464,7 +523,11 @@ $border-radius: 8px;
         color: white;
 
         &:hover {
-          background: linear-gradient(135deg, darken($navy-dark, 5%), darken($navy-medium, 5%));
+          background: linear-gradient(
+            135deg,
+            darken($navy-dark, 5%),
+            darken($navy-medium, 5%)
+          );
           box-shadow: 0 4px 10px rgba($navy-dark, 0.3);
           transform: translateY(-2px);
         }
@@ -476,7 +539,11 @@ $border-radius: 8px;
         color: white;
 
         &:hover {
-          background: linear-gradient(135deg, darken($red, 5%), darken($red, 15%));
+          background: linear-gradient(
+            135deg,
+            darken($red, 5%),
+            darken($red, 15%)
+          );
           box-shadow: 0 4px 10px rgba($red, 0.3);
           transform: translateY(-2px);
         }
@@ -493,41 +560,80 @@ $border-radius: 8px;
 
 // Animations
 @keyframes twinkle {
-  0% { opacity: 0.15; }
-  50% { opacity: 0.3; }
-  100% { opacity: 0.15; }
+  0% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.15;
+  }
 }
 
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: translate(-50%, -60%); }
-  to { opacity: 1; transform: translate(-50%, -50%); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
 
 @keyframes backdropFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0.7; }
-  50% { opacity: 1; }
-  100% { opacity: 0.7; }
+  0% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes pulse {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
 }
 
 .user-manage-confirm-modal {
@@ -663,17 +769,17 @@ $border-radius: 8px;
   padding: 50px 0;
 
   .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(26, 58, 108, 0.1);
-      border-radius: 50%;
-      border-top-color: #1a3a6c;
-      animation: spin 1s ease-in-out infinite;
-      margin-bottom: 15px;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(26, 58, 108, 0.1);
+    border-radius: 50%;
+    border-top-color: #1a3a6c;
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 15px;
   }
 
   p {
-      color: #666;
-      font-size: 16px;
+    color: #666;
+    font-size: 16px;
   }
 }

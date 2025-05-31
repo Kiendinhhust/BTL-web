@@ -17,8 +17,8 @@ import BuyerSystem from "../routes/BuyerSystem";
 import Register from "../routes/Register.js";
 import VerifyOTP from "../routes/VerifyOTP.js";
 import HomePage from "./HomePage/HomePage.js";
-import CartPage from "./HomePage/CartPage.js";
-import MyOrders from "../components/Product/MyOrders";
+import CartPage from "./CartPage/CartPage.js";
+import MyOrders from "../containers/MyOrders/MyOrders";
 import Order from "../components/Product/Order";
 import ProductDetail from "../components/Product/ProductDetail";
 import { default as HomePageHeader } from "./HomePage/Header.js";
@@ -26,6 +26,8 @@ import { CustomToastCloseButton } from "../components/CustomToast";
 import ConfirmModal from "../components/ConfirmModal";
 import Footer from "./Footer/Footer";
 import "./App.scss";
+
+import ItemManage from "./System/ItemManage.js";
 
 class App extends Component {
   handlePersistorState = () => {
@@ -78,6 +80,11 @@ class App extends Component {
                   <Route
                     path={path.SYSTEM}
                     component={userIsAuthenticated(System)}
+                  />
+
+                  <Route
+                    path={"/system/item-manage"}
+                    component={userIsAuthenticated(ItemManage)}
                   />
                   <Route path={path.CART} component={CartPage} />
                   <Route path={"/myorders"} component={MyOrders} />

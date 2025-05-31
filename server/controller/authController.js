@@ -1,13 +1,13 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { User, UserInfo, sequelize } = require("../models");
+const { User, UserInfo, Shop, sequelize } = require("../models");
 const { sendOTP } = require("../utils/mailer");
-
 const {
   saveTempUser,
   getTempUser,
   deleteTempUser,
   allTempUser,
+  isUsernameInTemp,
 } = require("../utils/tempUser");
 
 const generateOTP = () =>
@@ -17,16 +17,33 @@ const generateOTP = () =>
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (await User.findOne({ where: { username } })) {
+
+    // Kiểm tra username và email đã tồn tại
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
       return res.status(400).json({ error: "Username đã tồn tại!" });
     }
+
+    // Kiểm tra username có đang trong quá trình đăng ký không
+    if (isUsernameInTemp(username)) {
+      return res.status(400).json({
+        error: "Username đang được sử dụng trong quá trình đăng ký khác!",
+      });
+    }
+
+    const existingEmail = await UserInfo.findOne({ where: { email } });
+    if (existingEmail) {
+      return res.status(400).json({ error: "Email đã được sử dụng!" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
     saveTempUser(email, username, hashedPassword, otp);
-    await sendOTP(email, otp);
-
+    const result = await sendOTP(email, otp);
+    console.log("Kết quả gửi email:", result);
     res.json({ message: "OTP đã được gửi đến email của bạn!" });
   } catch (error) {
+    console.error("Lỗi đăng ký:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -40,19 +57,41 @@ const verifyOTP = async (req, res) => {
     const tempUser = getTempUser(email);
 
     if (!tempUser || tempUser.otp !== otp) {
+      await transaction.rollback();
       return res.status(400).json({ error: "Mã OTP không hợp lệ!" });
     }
 
+    // Kiểm tra lại username trước khi tạo user (tránh race condition)
+    const existingUser = await User.findOne({
+      where: { username: tempUser.username },
+      transaction,
+    });
+
+    if (existingUser) {
+      await transaction.rollback();
+      deleteTempUser(email);
+      return res.status(400).json({
+        error: "Username đã tồn tại! Vui lòng đăng ký lại với username khác.",
+      });
+    }
+
     // Tạo user
-    const user = await User.create({
-      username: tempUser.username,
-      password_hash: tempUser.password,
-      role: "buyer",
-    });
-    await UserInfo.create({
-      user_id: user.user_id,
-      email: email,
-    });
+    const user = await User.create(
+      {
+        username: tempUser.username,
+        password_hash: tempUser.password,
+        role: "admin",
+      },
+      { transaction }
+    );
+
+    await UserInfo.create(
+      {
+        user_id: user.user_id,
+        email: email,
+      },
+      { transaction }
+    );
 
     console.log("User created:", user.user_id);
     deleteTempUser(email);
@@ -69,12 +108,31 @@ const verifyOTP = async (req, res) => {
     console.error("Lỗi xác thực OTP:", error);
 
     await transaction.rollback();
+
+    // Lấy email từ req.query để xóa tempUser
+    const { email } = req.query;
+    if (email) {
+      deleteTempUser(email); // Xóa tempUser khi có lỗi
+    }
+
+    // Xử lý lỗi duplicate key
+    if (
+      error.name === "SequelizeUniqueConstraintError" ||
+      error.original?.code === "23505" ||
+      error.message.includes("duplicate key value violates unique constraint")
+    ) {
+      return res.status(400).json({
+        error:
+          "Username hoặc email đã tồn tại! Vui lòng đăng ký lại với thông tin khác.",
+      });
+    }
+
     res.status(500).json({ error: "Lỗi xác thực OTP!" });
   }
 };
 
 const generateAccessToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "15m" }); // Token có hiệu lực 15 phút
+  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" }); // Token có hiệu lực 7 ngày
 };
 
 const generateRefreshToken = (userId) => {
@@ -87,7 +145,11 @@ const generateRefreshToken = (userId) => {
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne({
+      where: { username },
+      include: [{ model: UserInfo }],
+    });
+
     if (!user) {
       return res
         .status(400)
@@ -100,28 +162,32 @@ const login = async (req, res) => {
         .status(400)
         .json({ error: "Tên đăng nhập hoặc mật khẩu không đúng!" });
     }
-    console.log(process.env.JWT_REFRESH_SECRET);
-    console.log(user);
-    const accessToken = generateAccessToken(user.id);
-    const refreshToken = generateRefreshToken(user.id);
-
-    // Lưu Access Token trong HttpOnly Cookie
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict", // Chống CSRF
-      maxAge: 15 * 60 * 1000, // 15m
+    console.log("check", process.env.JWT_SECRET, user);
+    const accessToken = generateAccessToken(user.user_id);
+    const refreshToken = generateRefreshToken(user.user_id);
+    const shop = await Shop.findOne({
+      where: { owner_id: user.user_id },
+      order: [["shop_id", "DESC"]],
     });
-
     // Lưu Refresh Token trong HttpOnly Cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      secure: process.env.NODE_ENV === "production", // Chỉ bật secure khi chạy production
+      sameSite: "Strict", // Chống CSRF
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
     });
+    console.log("check", res.cookies);
 
-    res.json({ message: "Đăng nhập thành công!", accessToken });
+    res.json({
+      message: "Đăng nhập thành công!",
+      accessToken,
+      refreshToken,
+      userId: user.user_id,
+      username: user.username,
+      email: user.UserInfo ? user.UserInfo.email : null,
+      shop: shop ? shop.shop_id : null,
+      role: user.role,
+    });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Lỗi đăng nhập!" });
@@ -130,27 +196,51 @@ const login = async (req, res) => {
 
 // Refresh Access Token
 const refreshAccessToken = (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
+  // Try to get the refresh token from cookies first
+  let refreshToken = req.cookies.refreshToken;
+
+  // If not in cookies, try to get it from the Authorization header
+  if (!refreshToken) {
+    const authHeader = req.headers["authorization"];
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      refreshToken = authHeader.substring(7);
+    }
+  }
+
+  // If still no refresh token, check if it's in the request body
+  if (!refreshToken && req.body.refreshToken) {
+    refreshToken = req.body.refreshToken;
+  }
 
   if (!refreshToken) {
-    return res.status(401).json({ error: "Chưa đăng nhập!" });
+    return res.status(401).json({
+      success: false,
+      error: "Chưa đăng nhập! Không tìm thấy refresh token.",
+    });
   }
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const newAccessToken = generateAccessToken(decoded.userId);
 
-    // Lưu accesstoken mới
-    res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 15 * 60 * 1000, // 15m
+    res.json({
+      success: true,
+      accessToken: newAccessToken,
     });
-
-    res.json({ accessToken: newAccessToken });
   } catch (error) {
-    res.status(403).json({ error: "Refresh Token không hợp lệ!" });
+    console.error("Error refreshing token:", error);
+
+    if (error.name === "TokenExpiredError") {
+      return res.status(403).json({
+        success: false,
+        error: "Refresh Token đã hết hạn. Vui lòng đăng nhập lại.",
+      });
+    }
+
+    res.status(403).json({
+      success: false,
+      error: "Refresh Token không hợp lệ!",
+    });
   }
 };
 

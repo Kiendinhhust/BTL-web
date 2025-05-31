@@ -1,0 +1,190 @@
+.custom-toast {
+  position: fixed;
+  z-index: 9999;
+  min-width: 300px;
+  max-width: 500px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  animation: slideIn 0.3s ease-out;
+  color: white;
+  overflow: hidden;
+
+  // Positions
+  &.top-right {
+    top: 20px;
+    right: 20px;
+  }
+
+  &.top-left {
+    top: 20px;
+    left: 20px;
+  }
+
+  &.bottom-right {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  &.bottom-left {
+    bottom: 20px;
+    left: 20px;
+  }
+
+  // Types với màu sắc theo yêu cầu
+  &.success {
+    background: #22c55e; // Xanh lá
+    border-left: 4px solid #16a34a;
+    
+    .toast-icon {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+  }
+
+  &.error {
+    background: #ef4444; // Đỏ
+    border-left: 4px solid #dc2626;
+    
+    .toast-icon {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+  }
+
+  &.warning {
+    background: #f59e0b; // Vàng
+    border-left: 4px solid #d97706;
+    
+    .toast-icon {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+  }
+
+  &.info {
+    background: #0ea5e9; // Xanh nước biển
+    border-left: 4px solid #0284c7;
+    
+    .toast-icon {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+  }
+
+  // Thanh progress navy
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: #1e3a8a; // Navy
+    border-radius: 0 0 8px 8px;
+    animation: progress linear var(--duration, 3000ms);
+    width: 100%;
+  }
+
+  .toast-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .toast-message {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  &.closing {
+    animation: slideOut 0.3s ease-in forwards;
+  }
+}
+
+// Animation cho thanh progress navy
+@keyframes progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .custom-toast {
+    min-width: 280px;
+    max-width: calc(100vw - 40px);
+    margin: 0 20px;
+
+    &.top-right,
+    &.top-left {
+      top: 20px;
+      right: 20px;
+      left: 20px;
+    }
+
+    &.bottom-right,
+    &.bottom-left {
+      bottom: 20px;
+      right: 20px;
+      left: 20px;
+    }
+  }
+}

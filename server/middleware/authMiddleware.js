@@ -5,11 +5,29 @@ const { User } = require('../models');
 const authenticateToken = async (req, res, next) => {
     // Lấy token từ header Authorization: Bearer TOKEN
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Lấy phần token sau 'Bearer '
+    let token = null;
 
-    if (token == null) {
+    if (authHeader) {
+        // Kiểm tra định dạng của Authorization header
+        if (authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7); // Lấy phần sau 'Bearer '
+        } else {
+            // Nếu không có 'Bearer ' prefix, sử dụng toàn bộ giá trị
+            token = authHeader;
+        }
+    }
+
+    // Nếu không tìm thấy token trong header, kiểm tra trong cookies
+    if (!token) {
+        token = req.cookies && req.cookies.accessToken;
+    }
+
+    if (!token) {
         // Không có token -> Chưa đăng nhập
-        return res.status(401).json({ error: 'Yêu cầu chưa được xác thực (Không tìm thấy token).' });
+        return res.status(401).json({
+            success: false,
+            error: 'Yêu cầu chưa được xác thực (Không tìm thấy token).'
+        });
     }
 
     try {
@@ -21,26 +39,46 @@ const authenticateToken = async (req, res, next) => {
             // Loại bỏ password_hash
              attributes: { exclude: ['password_hash'] }
         });
-
+        // Xóa console.log để tránh log thông tin nhạy cảm
         if (!user) {
             // User không tồn tại (có thể đã bị xóa sau khi token được tạo)
-            return res.status(403).json({ error: 'Token hợp lệ nhưng không tìm thấy người dùng.' });
+            return res.status(403).json({
+                success: false,
+                error: 'Token hợp lệ nhưng không tìm thấy người dùng.'
+            });
         }
 
         // Gắn thông tin user vào request để các middleware/handler sau có thể sử dụng
-        req.user = user.get({ plain: true }); // Lấy dữ liệu thuần, bao gồm cả 'role'
+        req.user = {
+            userId: user.user_id,
+            user_id: user.user_id, // Add user_id for backward compatibility
+            username: user.username,
+            email: user.email,
+            role: user.role
+        };
+
         next(); // Chuyển sang middleware hoặc route handler tiếp theo
 
     } catch (error) {
         console.error("Lỗi xác thực token:", error.name, error.message);
         if (error.name === 'TokenExpiredError') {
-             return res.status(403).json({ error: 'Token đã hết hạn.', refress: true });
+            return res.status(403).json({
+                success: false,
+                error: 'Token đã hết hạn.',
+                refresh: true
+            });
         }
         if (error.name === 'JsonWebTokenError') {
-             return res.status(403).json({ error: 'Token không hợp lệ.' });
+            return res.status(403).json({
+                success: false,
+                error: `Token không hợp lệ: ${error.message}`
+            });
         }
         // Lỗi khác
-        return res.status(500).json({ error: 'Lỗi hệ thống khi xác thực token.' });
+        return res.status(500).json({
+            success: false,
+            error: 'Lỗi hệ thống khi xác thực token.'
+        });
     }
 };
 
@@ -55,7 +93,7 @@ const authorizeRole = (allowedRoles) => {
             return res.status(403).json({ error: 'Không thể xác định vai trò người dùng.' });
         }
 
-        const userRole = req.user.role; 
+        const userRole = req.user.role;
 
         // Kiểm tra quyền người dùng
         if (allowedRoles && Array.isArray(allowedRoles) && allowedRoles.includes(userRole)) {

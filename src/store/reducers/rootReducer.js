@@ -13,6 +13,7 @@ import productReducer from "./productReducer";
 import orderReducer from "./orderReducer";
 import userDetailReducer from "./userDetailReducer";
 import userAddressReducer from "./userAddressReducer";
+import shopReducer from "./shopReducer";
 
 const persistCommonConfig = {
   storage: storage,
@@ -45,5 +46,6 @@ const rootReducer = (history) =>
     order: persistReducer(orderPersistConfig, orderReducer),
     userDetail: userDetailReducer,
     userAddress: userAddressReducer,
+    shop: shopReducer,
   });
 export default rootReducer;

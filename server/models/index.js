@@ -1,198 +1,193 @@
-const sequelize = require('../config/db');
+const sequelize = require("../config/db");
 
-const User = require("./User");
+// Import tất cả các model
+const User = require("./user");
 const UserAddress = require("./UserAddress");
 const UserInfo = require("./UserInfo");
+const UserActivityLog = require("./UserActivityLog");
 const Shop = require("./Shop");
-const ShopAddress = require("./ShopAddress");
-const Category = require("./Category");
 const Product = require("./Product");
-const ProductImage = require("./ProductImage");
 const Item = require("./Item");
+const ProductImage = require("./ProductImage");
+const ProductReview = require("./ProductReview");
 const Order = require("./Order");
 const OrderItem = require("./OrderItem");
-const ShippingMethod = require("./ShippingMethod");
 const OrderShipping = require("./OrderShipping");
 const Payment = require("./Payment");
-const ProductReview = require("./ProductReview");
+const ShippingMethod = require("./ShippingMethod");
 const ReviewImage = require("./ReviewImage");
+const ShopRevenue = require("./ShopRevenue");
 const Cart = require("./Cart");
 
-const ShopRevenueSummary = require("./ShopRevenueSummary");
-const ProductRevenueSummary = require("./ProductRevenueSummary");
-const UserActivityLog = require("./UserActivityLog");
+// 1 User có 1 UserInfo
+User.hasOne(UserInfo, { foreignKey: "user_id", onDelete: "CASCADE" });
+UserInfo.belongsTo(User, { foreignKey: "user_id" });
 
+// 1 User có nhiều địa chỉ
+User.hasMany(UserAddress, { foreignKey: "user_id", onDelete: "CASCADE" });
+UserAddress.belongsTo(User, { foreignKey: "user_id" });
 
-// --- Định nghĩa Associations ---
-// --- User ---
-User.hasOne(UserInfo, { foreignKey: "user_id", as: "info", onDelete: "CASCADE" });
-User.hasMany(UserAddress, { foreignKey: "user_id", as: "addresses", onDelete: "CASCADE" });
-User.hasMany(Shop, { foreignKey: "owner_id", as: "ownedShops", onDelete: "CASCADE" });
-User.hasMany(Order, { foreignKey: "user_id", as: "orders", onDelete: "RESTRICT" });
-User.hasMany(Payment, { foreignKey: "user_id", as: "payments", onDelete: "RESTRICT" });
-User.hasMany(ProductReview, { foreignKey: "user_id", as: "reviews", onDelete: "CASCADE" });
-User.hasMany(Cart, { foreignKey: "user_id", as: "cartItems", onDelete: "CASCADE" }); // 1-N User-Cart
-User.hasMany(UserActivityLog, { foreignKey: "user_id", as: "activityLogs", onDelete: 'SET NULL'}); // SQL dùng SET NULL
-
-// User <=> Product (Wishlist - ManyToMany)
-User.belongsToMany(Product, {
-    through: 'wishlist', // Tên bảng trung gian (string là đủ)
-    foreignKey: "user_id",
-    otherKey: 'product_id',
-    as: "wishlistedProducts",
-    timestamps: true, // Bảng wishlist có created_at
-    updatedAt: false,
-    onDelete: 'CASCADE' // SQL cho FK user_id trong wishlist là CASCADE
+// 1 UserInfo có 1 địa chỉ mặc định
+UserInfo.belongsTo(UserAddress, {
+  foreignKey: "default_address",
+  onDelete: "SET NULL",
 });
 
-// --- UserInfo ---
-UserInfo.belongsTo(User, { foreignKey: "user_id", as: "user" });
-// SQL dùng default_address_id và SET NULL
-UserInfo.belongsTo(UserAddress, { foreignKey: "default_address_id", as: "defaultAddress", onDelete: "SET NULL" });
+// 1 User có thể sở hữu nhiều Shop
+User.hasMany(Shop, { foreignKey: "owner_id", onDelete: "CASCADE" });
+Shop.belongsTo(User, { foreignKey: "owner_id" });
 
-// --- UserAddress ---
-UserAddress.belongsTo(User, { foreignKey: "user_id", as: "user" });
-// SQL dùng RESTRICT cho OrderShipping liên quan đến UserAddress
-UserAddress.hasMany(OrderShipping, { foreignKey: 'shipping_address_id', as: 'shipments', onDelete: 'RESTRICT' });
+// 1 Shop có nhiều Product
+Shop.hasMany(Product, { foreignKey: "shop_id", onDelete: "CASCADE" });
+Product.belongsTo(Shop, { foreignKey: "shop_id" });
 
-// --- Shop ---
-Shop.belongsTo(User, { foreignKey: "owner_id", as: "owner" });
-Shop.hasMany(ShopAddress, { foreignKey: "shop_id", as: "addresses", onDelete: "CASCADE" });
-Shop.hasMany(Product, { foreignKey: "shop_id", as: "products", onDelete: "CASCADE" });
-// SQL dùng RESTRICT cho Orders liên quan đến Shop
-Shop.hasMany(Order, { foreignKey: "shop_id", as: "orders", onDelete: "RESTRICT" });
-Shop.hasMany(ShopRevenueSummary, { foreignKey: "shop_id", as: 'revenueSummaries', onDelete: 'CASCADE' });
-
-// --- ShopAddress ---
-ShopAddress.belongsTo(Shop, { foreignKey: "shop_id", as: "shop" });
-
-// --- Category ---
-// SQL dùng SET NULL cho parent_category_id
-Category.belongsTo(Category, { foreignKey: 'parent_category_id', as: 'parent', onDelete: 'SET NULL' }); // Self Ref Parent
-Category.hasMany(Category, { foreignKey: 'parent_category_id', as: 'children' }); // Self Ref Children
-
-// Category <=> Product (ManyToMany) - Dùng CASCADE như SQL
-Category.belongsToMany(Product, {
-    through: 'product_categories', // Tên bảng trung gian
-    foreignKey: "category_id",
-    otherKey: 'product_id',
-    as: "products",
-    timestamps: false, // Bảng product_categories không có timestamps
-    onDelete: 'CASCADE'
+// 1 Product có nhiều Items
+Product.hasMany(Item, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+  as: "items",
 });
-
-// --- Product ---
-Product.belongsTo(Shop, { foreignKey: "shop_id", as: "shop" });
-Product.hasMany(ProductImage, { foreignKey: "product_id", as: "images", onDelete: "CASCADE" });
-Product.hasMany(Item, { foreignKey: "product_id", as: "items", onDelete: "CASCADE" });
-Product.hasMany(ProductReview, { foreignKey: "product_id", as: "reviews", onDelete: "CASCADE" });
-Product.hasMany(ProductRevenueSummary, { foreignKey: "product_id", as: 'revenueSummaries', onDelete: 'CASCADE' });
-// SQL dùng RESTRICT cho OrderItems liên quan đến Product
-Product.hasMany(OrderItem, { foreignKey: "product_id", as: 'orderItems', onDelete: 'RESTRICT' });
-
-// Product <=> Category (ManyToMany) - Dùng CASCADE như SQL
-Product.belongsToMany(Category, {
-    through: 'product_categories', // Tên bảng trung gian
-    foreignKey: "product_id",
-    otherKey: 'category_id',
-    as: "categories",
-    timestamps: false,
-    onDelete: 'CASCADE'
-});
-
-// Product <=> User (Wishlist - ManyToMany) - Dùng CASCADE như SQL
-Product.belongsToMany(User, {
-    through: 'wishlist', // Tên bảng trung gian
-    foreignKey: "product_id",
-    otherKey: 'user_id',
-    as: "wishlistingUsers",
-    timestamps: true, // Bảng wishlist có created_at
-    updatedAt: false,
-    onDelete: 'CASCADE'
-});
-
-// --- ProductImage ---
-ProductImage.belongsTo(Product, { foreignKey: "product_id", as: "product" });
-
-// --- Item ---
 Item.belongsTo(Product, { foreignKey: "product_id", as: "product" });
-// SQL dùng RESTRICT cho OrderItems liên quan đến Item
-Item.hasMany(OrderItem, { foreignKey: "item_id", as: 'orderItems', onDelete: 'RESTRICT' });
-Item.hasMany(Cart, { foreignKey: "item_id", as: "cartItems", onDelete: "CASCADE" }); // 1-N Item-Cart
-// SQL dùng SET NULL cho review FK tới item
-Item.hasMany(ProductReview, { foreignKey: 'item_id', as: 'reviews', onDelete: 'SET NULL' });
 
-// --- Order ---
+// 1 Product có nhiều hình ảnh
+Product.hasMany(ProductImage, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+});
+ProductImage.belongsTo(Product, { foreignKey: "product_id" });
+
+// 1 User có nhiều Orders
+User.hasMany(Order, { foreignKey: "user_id", onDelete: "CASCADE" });
 Order.belongsTo(User, { foreignKey: "user_id", as: "user" });
+
+// 1 Shop có nhiều Orders
+Shop.hasMany(Order, { foreignKey: "shop_id", onDelete: "CASCADE" });
 Order.belongsTo(Shop, { foreignKey: "shop_id", as: "shop" });
-Order.hasMany(OrderItem, { foreignKey: "order_id", as: "orderItems", onDelete: "CASCADE" });
-Order.hasOne(OrderShipping, { foreignKey: "order_id", as: "shippingInfo", onDelete: "CASCADE" }); 
-Order.hasMany(Payment, { foreignKey: "order_id", as: "payments", onDelete: "CASCADE" });
-Order.hasMany(ProductReview, { foreignKey: "order_id", as: "reviews", onDelete: 'SET NULL' });
 
-// --- OrderItem ---
-OrderItem.belongsTo(Order, { foreignKey: "order_id", as: "order" });
+// 1 Order có nhiều OrderItems
+Order.hasMany(OrderItem, {
+  foreignKey: "order_id",
+  onDelete: "CASCADE",
+  as: "orderItems",
+});
+OrderItem.belongsTo(Order, { foreignKey: "order_id" });
+
+// 1 OrderItem thuộc về 1 Item
+Item.hasMany(OrderItem, { foreignKey: "item_id", onDelete: "CASCADE" });
 OrderItem.belongsTo(Item, { foreignKey: "item_id", as: "item" });
-OrderItem.belongsTo(Product, { foreignKey: "product_id", as: "product" });
 
-// --- ShippingMethod ---
-// SQL dùng RESTRICT cho OrderShipping liên quan đến ShippingMethod
-ShippingMethod.hasMany(OrderShipping, { foreignKey: 'shipping_method_id', as: 'shipments', onDelete: 'RESTRICT'});
+// 1 Order có 1 Payment
+Order.hasOne(Payment, {
+  foreignKey: "order_id",
+  onDelete: "CASCADE",
+  as: "payments",
+});
+Payment.belongsTo(Order, { foreignKey: "order_id" });
 
-// --- OrderShipping ---
-OrderShipping.belongsTo(Order, { foreignKey: "order_id", as: "order" });
-OrderShipping.belongsTo(ShippingMethod, { foreignKey: "shipping_method_id", as: "shippingMethod" });
-OrderShipping.belongsTo(UserAddress, { foreignKey: "shipping_address_id", as: "address" });
+// 1 User có nhiều Payments
+User.hasMany(Payment, { foreignKey: "user_id", onDelete: "CASCADE" });
+Payment.belongsTo(User, { foreignKey: "user_id" });
 
-// --- Payment ---
-Payment.belongsTo(Order, { foreignKey: "order_id", as: "order" });
-Payment.belongsTo(User, { foreignKey: "user_id", as: "user" });
+// 1 Order có 1 OrderShipping
+Order.hasOne(OrderShipping, {
+  foreignKey: "order_id",
+  onDelete: "CASCADE",
+  as: "orderShipping",
+});
+OrderShipping.belongsTo(Order, { foreignKey: "order_id" });
 
-// --- ProductReview ---
-ProductReview.belongsTo(Product, { foreignKey: "product_id", as: "product" });
-ProductReview.belongsTo(Item, { foreignKey: 'item_id', as: 'item' });
-ProductReview.belongsTo(User, { foreignKey: "user_id", as: "user" });
-ProductReview.belongsTo(Order, { foreignKey: "order_id", as: "order" });
-ProductReview.hasMany(ReviewImage, { foreignKey: "review_id", as: "images", onDelete: "CASCADE" });
+// 1 ShippingMethod có nhiều OrderShipping
+ShippingMethod.hasMany(OrderShipping, {
+  foreignKey: "shipping_method_id",
+  onDelete: "CASCADE",
+});
+OrderShipping.belongsTo(ShippingMethod, {
+  foreignKey: "shipping_method_id",
+  as: "shippingMethod",
+});
 
-// --- ReviewImage ---
-ReviewImage.belongsTo(ProductReview, { foreignKey: "review_id", as: "review" });
+// 1 OrderShipping sử dụng 1 UserAddress
+UserAddress.hasMany(OrderShipping, {
+  foreignKey: "shipping_address_id",
+  onDelete: "CASCADE",
+});
+OrderShipping.belongsTo(UserAddress, {
+  foreignKey: "shipping_address_id",
+  as: "shippingAddress",
+});
 
-// --- Cart ---
-Cart.belongsTo(User, { foreignKey: "user_id", as: "user" });
+// 1 User có nhiều ProductReviews
+User.hasMany(ProductReview, { foreignKey: "user_id", onDelete: "CASCADE" });
+ProductReview.belongsTo(User, { foreignKey: "user_id" });
+
+// 1 Product có nhiều ProductReviews
+Product.hasMany(ProductReview, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+});
+ProductReview.belongsTo(Product, { foreignKey: "product_id" });
+
+// 1 ProductReview có nhiều ReviewImages
+ProductReview.hasMany(ReviewImage, {
+  foreignKey: "review_id",
+  onDelete: "CASCADE",
+});
+ReviewImage.belongsTo(ProductReview, { foreignKey: "review_id" });
+
+// 1 User có thể có nhiều sản phẩm trong Wishlist
+User.belongsToMany(Product, {
+  through: "wishlist",
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+Product.belongsToMany(User, {
+  through: "wishlist",
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+});
+
+// 1 User có thể có nhiều sản phẩm trong giỏ hàng
+User.belongsToMany(Item, {
+  through: "cart",
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+Item.belongsToMany(User, {
+  through: "cart",
+  foreignKey: "item_id",
+  onDelete: "CASCADE",
+});
+
+// Cart - Item association (for eager loading item from cart)
 Cart.belongsTo(Item, { foreignKey: "item_id", as: "item" });
+Item.hasMany(Cart, { foreignKey: "item_id" });
 
-// --- ShopRevenueSummary ---
-ShopRevenueSummary.belongsTo(Shop, { foreignKey: "shop_id", as: "shop" }); // FK đã là CASCADE
+// 1 Shop có nhiều bản ghi doanh thu theo ngày
+Shop.hasMany(ShopRevenue, { foreignKey: "shop_id", onDelete: "CASCADE" });
+ShopRevenue.belongsTo(Shop, { foreignKey: "shop_id" });
 
-// --- ProductRevenueSummary ---
-ProductRevenueSummary.belongsTo(Product, { foreignKey: "product_id", as: "product" }); // FK đã là CASCADE
+// 1 User có nhiều hoạt động
+User.hasMany(UserActivityLog, { foreignKey: "user_id", onDelete: "CASCADE" });
+UserActivityLog.belongsTo(User, { foreignKey: "user_id" });
 
-// --- UserActivityLog ---
-UserActivityLog.belongsTo(User, { foreignKey: "user_id", as: "user" }); // FK đã là SET NULL
-
-
-// --- Xuất các models và sequelize instance ---
+// Xuất các models đã liên kết
 module.exports = {
   sequelize,
+  Cart,
   User,
   UserAddress,
   UserInfo,
   Shop,
-  ShopAddress,
-  Category,
   Product,
   ProductImage,
   Item,
+  UserActivityLog,
+  ProductReview,
   Order,
   OrderItem,
-  ShippingMethod,
   OrderShipping,
   Payment,
-  ProductReview,
+  ShopRevenue,
+  ShippingMethod,
   ReviewImage,
-  Cart,
-  ShopRevenueSummary,
-  ProductRevenueSummary,
-  UserActivityLog
 };

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm mặt hàng</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    form { max-width: 400px; }
+    input, textarea, button { width: 100%; padding: 8px; margin: 6px 0; }
+    label { font-weight: bold; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h2>Thêm mặt hàng mới</h2>
+  <form id="addItemForm" enctype="multipart/form-data">
+    <label>Product ID:</label>
+    <input type="text" id="productId" placeholder="Nhập productId" required />
+
+    <label>Giá:</label>
+    <input type="number" id="price" required />
+
+    <label>Số lượng tồn kho:</label>
+    <input type="number" id="stock" required />
+
+    <label>Giá khuyến mãi:</label>
+    <input type="number" id="sale_price" />
+
+    <label>Ảnh:</label>
+    <input type="file" id="image" accept="image/*" />
+
+    <label>Thuộc tính (JSON):</label>
+    <textarea id="attributes" placeholder='VD: {"color":"red","size":"L"}'></textarea>
+
+    <button type="submit">Thêm mặt hàng</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const form = document.getElementById('addItemForm');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageDiv.innerHTML = '';
+
+      const productId = document.getElementById('productId').value.trim();
+      const price = document.getElementById('price').value;
+      const stock = document.getElementById('stock').value;
+      const sale_price = document.getElementById('sale_price').value;
+      const attributesText = document.getElementById('attributes').value;
+      const imageFile = document.getElementById('image').files[0];
+
+      const formData = new FormData();
+      formData.append('price', price);
+      formData.append('stock', stock);
+      if (sale_price) formData.append('sale_price', sale_price);
+      if (attributesText) formData.append('attributes', attributesText);
+      if (imageFile) formData.append('file', imageFile); // phải khớp key với multer config
+
+      try {
+        const response = await fetch(`http://localhost:3434/api/products/add-item/${productId}`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          messageDiv.innerHTML = `<p class="success">✅ Thêm thành công: ${JSON.stringify(data)}</p>`;
+          form.reset();
+        } else {
+          messageDiv.innerHTML = `<p class="error">❌ Lỗi: ${data.message}</p>`;
+        }
+      } catch (err) {
+        messageDiv.innerHTML = `<p class="error">❌ Lỗi kết nối: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

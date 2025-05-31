@@ -23,8 +23,19 @@ const deleteImage = async (publicId) => {
         throw error;
     }
 };
-
+async function listImages(prefix) {
+    const res = await cloudinary.api.resources({
+      type: 'upload',
+      prefix
+    });
+    return res.resources.map(r => ({
+      public_id: r.public_id,
+      url:       r.secure_url
+    }));
+  }
+  
 module.exports = {
     uploadImage,
-    deleteImage
+    deleteImage,
+    listImages
 };

@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import "./Header.scss"; // Bạn cần tạo file CSS/SCSS tương ứng
@@ -13,7 +13,7 @@ const Header = (props) => {
       search: e.target.value,
     });
   };
-  console.log(props.cartQuantity);
+  // console.log(props.cartQuantity);
   return (
     <header className="header">
       <nav className="nav-bar">

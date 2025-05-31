@@ -1,226 +1,472 @@
 @import "../styles/common.scss";
 
 .navigator-menu {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, #1a3a6c, #0f2952);
-    position: relative;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #1a3a6c, #0f2952);
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 
-    &.list-unstyled,
-    .list-unstyled {
-        list-style-type: none;
+  &.list-unstyled,
+  .list-unstyled {
+    list-style-type: none;
+  }
+
+  // Hiệu ứng ánh sao nhẹ nhàng
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(
+        1px 1px at 10% 20%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 70% 50%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%
+      ),
+      radial-gradient(
+        1px 1px at 30% 70%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      );
+    pointer-events: none;
+    opacity: 0.2;
+  }
+
+  .menu-group {
+    display: inline-block;
+    font-size: 14px;
+    position: relative;
+    transition: all 0.3s ease;
+
+    &:hover {
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.1);
     }
 
-    // Hiệu ứng ánh sao nhẹ nhàng
-    &::before {
-        content: '';
+    // Style cho menu group active
+    &.active {
+      background-color: #2d5296;
+      position: relative;
+
+      &::before {
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
-        bottom: 0;
-        background-image:
-            radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 50%, transparent 100%),
-            radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.3) 50%, transparent 100%),
-            radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.4) 50%, transparent 100%);
-        pointer-events: none;
-        opacity: 0.2;
+        width: 4px;
+        height: 100%;
+        background-color: #4caf50; // Thanh bên trái màu xanh lá
+      }
+
+      .menu-group-name {
+        color: #ffffff;
+        font-weight: bold;
+      }
     }
 
-    .menu-group {
+    // Style đặc biệt cho menu Trang chủ khi active
+    &:first-child.active {
+      &::before {
+        background-color: #ff9800; // Màu cam cho trang chủ
+      }
+    }
+
+    // Style đặc biệt cho menu Hệ thống khi active
+    &:nth-child(2).active {
+      &::before {
+        background-color: #2196f3; // Màu xanh dương cho hệ thống
+      }
+    }
+
+    .menu-group-name {
+      line-height: 50px;
+      padding: 0 22px;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      position: relative;
+      letter-spacing: 0.3px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: block;
+
+      &:first-child {
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      &.active {
+        color: #ffffff;
+        font-weight: bold;
+      }
+    }
+
+    .menu-list {
+      display: none;
+      background-color: white;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+      color: #333;
+      position: absolute;
+      padding: 5px 0;
+      z-index: 100;
+      margin-top: 3px;
+      min-width: 220px;
+
+      // Hiển thị menu khi có class show
+      &.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .menu {
+        width: 100%;
+        padding: 0 15px;
+        height: 38px;
+        line-height: 38px;
+        text-transform: none;
         position: relative;
-        transition: all 0.3s ease;
+
+        .menu-link {
+          text-decoration: none;
+          color: #333;
+          cursor: pointer;
+          display: block;
+        }
+
+        .sub-menu-list {
+          text-decoration: none;
+          display: none;
+          background-color: white;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+          border-radius: 6px;
+          position: absolute;
+          top: 0;
+          left: 100%;
+          padding: 5px 0;
+          min-width: 220px;
+
+          // Hiển thị submenu khi có class show
+          &.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+          }
+
+          .sub-menu {
+            padding: 0 15px;
+            height: 38px;
+            line-height: 38px;
+            white-space: nowrap;
+            text-decoration: none;
+            &:hover {
+              background-color: rgba(26, 58, 108, 0.05);
+            }
+
+            .sub-menu-link {
+              text-decoration: none;
+              color: #333;
+              display: block;
+            }
+
+            &.active a {
+              font-weight: 600;
+              color: #1a3a6c;
+              position: relative;
+
+              &::before {
+                content: "★";
+                margin-right: 6px;
+                font-size: 10px;
+                color: #1a3a6c;
+              }
+            }
+          }
+        }
+
+        &.active {
+          background-color: rgba(26, 58, 108, 0.08);
+          text-decoration: none;
+
+          span {
+            font-weight: 600;
+            color: #1a3a6c;
+            position: relative;
+
+            &::before {
+              content: "★";
+              margin-right: 6px;
+              font-size: 10px;
+              color: #1a3a6c;
+            }
+          }
+        }
 
         &:hover {
-            cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.1);
+          background-color: rgba(26, 58, 108, 0.05);
         }
 
-        // Style cho menu group active
-        &.active {
-            background-color: #2d5296;
-            position: relative;
-            
-            &::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 4px;
-                height: 100%;
-                background-color: #4caf50; // Thanh bên trái màu xanh lá
-            }
-            
-            .menu-group-name {
-                color: #ffffff;
-                font-weight: bold;
-            }
+        .icon-right {
+          display: block;
+          position: absolute;
+          top: 50%;
+          right: 10px;
+          transform: translateY(-50%);
+          transition: transform 0.2s ease;
         }
 
-        // Style đặc biệt cho menu Trang chủ khi active
-        &:first-child.active {
-            &::before {
-                background-color: #ff9800; // Màu cam cho trang chủ
-            }
+        &:hover .icon-right {
+          transform: translateY(-50%) translateX(3px);
         }
-
-        // Style đặc biệt cho menu Hệ thống khi active
-        &:nth-child(2).active {
-            &::before {
-                background-color: #2196f3; // Màu xanh dương cho hệ thống
-            }
-        }
-
-        .menu-group-name {
-            line-height: 50px;
-            padding: 0 22px;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            position: relative;
-            letter-spacing: 0.3px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: block;
-            
-            &:first-child {
-                border-left: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            &.active {
-                color: #ffffff;
-                font-weight: bold;
-            }
-        }
-
-        .menu-list {
-            display: none;
-            background-color: white;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-            border-radius: 6px;
-            color: #333;
-            position: absolute;
-            padding: 5px 0;
-            z-index: 100;
-            margin-top: 3px;
-            min-width: 220px;
-
-            // Hiển thị menu khi có class show
-            &.show {
-                display: block;
-                animation: fadeIn 0.3s ease;
-            }
-
-            .menu {
-                width: 100%;
-                padding: 0 15px;
-                height: 38px;
-                line-height: 38px;
-                text-transform: none;
-                position: relative;
-
-                .menu-link {
-                    text-decoration: none;
-                    color: #333;
-                    cursor: pointer;
-                    display: block;
-                }
-
-                .sub-menu-list {
-                    display: none;
-                    background-color: white;
-                    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-                    border-radius: 6px;
-                    position: absolute;
-                    top: 0;
-                    left: 100%;
-                    padding: 5px 0;
-                    min-width: 220px;
-
-                    // Hiển thị submenu khi có class show
-                    &.show {
-                        display: block;
-                        animation: fadeIn 0.3s ease;
-                    }
-
-                    .sub-menu {
-                        padding: 0 15px;
-                        height: 38px;
-                        line-height: 38px;
-                        white-space: nowrap;
-
-                        &:hover {
-                            background-color: rgba(26,58,108,0.05);
-                        }
-
-                        .sub-menu-link {
-                            text-decoration: none;
-                            color: #333;
-                            display: block;
-                        }
-
-                        &.active a {
-                            font-weight: 600;
-                            color: #1a3a6c;
-                            position: relative;
-                            
-                            &::before {
-                                content: '★';
-                                margin-right: 6px;
-                                font-size: 10px;
-                                color: #1a3a6c;
-                            }
-                        }
-                    }
-                }
-
-                &.active {
-                    background-color: rgba(26,58,108,0.08);
-                    
-                    span {
-                        font-weight: 600;
-                        color: #1a3a6c;
-                        position: relative;
-                        
-                        &::before {
-                            content: '★';
-                            margin-right: 6px;
-                            font-size: 10px;
-                            color: #1a3a6c;
-                        }
-                    }
-                }
-
-                &:hover {
-                    background-color: rgba(26,58,108,0.05);
-                }
-
-                .icon-right {
-                    display: block;
-                    position: absolute;
-                    top: 50%;
-                    right: 10px;
-                    transform: translateY(-50%);
-                    transition: transform 0.2s ease;
-                }
-
-                &:hover .icon-right {
-                    transform: translateY(-50%) translateX(3px);
-                }
-            }
-        }
+      }
     }
+  }
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1400px) {
+  .navigator-menu {
+    // ... code như trên
+
+    .menu-group {
+      // Ẩn text gốc nhưng giữ icon
+      .menu-group-name {
+        position: relative;
+        text-indent: -9999px;
+        overflow: hidden;
+        // width: 50px;
+        margin: 0px;
+        padding: 0px;
+        height: 50px;
+        display: flex;
+        width: 80px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      // Phần tử 1 - Trang chủ
+      &:nth-child(1) .menu-group-name::before {
+        content: "";
+        display: flex;
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        background-image: url("../assets/images/icons/home.png");
+        background-size: cover; // hoặc cover, 100% 100% // fa-home
+        // font-family: "Font Awesome 5 Free";
+        background-repeat: no-repeat;
+        font-weight: 900;
+        position: relative;
+        // left: 50%;
+        // top: 50%;
+        // transform: translate(-50%, -50%);
+        text-indent: 0;
+        font-size: 24px;
+        color: white;
+      }
+
+      // Phần tử 2 - Shop
+      &:nth-child(2) .menu-group-name::before {
+        content: "";
+        display: flex;
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        background-image: url("../assets/images/icons/shop.png");
+        background-size: cover; // hoặc cover, 100% 100% // fa-home
+        // font-family: "Font Awesome 5 Free";
+        background-repeat: no-repeat;
+        font-weight: 900;
+        position: relative;
+        // left: 50%;
+        // top: 50%;
+        // transform: translate(-50%, -50%);
+        text-indent: 0;
+        font-size: 24px;
+        color: white;
+      }
+
+      // Phần tử 3 - Đơn hàng
+      &:nth-child(3) .menu-group-name::before {
+        content: "";
+        display: flex;
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        background-image: url("../assets/images/icons/shoporder.png");
+        background-size: cover; // hoặc cover, 100% 100% // fa-home
+        // font-family: "Font Awesome 5 Free";
+        background-repeat: no-repeat;
+        font-weight: 900;
+        position: relative;
+        // left: 50%;
+        // top: 50%;
+        // transform: translate(-50%, -50%);
+        text-indent: 0;
+        font-size: 24px;
+        color: white;
+      }
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+  }
+}
+@media (max-width: 800px) {
+  .navigator-menu {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); // 2px / 2, 10px / 2
+
+    // Hiệu ứng ánh sao với px chia đôi
+    &::before {
+      background-image: radial-gradient(
+          0.5px 0.5px at 10% 20%,
+          // 1px / 2
+          rgba(255, 255, 255, 0.4) 50%,
+          transparent 100%
+        ),
+        radial-gradient(
+          0.5px 0.5px at 70% 50%,
+          // 1px / 2
+          rgba(255, 255, 255, 0.3) 50%,
+          transparent 100%
+        ),
+        radial-gradient(
+          0.5px 0.5px at 30% 70%,
+          // 1px / 2
+          rgba(255, 255, 255, 0.4) 50%,
+          transparent 100%
+        );
     }
+
+    .menu-group {
+      font-size: 7px; // 14px / 2
+
+      &.active {
+        &::before {
+          width: 2px; // 4px / 2
+        }
+      }
+
+      .menu-group-name {
+        line-height: 25px; // 50px / 2
+        padding: 0 11px; // 22px / 2
+        border-right: 0.5px solid rgba(255, 255, 255, 0.1); // 1px / 2
+        letter-spacing: 0.15px; // 0.3px / 2
+
+        &:first-child {
+          border-left: 0.5px solid rgba(255, 255, 255, 0.1); // 1px / 2
+        }
+      }
+
+      .menu-list {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); // 6px / 2, 16px / 2
+        border-radius: 3px; // 6px / 2
+        padding: 2.5px 0; // 5px / 2
+        margin-top: 1.5px; // 3px / 2
+        min-width: 110px; // 220px / 2
+
+        .menu {
+          padding: 0 7.5px; // 15px / 2
+          height: 19px; // 38px / 2
+          line-height: 19px; // 38px / 2
+
+          .sub-menu-list {
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); // 6px / 2, 16px / 2
+            border-radius: 3px; // 6px / 2
+            padding: 2.5px 0; // 5px / 2
+            min-width: 110px; // 220px / 2
+            text-decoration: none;
+            .sub-menu {
+              padding: 0 7.5px; // 15px / 2
+              height: 19px; // 38px / 2
+              line-height: 19px; // 38px / 2
+
+              &.active a {
+                &::before {
+                  margin-right: 3px; // 6px / 2
+                  font-size: 5px; // 10px / 2
+                }
+              }
+            }
+          }
+
+          &.active {
+            span {
+              &::before {
+                margin-right: 3px; // 6px / 2
+                font-size: 5px; // 10px / 2
+              }
+            }
+          }
+
+          .icon-right {
+            right: 5px; // 10px / 2
+          }
+
+          &:hover .icon-right {
+            transform: translateY(-50%) translateX(1.5px); // 3px / 2
+          }
+        }
+      }
+    }
+  }
+
+  // Override media query 1400px với px chia đôi
+  @media (max-width: 800px) {
+    // 1400px / 2
+    .navigator-menu {
+      .menu-group {
+        .menu-group-name {
+          height: 25px; // 50px / 2
+          width: 40px; // 80px / 2
+        }
+
+        // Phần tử 1 - Trang chủ
+        &:nth-child(1) .menu-group-name::before {
+          width: 15px; // 30px / 2
+          height: 15px; // 30px / 2
+          font-size: 12px; // 24px / 2
+        }
+
+        // Phần tử 2 - Shop
+        &:nth-child(2) .menu-group-name::before {
+          width: 15px; // 30px / 2
+          height: 15px; // 30px / 2
+          font-size: 12px; // 24px / 2
+        }
+
+        // Phần tử 3 - Đơn hàng
+        &:nth-child(3) .menu-group-name::before {
+          width: 15px; // 30px / 2
+          height: 15px; // 30px / 2
+          font-size: 12px; // 24px / 2
+        }
+      }
+    }
+  }
+}
+
+// Animation với px chia đôi
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px); // 8px / 2
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

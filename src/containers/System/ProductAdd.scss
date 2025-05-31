@@ -30,8 +30,7 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .productadd-container {
-  height: 90vh;
-  overflow-y: scroll;
+  height: fit-content;
   max-width: 800px;
   margin: 30px auto;
   padding: 30px;

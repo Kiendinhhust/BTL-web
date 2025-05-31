@@ -1,0 +1,36 @@
+name: Sync to another repository
+
+on:
+  push:
+    branches:
+      - tdoan
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout current repository
+      uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "Daviseraaa"
+        git config --global user.email "trantuandoan04@gmail.com"
+
+    - name: Clone target repository
+      run: |
+        git clone https://github.com/Daviseraaa/eCommerce-server target-repo
+        cd target-repo
+        git checkout main
+
+    - name: Copy selected folders
+      run: |
+        cp -r server/* target-repo/
+
+    - name: Commit and push
+      run: |
+        cd target-repo
+        git add .
+        git commit -m "Sync selected folders from server" || echo "No changes to commit"
+        git push https://Daviseraaa:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Daviseraaa/eCommerce-server.git main

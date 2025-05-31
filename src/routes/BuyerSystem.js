@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from 'react-router-dom';
 import RegisterSeller from '../containers/Buyer/RegisterSeller';
+import MyOrders from '../containers/MyOrders/MyOrders';
+import OrderDetail from '../containers/OrderDetail/OrderDetail';
 
 class BuyerSystem extends Component {
     render() {
@@ -11,6 +13,8 @@ class BuyerSystem extends Component {
                 <div className="buyer-list">
                     <Switch>
                         <Route path="/buyer/register-seller" component={RegisterSeller} />
+                        <Route path="/myorders" exact component={MyOrders} />
+                        <Route path="/buyer/my-orders/:orderId" component={OrderDetail} />
                         <Route component={() => { return (<Redirect to={buyerMenuPath} />) }} />
                     </Switch>
                 </div>

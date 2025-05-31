@@ -30,22 +30,25 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
 .product-container {
   border: 1px solid $medium-gray;
-  padding: 20px;
+  padding: 10px;
   border-radius: $border-radius;
   background-color: $white;
   text-align: center;
-  height: 650px;
-  width: 310px;
+  height: 500px;
+  width: 250px;
+  max-height: 500px;
   max-width: 100%;
   position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
   box-shadow: $box-shadow;
   @include hover-transform;
 
   // Navy gradient strip at top
   &::before {
     content: "";
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
     right: 0;
@@ -56,16 +59,21 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
 .product-image-container {
   display: flex;
+  height: 80px;
+  min-height: 80px;
+  width: auto;
+  // width: 100px;
   justify-content: center;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   overflow: hidden;
   border-radius: $border-radius;
 
   .product-image {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
+    width: auto;
+    max-width: 100%;
+    height: 90%;
+    // object-fit: cover;
     transition: $transition;
     cursor: pointer;
 
@@ -77,27 +85,58 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
 .product-name {
   display: inline-block;
-  font-size: 18px;
+  height: fit-content;
+  font-size: 12px;
   font-weight: 600;
   color: $navy-dark;
-  overflow: hidden;
+  // overflow: hidden;
   max-width: 100%;
   text-overflow: ellipsis;
   white-space: nowrap;
-  position: relative;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
+  // position: relative;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
 
   &::after {
     content: "";
-    position: absolute;
+    position: relative;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     height: 2px;
-    width: 40px;
+    width: 15%;
     @include navy-gradient;
     border-radius: 2px;
+  }
+}
+
+.product-shop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+  margin: 4px 0;
+  padding: 3px 10px;
+  background-color: $light-gray;
+  border-radius: 20px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+
+  i {
+    color: $navy-medium;
+    font-size: 10px;
+  }
+
+  span {
+    color: $navy-dark;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  &:hover {
+    background-color: $medium-gray;
   }
 }
 
@@ -106,49 +145,112 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   align-items: center;
   justify-content: center;
   gap: 5px;
-  margin: 10px 0;
+  margin: 5px 0;
 
-  .star-icon {
-    color: #ffc107;
-    transition: $transition;
+  .stars-container {
+    display: flex;
+    align-items: center;
+    gap: 3px;
 
-    &:hover {
-      transform: scale(1.2) rotate(5deg);
+    i {
+      color: #ddd;
+      font-size: 16px;
+
+      &.filled {
+        color: #ffc107;
+      }
+
+      &:hover {
+        transform: scale(1.2) rotate(5deg);
+      }
+    }
+
+    .rating-value {
+      margin-left: 5px;
+      color: $dark-gray;
+      font-size: 14px;
     }
   }
 }
 
-.product-rating-count {
-  color: $navy-light;
-  font-weight: 500;
-  font-size: 14px;
-}
-
 .product-price {
-  font-size: 18px;
+  font-size: 12px;
   font-weight: 700;
   color: $accent-color;
-  margin: 10px 0;
+  margin: 5px 0;
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  &::before {
-    content: "";
-    position: absolute;
-    bottom: -3px;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: rgba($accent-color, 0.3);
+  .original-price {
+    text-decoration: line-through;
+    color: $dark-gray;
+    font-size: 10px;
+    font-weight: 400;
+    margin-bottom: 5px;
+  }
+
+  .sale-price {
+    color: $accent-color;
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.product-stock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 10px;
+  color: $navy-dark;
+  margin: 4px 0;
+  font-weight: 500;
+
+  i {
+    color: $navy-medium;
+    font-size: 10px;
+  }
+
+  span {
+    color: $navy-dark;
+  }
+}
+
+.product-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px 0;
+
+  .stars-container {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 5px;
+
+    i {
+      color: #ddd;
+      font-size: 12px;
+
+      &.filled {
+        color: #ffc107;
+      }
+    }
+  }
+
+  .rating-value {
+    font-size: 10px;
+    color: $dark-gray;
   }
 }
 
 .product-quantity-container {
-  margin: 15px 0;
+  margin: 5px 0;
 }
 
 .select-container {
-  padding: 8px 12px;
+  padding: 4px 12px;
   border: 1px solid $navy-light;
   border-radius: $border-radius;
   background-color: $white;
@@ -167,26 +269,34 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border-color: $navy-dark;
   }
 }
-
+.addToCart-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  align-items: end;
+  justify-content: center;
+}
 .addToCart-button {
   background-color: $navy-medium;
   color: $white;
   border: none;
-  padding: 12px 20px;
-  font-size: 15px;
+  height: 30px;
+  width: 100%;
+  padding: 6px 20px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   border-radius: $border-radius;
   transition: $transition;
-  margin-top: 10px;
-  position: relative;
-  overflow: hidden; /* Thêm overflow: hidden để hiệu ứng không tràn ra ngoài */
+  // margin-top: 5px;
+  // position: relative;
   display: inline-block; /* Đảm bảo nút hiển thị đúng kích thước */
   text-align: center; /* Căn giữa text */
 
   &::before {
     content: "";
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
@@ -213,12 +323,13 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 // Styling cho nút thuộc tính sản phẩm
 .product-attributes-button {
   background-color: $light-gray;
+  height: fit-content;
   color: $navy-dark;
   border: 1px solid $medium-gray;
   border-radius: $border-radius;
-  padding: 8px 12px;
+  padding: 5px 5px;
   margin: 5px;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -252,9 +363,9 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   color: $navy-dark;
   border: 1px solid $medium-gray;
   border-radius: $border-radius;
-  padding: 8px 12px;
+  padding: 5px 5px;
   margin: 5px;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 500;
   cursor: pointer;
   transition: $transition;
@@ -272,17 +383,93 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 }
 
+// Variant details display
+.product-variant-info {
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: $border-radius;
+  background-color: $light-gray;
+  height: fit-content;
+
+  .variant-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .variant-sku {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+
+      .label {
+        font-weight: 600;
+        color: $navy-dark;
+      }
+
+      .value {
+        color: $navy-medium;
+      }
+    }
+
+    .variant-attributes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+
+      .attribute-item {
+        background-color: $white;
+        padding: 2px 2px;
+        border-radius: 4px;
+        border: 1px solid $medium-gray;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+
+        .attribute-key {
+          font-weight: 600;
+          color: $navy-dark;
+          font-size: 10px;
+        }
+
+        .attribute-value {
+          color: $navy-medium;
+          font-size: 10px;
+        }
+      }
+    }
+  }
+}
+
 // Container cho các nút thuộc tính
 .product-attributes-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 10px 0;
-  gap: 5px;
+  flex-direction: column;
+  margin: 5px 0;
+
+  .attributes-title {
+    font-weight: 600;
+    color: $navy-dark;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .attributes-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .no-variants {
+    color: $dark-gray;
+    font-style: italic;
+    text-align: center;
+    padding: 5px;
+  }
 }
 .product-checkmark {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   margin-right: 5px;
   transition: $transition;
 
@@ -310,13 +497,13 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
 // Add a badge for new or featured products
 .product-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  padding: 5px 10px;
+  position: relative;
+  top: 10px;
+  right: 10px;
+  padding: 5px 5px;
   font-size: 12px;
   font-weight: 600;
-  border-radius: 20px;
+  border-radius: 15px;
   z-index: 1;
 
   &.new {
@@ -337,15 +524,15 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
 // Add a quick view button that appears on hover
 .quick-view-button {
-  position: absolute;
-  bottom: -40px;
+  position: relative;
+  // bottom: -30px;
   left: 50%;
   transform: translateX(-50%);
   background-color: rgba($white, 0.9);
   color: $navy-dark;
   border: none;
-  padding: 8px 15px;
-  font-size: 14px;
+  padding: 4px 10px;
+  font-size: 10px;
   font-weight: 500;
   border-radius: $border-radius;
   cursor: pointer;

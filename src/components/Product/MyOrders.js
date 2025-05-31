@@ -1,23 +1,49 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import "./MyOrder.scss";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
-import OneOrder from "./OneOrder";
+import { fetchOrder } from "../../store/actions/orderActions";
+import { accessToken, LoginHack } from "../../containers/System/LoginHack";
+import axios from "axios";
+
 const MyOrder = (props) => {
+  const hasCalledAPI = useRef(false);
+  useEffect(() => {
+    const fetchOrderFun = async () => {
+      let fetchOrder;
+      await LoginHack;
+      await axios
+        .get(`${process.env.REACT_APP_BACKEND_URL}/api/order/my-order`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào header
+          },
+        })
+        .then((res) => {
+          fetchOrder = res.data.products;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      props.fetchOrder({ orders: fetchOrder });
+      // console.log("FETCH", props.orders);
+    };
+    if (!hasCalledAPI.current) {
+      fetchOrderFun();
+      hasCalledAPI.current = true;
+    }
+  }, [props]);
   return (
     <div className="myOrder">
-      {Object.entries(props.orders)
-        .reverse()
-        .map(([orderId, order]) => {
-          // console.log(order);
-          return (
-            <React.Fragment key={orderId}>
-              <h1 className="myOrder-title">Order: {orderId}</h1>
-              <OneOrder order={order} />
-              <hr className="dash" />
-            </React.Fragment>
-          );
-        })}
+      {/* {props.orders.reverse().map((order, index) => {
+        // console.log(order);
+        return (
+          <React.Fragment key={order?.order_id}>
+            <h1 className="myOrder-title">Order: {order?.order_id}</h1>
+            <OneOrder order={order} />
+            <hr className="dash" />
+          </React.Fragment>
+        );
+      })} */}
     </div>
   );
 };
@@ -34,7 +60,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return { fetchOrder: (payload) => dispatch(fetchOrder(payload)) };
 };
 
 export default connect(

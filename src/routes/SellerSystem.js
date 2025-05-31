@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from 'react-router-dom';
 import ShopManage from '../containers/Seller/ShopManage';
+import SellerOrders from '../containers/SellerOrders/SellerOrders';
+
 
 class SellerSystem extends Component {
     render() {
@@ -11,6 +13,7 @@ class SellerSystem extends Component {
                 <div className="seller-list">
                     <Switch>
                         <Route path="/seller/shop-manage" component={ShopManage} />
+                        <Route path="/seller/orders" component={SellerOrders} />
                         <Route component={() => { return (<Redirect to={sellerMenuPath} />) }} />
                     </Switch>
                 </div>
