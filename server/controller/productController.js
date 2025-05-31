@@ -5,7 +5,7 @@ const slugify = require("slugify");
 const { Op } = require("sequelize");
 
 const { uploadImage, deleteImage } = require("../utils/cloudinaryHelper");
-const cloudinary = require('../config/cloudinaryStore');
+const cloudinary = require("../config/cloudinaryStore");
 
 // Hàm helper lấy thông tin phân trang
 const getPagination = (page, size) => {
@@ -46,7 +46,7 @@ const createProduct = async (req, res) => {
     if (!req.body.title || !req.body.shop_id) {
       return res.status(400).send({
         success: false,
-        message: "Tiêu đề và shop_id không được để trống!"
+        message: "Tiêu đề và shop_id không được để trống!",
       });
     }
 
@@ -55,7 +55,7 @@ const createProduct = async (req, res) => {
     if (!shop) {
       return res.status(404).send({
         success: false,
-        message: `Không tìm thấy shop với id=${req.body.shop_id}.`
+        message: `Không tìm thấy shop với id=${req.body.shop_id}.`,
       });
     }
 
@@ -71,7 +71,7 @@ const createProduct = async (req, res) => {
       slug: productSlug,
       description: req.body.description || "",
       status: req.body.status || "active",
-      category_id: req.body.category_id || null
+      category: req.body.category || null,
     });
 
     // 5. Prepare items input (accepts array of items or fallback to single-item payload)
@@ -80,19 +80,21 @@ const createProduct = async (req, res) => {
     // The fallback below is for single-item creation or if `items` is not an array.
     const itemsInput = Array.isArray(req.body.items)
       ? req.body.items
-      : [{
-          price: req.body.price,
-          stock: req.body.stock,
-          sale_price: req.body.sale_price,
-          attributes: req.body.attributes,
-          image: req.body.image,
-          image_url: req.body.image_url,
-          sku: req.body.sku
-        }];
+      : [
+          {
+            price: req.body.price,
+            stock: req.body.stock,
+            sale_price: req.body.sale_price,
+            attributes: req.body.attributes,
+            image: req.body.image,
+            image_url: req.body.image_url,
+            sku: req.body.sku,
+          },
+        ];
 
     // 6. Process each item: upload image if base64 provided, or use existing public_id
     const itemsData = await Promise.all(
-      itemsInput.map(async item => {
+      itemsInput.map(async (item) => {
         // 1. Xử lý upload hoặc lấy publicId
         let publicId = null;
         if (item.image) {
@@ -101,14 +103,15 @@ const createProduct = async (req, res) => {
         } else if (item.image_url) {
           publicId = item.image_url;
         }
-    
+
         // 2. Parse attributes thành object
         let processedAttributes = {};
         if (item.attributes) {
           try {
-            processedAttributes = typeof item.attributes === "string"
-              ? JSON.parse(item.attributes)
-              : item.attributes;
+            processedAttributes =
+              typeof item.attributes === "string"
+                ? JSON.parse(item.attributes)
+                : item.attributes;
           } catch (e) {
             processedAttributes = {};
           }
@@ -116,16 +119,16 @@ const createProduct = async (req, res) => {
             processedAttributes = {};
           }
         }
-    
+
         // 3. Trả về object cho mỗi item
         return {
           product_id: product.product_id,
-          sku:         item.sku || null,
-          price:       item.price || 0,
-          stock:       item.stock || 0,
-          sale_price:  item.sale_price || null,
-          attributes:  processedAttributes,
-          image_url:   publicId
+          sku: item.sku || null,
+          price: item.price || 0,
+          stock: item.stock || 0,
+          sale_price: item.sale_price || null,
+          attributes: processedAttributes,
+          image_url: publicId,
         };
       })
     );
@@ -138,24 +141,30 @@ const createProduct = async (req, res) => {
       success: true,
       message: "Sản phẩm và các biến thể (items) đã được tạo thành công!",
       product,
-      items: createdItems
+      items: createdItems,
     });
   } catch (error) {
     console.error("Lỗi khi tạo sản phẩm:", error);
     return res.status(500).send({
       success: false,
-      message: error.message || "Đã xảy ra lỗi khi tạo sản phẩm."
+      message: error.message || "Đã xảy ra lỗi khi tạo sản phẩm.",
     });
   }
 };
 
 // Lấy danh sách sản phẩm (có phân trang và tìm kiếm cơ bản)
 const getAllProducts = async (req, res) => {
-  const { page, size, title } = req.query; // Lấy tham số từ query string
+  const { page, size, title, category } = req.query; // Lấy tham số từ query string
   const { limit, offset } = getPagination(page, size);
 
   // Điều kiện tìm kiếm (nếu có title)
-  var condition = title ? { title: { [Op.iLike]: `%${title}%` } } : null;
+  var condition = {};
+  if (title) {
+    condition.title = { [Op.iLike]: `%${title}%` };
+  }
+  if (category) {
+    condition.category = { [Op.iLike]: `%${category}%` };
+  }
   // Op.iLike không phân biệt hoa thường (PostgreSQL), dùng Op.like nếu cần phân biệt
 
   try {
@@ -164,7 +173,7 @@ const getAllProducts = async (req, res) => {
       limit: limit,
       offset: offset,
       order: [["created_at", "DESC"]], // Sắp xếp theo mới nhất
-      include: [{ model: Shop, attributes: ['shop_name', 'shop_id'] }] // join với Shop
+      include: [{ model: Shop, attributes: ["shop_name", "shop_id"] }], // join với Shop
     });
 
     const response = getPagingData(data, page, limit);
@@ -189,7 +198,7 @@ const getProductsByShop = async (req, res) => {
     if (!shop) {
       return res.status(404).send({
         success: false,
-        message: `Không tìm thấy shop với id=${shopId}.`
+        message: `Không tìm thấy shop với id=${shopId}.`,
       });
     }
 
@@ -207,26 +216,28 @@ const getProductsByShop = async (req, res) => {
       include: [
         {
           model: Shop,
-          attributes: ['shop_name', 'shop_id', 'owner_id']
-        }
-      ]
+          attributes: ["shop_name", "shop_id", "owner_id"],
+        },
+      ],
     });
 
     const response = getPagingData(data, page, limit);
     response.shopInfo = {
       shop_id: shop.shop_id,
-      shop_name: shop.shop_name
+      shop_name: shop.shop_name,
     };
 
     res.send({
       success: true,
-      ...response
+      ...response,
     });
   } catch (error) {
     console.error(`Lỗi khi lấy danh sách sản phẩm của shop ${shopId}:`, error);
     res.status(500).send({
       success: false,
-      message: error.message || `Đã xảy ra lỗi khi lấy danh sách sản phẩm của shop ${shopId}.`,
+      message:
+        error.message ||
+        `Đã xảy ra lỗi khi lấy danh sách sản phẩm của shop ${shopId}.`,
     });
   }
 };
@@ -240,14 +251,22 @@ const getProductById = async (req, res) => {
       include: [
         {
           model: Shop,
-          
-          attributes: ['shop_name', 'shop_id', 'owner_id']
+
+          attributes: ["shop_name", "shop_id", "owner_id"],
         },
         {
           model: Item,
-          attributes: ['item_id', 'price', 'stock', 'sale_price', 'image_url', 'attributes']
-        }
-      ]
+          as: "items",
+          attributes: [
+            "item_id",
+            "price",
+            "stock",
+            "sale_price",
+            "image_url",
+            "attributes",
+          ],
+        },
+      ],
     });
 
     if (product) {
@@ -256,19 +275,19 @@ const getProductById = async (req, res) => {
 
       res.send({
         success: true,
-        data: product
+        data: product,
       });
     } else {
       res.status(404).send({
         success: false,
-        message: `Không tìm thấy sản phẩm với id=${id}.`
+        message: `Không tìm thấy sản phẩm với id=${id}.`,
       });
     }
   } catch (error) {
     console.error(`Lỗi khi lấy sản phẩm id=${id}:`, error);
     res.status(500).send({
       success: false,
-      message: `Lỗi khi lấy sản phẩm với id=${id}.`
+      message: `Lỗi khi lấy sản phẩm với id=${id}.`,
     });
   }
 };
@@ -283,7 +302,7 @@ const updateProduct = async (req, res) => {
     if (!product) {
       return res.status(404).send({
         success: false,
-        message: `Không tìm thấy sản phẩm với id=${id}.`
+        message: `Không tìm thấy sản phẩm với id=${id}.`,
       });
     }
 
@@ -318,12 +337,12 @@ const updateProduct = async (req, res) => {
       price: req.body.price,
       status: req.body.status,
       category_id: req.body.category_id,
-      slug: req.body.slug
+      slug: req.body.slug,
     };
 
     // Lọc bỏ các trường undefined
-    Object.keys(updateData).forEach(key =>
-      updateData[key] === undefined && delete updateData[key]
+    Object.keys(updateData).forEach(
+      (key) => updateData[key] === undefined && delete updateData[key]
     );
 
     const num = await Product.update(updateData, {
@@ -342,7 +361,12 @@ const updateProduct = async (req, res) => {
               const itemImgResult = await uploadImage("items", itemData.image);
               itemSpecificPublicId = itemImgResult.public_id;
             } catch (imgError) {
-              console.error(`Error uploading image for item (SKU: ${itemData.sku || 'N/A'}, ID: ${itemData.item_id || 'New'}):`, imgError);
+              console.error(
+                `Error uploading image for item (SKU: ${
+                  itemData.sku || "N/A"
+                }, ID: ${itemData.item_id || "New"}):`,
+                imgError
+              );
               // Optionally, decide whether to skip this item or proceed without updating the image
             }
           }
@@ -351,15 +375,24 @@ const updateProduct = async (req, res) => {
           let processedAttributes = {};
           if (itemData.attributes) {
             try {
-              processedAttributes = typeof itemData.attributes === 'string'
-                ? JSON.parse(itemData.attributes)
-                : itemData.attributes;
-              if (typeof processedAttributes !== 'object' || processedAttributes === null) {
+              processedAttributes =
+                typeof itemData.attributes === "string"
+                  ? JSON.parse(itemData.attributes)
+                  : itemData.attributes;
+              if (
+                typeof processedAttributes !== "object" ||
+                processedAttributes === null
+              ) {
                 // Ensure attributes is an object, default to empty if parsing fails or type is wrong
                 processedAttributes = {};
               }
             } catch (e) {
-              console.error(`Error parsing attributes for item (SKU: ${itemData.sku || 'N/A'}, ID: ${itemData.item_id || 'New'}):`, e);
+              console.error(
+                `Error parsing attributes for item (SKU: ${
+                  itemData.sku || "N/A"
+                }, ID: ${itemData.item_id || "New"}):`,
+                e
+              );
               processedAttributes = {}; // Default to empty object on error
             }
           }
@@ -375,24 +408,43 @@ const updateProduct = async (req, res) => {
           };
 
           // Remove undefined fields from payload to avoid unintentional overwrites with null
-          Object.keys(currentItemDataPayload).forEach(key =>
-            currentItemDataPayload[key] === undefined && delete currentItemDataPayload[key]
+          Object.keys(currentItemDataPayload).forEach(
+            (key) =>
+              currentItemDataPayload[key] === undefined &&
+              delete currentItemDataPayload[key]
           );
 
-
-          if (itemData.item_id) { // Existing item: Update
-            if (Object.keys(currentItemDataPayload).length > 0) { // Only update if there's data
+          if (itemData.item_id) {
+            // Existing item: Update
+            if (Object.keys(currentItemDataPayload).length > 0) {
+              // Only update if there's data
               await Item.update(currentItemDataPayload, {
-                where: { item_id: itemData.item_id, product_id: id } // Ensure item belongs to product
+                where: { item_id: itemData.item_id, product_id: id }, // Ensure item belongs to product
               });
             }
-          } else if (itemData.sku) { // New item: Create (SKU is mandatory for new items)
-            await Item.create({
-              ...currentItemDataPayload,
-              product_id: id, // Associate with the current product
+          } else if (itemData.sku) {
+            // Check if item with this SKU already exists
+            const existingItem = await Item.findOne({
+              where: { sku: itemData.sku },
             });
+
+            if (existingItem) {
+              // Update existing item
+              await Item.update(currentItemDataPayload, {
+                where: { sku: itemData.sku },
+              });
+            } else {
+              // Create new item
+              await Item.create({
+                ...currentItemDataPayload,
+                product_id: id, // Associate with the current product
+              });
+            }
           } else {
-            console.warn("Skipping item creation/update due to missing SKU for a new item or no data for an existing item:", itemData);
+            console.warn(
+              "Skipping item creation/update due to missing SKU for a new item or no data for an existing item:",
+              itemData
+            );
           }
         }
       }
@@ -401,9 +453,9 @@ const updateProduct = async (req, res) => {
       // Lấy lại sản phẩm đã cập nhật để trả về
       const updatedProduct = await Product.findByPk(id, {
         include: [
-          { model: Shop, attributes: ['shop_name', 'shop_id'] },
-          { model: Item }
-        ]
+          { model: Shop, attributes: ["shop_name", "shop_id"] },
+          { model: Item, as: "items" },
+        ],
       });
 
       res.send({
@@ -428,7 +480,7 @@ const updateProduct = async (req, res) => {
     }
     res.status(500).send({
       success: false,
-      message: `Lỗi khi cập nhật sản phẩm với id=${id}.`
+      message: `Lỗi khi cập nhật sản phẩm với id=${id}.`,
     });
   }
 };
@@ -437,9 +489,7 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   const id = req.params.id;
 
-
   try {
-
     // Xóa sản phẩm
     const num = await Product.destroy({
       where: { product_id: id },
@@ -448,7 +498,7 @@ const deleteProduct = async (req, res) => {
     if (num == 1) {
       res.send({
         success: true,
-        message: "Sản phẩm đã được xóa thành công!"
+        message: "Sản phẩm đã được xóa thành công!",
       });
     } else {
       res.status(404).send({
@@ -460,7 +510,7 @@ const deleteProduct = async (req, res) => {
     console.error(`Lỗi khi xóa sản phẩm id=${id}:`, error);
     res.status(500).send({
       success: false,
-      message: `Không thể xóa sản phẩm với id=${id}.`
+      message: `Không thể xóa sản phẩm với id=${id}.`,
     });
   }
 };
@@ -471,18 +521,28 @@ const deleteProduct = async (req, res) => {
 const checkProductOwnership = async (productId, userId) => {
   try {
     const product = await Product.findByPk(productId, {
-      include: [{ model: Shop, attributes: ['owner_id', 'shop_id', 'shop_name'] }],
+      include: [
+        { model: Shop, attributes: ["owner_id", "shop_id", "shop_name"] },
+      ],
     });
 
     if (!product) {
-      return { product: null, isOwner: false, error: "Sản phẩm không tồn tại." };
+      return {
+        product: null,
+        isOwner: false,
+        error: "Sản phẩm không tồn tại.",
+      };
     }
 
     const isOwner = product.Shop && product.Shop.owner_id === userId;
     return { product, isOwner, error: null };
   } catch (error) {
     console.error("Lỗi khi kiểm tra quyền sở hữu sản phẩm:", error);
-    return { product: null, isOwner: false, error: "Lỗi khi kiểm tra quyền sở hữu sản phẩm." };
+    return {
+      product: null,
+      isOwner: false,
+      error: "Lỗi khi kiểm tra quyền sở hữu sản phẩm.",
+    };
   }
 };
 
@@ -490,20 +550,20 @@ const checkProductOwnership = async (productId, userId) => {
 const createItem = async (req, res) => {
   const productId = req.params.productId;
 
-
   try {
     // Kiểm tra sản phẩm có tồn tại không
     const product = await Product.findByPk(productId, {
-      include: [{ model: Shop, attributes: ['owner_id', 'shop_id', 'shop_name'] }]
+      include: [
+        { model: Shop, attributes: ["owner_id", "shop_id", "shop_name"] },
+      ],
     });
 
     if (!product) {
       return res.status(404).send({
         success: false,
-        message: "Sản phẩm không tồn tại."
+        message: "Sản phẩm không tồn tại.",
       });
     }
-
 
     // Xử lý ảnh nếu có
     let publicId = null;
@@ -537,21 +597,21 @@ const createItem = async (req, res) => {
     if (!price || stock === undefined || stock === null) {
       return res.status(400).send({
         success: false,
-        message: "Giá và số lượng tồn kho là bắt buộc."
+        message: "Giá và số lượng tồn kho là bắt buộc.",
       });
     }
 
     if (stock < 0) {
       return res.status(400).send({
         success: false,
-        message: "Số lượng tồn kho không thể âm."
+        message: "Số lượng tồn kho không thể âm.",
       });
     }
 
     if (sale_price && parseFloat(sale_price) >= parseFloat(price)) {
       return res.status(400).send({
         success: false,
-        message: "Giá khuyến mãi phải nhỏ hơn giá gốc."
+        message: "Giá khuyến mãi phải nhỏ hơn giá gốc.",
       });
     }
 
@@ -559,7 +619,7 @@ const createItem = async (req, res) => {
     if (!sku) {
       return res.status(400).send({
         success: false,
-        message: "SKU là bắt buộc cho mỗi biến thể sản phẩm."
+        message: "SKU là bắt buộc cho mỗi biến thể sản phẩm.",
       });
     }
 
@@ -567,17 +627,16 @@ const createItem = async (req, res) => {
     let parsedAttributes = {};
     if (attributes) {
       try {
-        parsedAttributes = typeof attributes === 'string'
-          ? JSON.parse(attributes)
-          : attributes;
+        parsedAttributes =
+          typeof attributes === "string" ? JSON.parse(attributes) : attributes;
 
-        if (typeof parsedAttributes !== 'object') {
-          throw new Error('Attributes must be an object');
+        if (typeof parsedAttributes !== "object") {
+          throw new Error("Attributes must be an object");
         }
       } catch (e) {
         return res.status(400).send({
           success: false,
-          message: "Thuộc tính (attributes) phải là một đối tượng JSON hợp lệ."
+          message: "Thuộc tính (attributes) phải là một đối tượng JSON hợp lệ.",
         });
       }
     }
@@ -590,7 +649,7 @@ const createItem = async (req, res) => {
       image_url: publicId, // Lưu public_id thay vì URL
       sale_price: sale_price || null,
       attributes: parsedAttributes,
-      sku: sku
+      sku: sku,
     };
 
     const newItem = await Item.create(newItemData);
@@ -598,7 +657,7 @@ const createItem = async (req, res) => {
     res.status(201).send({
       success: true,
       message: "Mặt hàng đã được thêm thành công!",
-      data: newItem
+      data: newItem,
     });
   } catch (error) {
     console.error("Lỗi khi thêm mặt hàng:", error);
@@ -607,13 +666,13 @@ const createItem = async (req, res) => {
     if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(400).send({
         success: false,
-        message: `SKU đã tồn tại.`
+        message: `SKU đã tồn tại.`,
       });
     }
 
     res.status(500).send({
       success: false,
-      message: "Đã xảy ra lỗi khi thêm mặt hàng."
+      message: "Đã xảy ra lỗi khi thêm mặt hàng.",
     });
   }
 };
@@ -627,15 +686,15 @@ const getItemsByProduct = async (req, res) => {
       include: [
         {
           model: Shop,
-          attributes: ['shop_name', 'shop_id']
-        }
-      ]
+          attributes: ["shop_name", "shop_id"],
+        },
+      ],
     });
 
     if (!product) {
       return res.status(404).send({
         success: false,
-        message: "Sản phẩm không tồn tại."
+        message: "Sản phẩm không tồn tại.",
       });
     }
 
@@ -654,16 +713,16 @@ const getItemsByProduct = async (req, res) => {
           product_id: product.product_id,
           title: product.title,
           shop_name: product.Shop.shop_name,
-          shop_id: product.Shop.shop_id
+          shop_id: product.Shop.shop_id,
         },
-        items: items
-      }
+        items: items,
+      },
     });
   } catch (error) {
     console.error("Lỗi khi lấy danh sách mặt hàng:", error);
     res.status(500).send({
       success: false,
-      message: "Đã xảy ra lỗi khi lấy danh sách mặt hàng."
+      message: "Đã xảy ra lỗi khi lấy danh sách mặt hàng.",
     });
   }
 };

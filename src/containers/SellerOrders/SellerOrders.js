@@ -54,12 +54,10 @@ const SellerOrders = (props) => {
       if (result.success && result.data) {
         setOrders(result.data.products || []);
         setTotalPages(result.data.totalPages || 0);
-
         // Fetch images for the first item of each order
         const ordersWithItems = result.data.products.filter(
           (order) => order.orderItems && order.orderItems.length > 0
         );
-
         fetchOrderImages(ordersWithItems);
       } else {
         toast.error(result.error || "Không thể tải danh sách đơn hàng", {
@@ -96,6 +94,7 @@ const SellerOrders = (props) => {
 
     for (const order of ordersWithItems) {
       const firstItem = order.orderItems[0];
+      // console.log(firstItem);
       if (
         firstItem &&
         firstItem.item_image_url &&
@@ -103,9 +102,7 @@ const SellerOrders = (props) => {
       ) {
         try {
           const imageResult = firstItem.item_image_url;
-          if (imageResult.success) {
-            newImageCache[firstItem.item_image_url] = imageResult.url;
-          }
+          newImageCache[firstItem.item_image_url] = imageResult;
         } catch (error) {
           console.error("Error fetching image:", error);
         }
@@ -304,7 +301,7 @@ const SellerOrders = (props) => {
                       {order.user?.username || "Không xác định"}
                     </div>
                     <div className="cell date">
-                      {formatDate(order.created_at)}
+                      {formatDate(order.createdAt)}
                     </div>
                     <div className="cell items">
                       {order.orderItems && order.orderItems.length > 0 ? (
@@ -506,7 +503,7 @@ const SellerOrders = (props) => {
                       <div className="info-item">
                         <span className="info-label">Ngày đặt:</span>
                         <span className="info-value">
-                          {formatDate(selectedOrder.created_at)}
+                          {formatDate(selectedOrder.createdAt)}
                         </span>
                       </div>
                       <div className="info-item">

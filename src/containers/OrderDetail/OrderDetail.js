@@ -1,5 +1,5 @@
 import "./OrderDetail.scss";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import { Link, useParams, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -12,7 +12,6 @@ const OrderDetail = (props) => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageCache, setImageCache] = useState({});
-
   // Fetch order details when component mounts
   useEffect(() => {
     fetchOrderDetails();

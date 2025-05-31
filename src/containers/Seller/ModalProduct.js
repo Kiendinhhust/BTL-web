@@ -12,14 +12,31 @@ class ModalProduct extends Component {
     this.state = {
       title: "",
       description: "",
-      category_id: "",
+      category: "",
       status: "active",
       items: [], // Array of items with their own properties
       currentItemIndex: 0, // Index of the currently edited item
       showItemForm: false, // Whether to show the item form
       isSubmitting: false,
+      categories: [
+        // THÊM: Danh sách categories cho sản phẩm
+        "Thời Trang",
+        "Thực Phẩm",
+        "Đồ Gia Dụng",
+        "Đồ Điện Tử",
+        "Sách",
+        "Thể Thao",
+        "Sức Khỏe",
+        "Mẹ Và Bé",
+        "Đồ Chơi",
+        "Thú Cưng",
+        "Nội Thất",
+        "Văn Phòng Phẩm",
+        "Thực Vật",
+      ],
       errors: {
         title: "",
+        category: "", // THÊM: Error cho category
         items: [], // Array of errors for each item
       },
     };
@@ -27,14 +44,13 @@ class ModalProduct extends Component {
 
   async componentDidMount() {
     if (this.props.productData) {
-      const { title, description, category_id, status } =
-        this.props.productData;
+      const { title, description, category, status } = this.props.productData;
 
       // Khởi tạo state với dữ liệu cơ bản của sản phẩm
       this.setState({
         title: title || "",
         description: description || "",
-        category_id: category_id || "",
+        category: category || "",
         status: status || "active",
       });
 
@@ -62,7 +78,10 @@ class ModalProduct extends Component {
               price: item.price || "",
               stock: item.stock || "",
               sale_price: item.sale_price || "",
-              attributes: item.attributes || {},
+              attribute1_name: Object.keys(item.attributes || {})[0] || "", // SỬA: Tách tên thuộc tính đầu tiên
+              attribute1_value: Object.values(item.attributes || {})[0] || "", // SỬA: Tách giá trị thuộc tính đầu tiên
+              attribute2_name: Object.keys(item.attributes || {})[1] || "", // SỬA: Tách tên thuộc tính thứ hai
+              attribute2_value: Object.values(item.attributes || {})[1] || "", // SỬA: Tách giá trị thuộc tính thứ hai
               image_url: imagePublicId,
               previewImgURL: imagePreviewUrl,
               sku: item.sku || "",
@@ -85,7 +104,10 @@ class ModalProduct extends Component {
               price: "",
               stock: "",
               sale_price: "",
-              attributes: {},
+              attribute1_name: "", // THÊM: Thêm attribute1_name cho item mặc định
+              attribute1_value: "", // THÊM: Thêm attribute1_value cho item mặc định
+              attribute2_name: "", // THÊM: Thêm attribute2_name cho item mặc định
+              attribute2_value: "", // THÊM: Thêm attribute2_value cho item mặc định
               image_url: "",
               previewImgURL: "",
               sku: "",
@@ -105,7 +127,10 @@ class ModalProduct extends Component {
             price: "",
             stock: "",
             sale_price: "",
-            attributes: {},
+            attribute1_name: "", // THÊM: Thêm attribute1_name cho item mặc định
+            attribute1_value: "", // THÊM: Thêm attribute1_value cho item mặc định
+            attribute2_name: "", // THÊM: Thêm attribute2_name cho item mặc định
+            attribute2_value: "", // THÊM: Thêm attribute2_value cho item mặc định
             image_url: "",
             previewImgURL: "",
             sku: "",
@@ -125,14 +150,13 @@ class ModalProduct extends Component {
       prevProps.productData !== this.props.productData &&
       this.props.productData
     ) {
-      const { title, description, category_id, status } =
-        this.props.productData;
+      const { title, description, category, status } = this.props.productData;
 
       // Cập nhật state với dữ liệu cơ bản của sản phẩm
       this.setState({
         title: title || "",
         description: description || "",
-        category_id: category_id || "",
+        category: category || "",
         status: status || "active",
       });
     }
@@ -185,7 +209,10 @@ class ModalProduct extends Component {
               price: "",
               stock: "",
               sale_price: "",
-              attributes: {},
+              attribute1_name: "", // THÊM: Thêm attribute1_name cho item mặc định
+              attribute1_value: "", // THÊM: Thêm attribute1_value cho item mặc định
+              attribute2_name: "", // THÊM: Thêm attribute2_name cho item mặc định
+              attribute2_value: "", // THÊM: Thêm attribute2_value cho item mặc định
               image_url: "",
               previewImgURL: "",
               sku: "",
@@ -226,18 +253,18 @@ class ModalProduct extends Component {
   };
 
   // Handle changes to item attributes
-  handleItemAttributeChange = (index, attributeName, value) => {
-    const items = [...this.state.items];
-    items[index] = {
-      ...items[index],
-      attributes: {
-        ...items[index].attributes,
-        [attributeName]: value,
-      },
-    };
+  // handleItemAttributeChange = (index, attributeName, value) => {
+  //   const items = [...this.state.items];
+  //   items[index] = {
+  //     ...items[index],
+  //     attributes: {
+  //       ...items[index].attributes,
+  //       [attributeName]: value,
+  //     },
+  //   };
 
-    this.setState({ items });
-  };
+  //   this.setState({ items });
+  // };
 
   // Handle image upload for an item
   handleItemImageUpload = async (event, index) => {
@@ -282,11 +309,11 @@ class ModalProduct extends Component {
     try {
       // Upload image using storeService
       const result = await uploadImage(file, "items");
-
+      // console.log(result);
       if (result.success) {
         items[index] = {
           ...items[index],
-          image_url: result.public_id, // Store public_id
+          image_url: result.url, // Store public_id
         };
         // console.log("Image uploaded successfully:", result);
         this.setState({ items });
@@ -334,7 +361,10 @@ class ModalProduct extends Component {
       price: "",
       stock: "",
       sale_price: "",
-      attributes: {},
+      attribute1_name: "", // THÊM: Thêm attribute1_name cho item mới
+      attribute1_value: "", // THÊM: Thêm attribute1_value cho item mới
+      attribute2_name: "", // THÊM: Thêm attribute2_name cho item mới
+      attribute2_value: "", // THÊM: Thêm attribute2_value cho item mới
       image_url: "",
       previewImgURL: "",
       sku: "",
@@ -381,12 +411,19 @@ class ModalProduct extends Component {
     let isValid = true;
     let errors = {
       title: "",
+      category: "", // THÊM: Thêm category vào errors
       items: [...this.state.errors.items],
     };
 
     // Validate title
     if (!this.state.title.trim()) {
       errors.title = "Vui lòng nhập tên sản phẩm";
+      isValid = false;
+    }
+
+    // THÊM: Validate category
+    if (!this.state.category.trim()) {
+      errors.category = "Vui lòng chọn danh mục sản phẩm";
       isValid = false;
     }
 
@@ -457,7 +494,7 @@ class ModalProduct extends Component {
     this.setState({ isSubmitting: true });
 
     try {
-      const { title, description, category_id, status, items } = this.state;
+      const { title, description, category, status, items } = this.state;
       const shopId = this.props.shopId;
 
       // 2. Build payload with full items array
@@ -466,14 +503,24 @@ class ModalProduct extends Component {
         price: item.price !== "" ? parseFloat(item.price) : 0,
         stock: item.stock !== "" ? parseInt(item.stock, 10) : 0,
         sale_price: item.sale_price ? parseFloat(item.sale_price) : null,
-        attributes: item.attributes || {},
+        attributes: {
+          // SỹA: Tạo lại object attributes từ 2 cặp riêng biệt
+          ...(item.attribute1_name &&
+            item.attribute1_value && {
+              [item.attribute1_name]: item.attribute1_value,
+            }),
+          ...(item.attribute2_name &&
+            item.attribute2_value && {
+              [item.attribute2_name]: item.attribute2_value,
+            }),
+        },
         image_url: item.image_url || null,
       }));
 
       const productData = {
         title,
         description,
-        category_id: category_id || null,
+        category: category || null,
         status,
         shop_id: shopId,
         items: itemsPayload, // send all variants at once
@@ -547,14 +594,17 @@ class ModalProduct extends Component {
     this.setState({
       title: "",
       description: "",
-      category_id: "",
+      category: "",
       status: "active",
       items: [
         {
           price: "",
           stock: "",
           sale_price: "",
-          attributes: {},
+          attribute1_name: "", // THÊM: Reset attribute1_name
+          attribute1_value: "", // THÊM: Reset attribute1_value
+          attribute2_name: "", // THÊM: Reset attribute2_name
+          attribute2_value: "", // THÊM: Reset attribute2_value
           image_url: "",
           previewImgURL: "",
           sku: "",
@@ -564,6 +614,7 @@ class ModalProduct extends Component {
       showItemForm: false,
       errors: {
         title: "",
+        category: "", // THÊM: Reset error cho category
         items: [{}],
       },
     });
@@ -636,6 +687,34 @@ class ModalProduct extends Component {
                     />
                     {errors.title && (
                       <div className="invalid-feedback">{errors.title}</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* THÊM: Category selection ngay dưới Tên sản phẩm */}
+                <div className="form-row">
+                  <div className="form-group col-12">
+                    <label>Danh mục sản phẩm:</label>
+                    <select
+                      value={this.state.category}
+                      onChange={(event) =>
+                        this.handleOnChangeInput(event, "category")
+                      }
+                      className={
+                        errors.category
+                          ? "form-control is-invalid"
+                          : "form-control"
+                      }
+                    >
+                      <option value="">-- Chọn danh mục --</option>
+                      {this.state.categories.map((cat, index) => (
+                        <option key={index} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.category && (
+                      <div className="invalid-feedback">{errors.category}</div>
                     )}
                   </div>
                 </div>
@@ -818,20 +897,13 @@ class ModalProduct extends Component {
                             type="text"
                             placeholder="Tên thuộc tính (VD: Màu sắc)"
                             className="form-control attribute-name"
-                            value={Object.keys(currentItem.attributes)[0] || ""}
+                            value={currentItem.attribute1_name || ""} // SỬA: Sử dụng attribute1_name thay vì Object.keys()[0]
                             onChange={(e) => {
-                              const oldKey =
-                                Object.keys(currentItem.attributes)[0] || "";
-                              const oldValue =
-                                currentItem.attributes[oldKey] || "";
-                              const newAttributes = {};
-                              if (e.target.value) {
-                                newAttributes[e.target.value] = oldValue;
-                              }
+                              // SỬA: Đơn giản hóa onChange cho attribute1_name
                               this.handleItemChange(
                                 currentItemIndex,
-                                "attributes",
-                                newAttributes
+                                "attribute1_name",
+                                e.target.value
                               );
                             }}
                           />
@@ -839,23 +911,46 @@ class ModalProduct extends Component {
                             type="text"
                             placeholder="Giá trị thuộc tính (VD: Đỏ)"
                             className="form-control attribute-value"
-                            value={
-                              Object.values(currentItem.attributes)[0] || ""
-                            }
+                            value={currentItem.attribute1_value || ""} // SỬA: Sử dụng attribute1_value thay vì Object.values()[0]
                             onChange={(e) => {
-                              const key =
-                                Object.keys(currentItem.attributes)[0] || "";
-                              if (key) {
-                                const newAttributes = {
-                                  ...currentItem.attributes,
-                                };
-                                newAttributes[key] = e.target.value;
-                                this.handleItemChange(
-                                  currentItemIndex,
-                                  "attributes",
-                                  newAttributes
-                                );
-                              }
+                              // SỬA: Đơn giản hóa onChange cho attribute1_value
+                              this.handleItemChange(
+                                currentItemIndex,
+                                "attribute1_value",
+                                e.target.value
+                              );
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="attributes-container">
+                        <div className="attribute-row">
+                          <input
+                            type="text"
+                            placeholder="Tên thuộc tính (VD: Màu sắc)"
+                            className="form-control attribute-name"
+                            value={currentItem.attribute2_name || ""} // SỬA: Sử dụng attribute2_name thay vì Object.keys()[1]
+                            onChange={(e) => {
+                              // SỬA: Đơn giản hóa onChange cho attribute2_name
+                              this.handleItemChange(
+                                currentItemIndex,
+                                "attribute2_name",
+                                e.target.value
+                              );
+                            }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Giá trị thuộc tính (VD: Đỏ)"
+                            className="form-control attribute-value"
+                            value={currentItem.attribute2_value || ""} // SỬA: Sử dụng attribute2_value thay vì Object.values()[1]
+                            onChange={(e) => {
+                              // SỬA: Đơn giản hóa onChange cho attribute2_value
+                              this.handleItemChange(
+                                currentItemIndex,
+                                "attribute2_value",
+                                e.target.value
+                              );
                             }}
                           />
                         </div>

@@ -18,7 +18,7 @@ import Register from "../routes/Register.js";
 import VerifyOTP from "../routes/VerifyOTP.js";
 import HomePage from "./HomePage/HomePage.js";
 import CartPage from "./CartPage/CartPage.js";
-import MyOrders from '../containers/MyOrders/MyOrders'
+import MyOrders from "../containers/MyOrders/MyOrders";
 import Order from "../components/Product/Order";
 import ProductDetail from "../components/Product/ProductDetail";
 import { default as HomePageHeader } from "./HomePage/Header.js";
@@ -81,7 +81,7 @@ class App extends Component {
                     path={path.SYSTEM}
                     component={userIsAuthenticated(System)}
                   />
-                 
+
                   <Route
                     path={"/system/item-manage"}
                     component={userIsAuthenticated(ItemManage)}

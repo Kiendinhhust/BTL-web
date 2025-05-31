@@ -1,4 +1,7 @@
-// Variables
+// Variables - SỬA: Cập nhật màu chính theo yêu cầu
+$primary-blue: #3a5998; // SỬA: Màu chính xanh navy
+$success-green: #4caf50; // THÊM: Màu xanh lá cho success
+$danger-red: #e53935; // THÊM: Màu đỏ cho error/danger
 $navy-dark: #1a3a6c;
 $navy-medium: #2c4272;
 $navy-light: #3a5998;
@@ -13,12 +16,12 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 .homepage-productscontainer {
   margin: 0;
   padding: 40px 20px;
-  max-height: 80vh;
-  min-height: 80vh;
+  max-height: 78vh;
+  min-height: 78vh;
   flex-wrap: wrap;
   overflow-y: scroll;
   display: flex;
-  gap: 40px;
+  gap: 30px;
   justify-content: center;
   background-color: #f8f9fa;
   scrollbar-width: none;
@@ -28,7 +31,7 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 80px;
+    padding: 40px;
 
     .loading-spinner {
       width: 60px;
@@ -236,6 +239,178 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       width: 32px;
       height: 32px;
       font-size: 12px;
+    }
+  }
+}
+
+// THÊM: Category filter styles với màu chính #3a5998, #4caf50, #e53935
+.category-filter-wrapper {
+  margin: 5px 0 10px 0; // THÊM: Margin cho đẹp hơn
+  display: flex;
+  justify-content: center;
+  padding: 0 20px; // THÊM: Padding cho responsive
+
+  .category-filter-inner {
+    display: flex; // THÊM: Flex layout cho label và select
+    align-items: center; // THÊM: Căn giữa theo chiều dọc
+    gap: 15px; // THÊM: Khoảng cách giữa label và select
+    background: linear-gradient(
+      135deg,
+      $primary-blue 0%,
+      darken($primary-blue, 15%) 100%
+    ); // THÊM: Gradient với màu chính
+    padding: 5px 10px; // THÊM: Padding cho container
+    border-radius: 15px; // THÊM: Bo góc đẹp
+    box-shadow: 0 8px 25px rgba($primary-blue, 0.3); // THÊM: Shadow với màu chính
+    backdrop-filter: blur(10px); // THÊM: Blur effect
+    border: 1px solid rgba(255, 255, 255, 0.2); // THÊM: Border trong suốt
+    transition: all 0.3s ease; // THÊM: Smooth transition
+
+    &:hover {
+      transform: translateY(-2px); // THÊM: Hiệu ứng nâng khi hover
+      box-shadow: 0 12px 35px rgba($primary-blue, 0.4); // THÊM: Shadow đậm hơn khi hover
+    }
+
+    .filter-label {
+      display: flex; // THÊM: Flex cho icon và text
+      align-items: center; // THÊM: Căn giữa
+      gap: 8px; // THÊM: Khoảng cách icon và text
+      color: white; // THÊM: Màu chữ trắng
+      font-weight: 600; // THÊM: Font weight đậm
+      font-size: 14px; // THÊM: Font size
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); // THÊM: Text shadow
+
+      i {
+        font-size: 4px; // THÊM: Size icon
+        opacity: 0.9; // THÊM: Độ trong suốt icon
+        color: lighten(
+          $primary-blue,
+          30%
+        ); // THÊM: Màu icon sáng hơn từ màu chính
+      }
+    }
+
+    .custom-select-wrapper {
+      position: relative; // THÊM: Relative position cho custom arrow
+
+      .category-select-modern {
+        appearance: none; // THÊM: Loại bỏ default arrow
+        -webkit-appearance: none; // THÊM: Webkit support
+        -moz-appearance: none; // THÊM: Firefox support
+        padding: 0px 40px 0px 5px; // THÊM: Padding với space cho custom arrow
+        border: 2px solid rgba(255, 255, 255, 0.3); // THÊM: Border trong suốt
+        border-radius: 8px; // THÊM: Bo góc đẹp hơn
+        font-size: 14px; // THÊM: Font size
+        font-weight: 500; // THÊM: Font weight
+        background: rgba(255, 255, 255, 0.95); // THÊM: Background trong suốt
+        cursor: pointer; // THÊM: Cursor pointer
+        min-width: 50px; // THÊM: Min-width
+        color: $primary-blue; // THÊM: Màu chữ theo màu chính
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); // THÊM: Smooth transition
+        backdrop-filter: blur(10px); // THÊM: Blur effect
+
+        &:focus {
+          outline: none; // THÊM: Loại bỏ outline
+          border-color: $navy-light; // THÊM: Border màu xanh lá khi focus
+          box-shadow: 0 0 0 4px rgba($navy-light, 0.2);
+          background: rgba(255, 255, 255, 1); // THÊM: Background khi focus
+          transform: translateY(-2px); // THÊM: Hiệu ứng nâng lên
+          color: darken($primary-blue, 10%); // THÊM: Màu chữ đậm hơn khi focus
+        }
+
+        &:hover {
+          border-color: lighten(
+            $primary-blue,
+            20%
+          ); // THÊM: Border sáng hơn khi hover
+          background: rgba(255, 255, 255, 1); // THÊM: Background khi hover
+          transform: translateY(-1px); // THÊM: Hiệu ứng nâng nhẹ
+          box-shadow: 0 4px 15px rgba($primary-blue, 0.2); // THÊM: Shadow khi hover
+        }
+
+        option {
+          background: white; // THÊM: Background cho option
+          color: $primary-blue; // THÊM: Màu chữ option theo màu chính
+          padding: 5px; // THÊM: Padding cho option
+          font-weight: 500; // THÊM: Font weight cho option
+
+          &:hover {
+            background: lighten(
+              $primary-blue,
+              100%
+            ); // THÊM: Background khi hover option
+          }
+
+          &:checked {
+            background: $navy-light; // THÊM: Background khi selected
+            color: white; // THÊM: Màu chữ khi selected
+          }
+        }
+      }
+
+      .select-arrow {
+        position: absolute; // THÊM: Absolute position
+        right: 15px; // THÊM: Vị trí từ phải
+        top: 50%; // THÊM: Căn giữa theo chiều dọc
+        transform: translateY(-50%); // THÊM: Transform để căn giữa
+        pointer-events: none; // THÊM: Không thể click
+        color: $primary-blue; // THÊM: Màu icon theo màu chính
+        font-size: 14px; // THÊM: Size icon
+        transition: all 0.3s ease; // THÊM: Transition cho animation
+        opacity: 0.7; // THÊM: Độ trong suốt
+      }
+
+      &:hover .select-arrow {
+        transform: translateY(-50%) rotate(180deg); // THÊM: Xoay icon khi hover
+        color: $navy-light; // THÊM: Đổi màu icon khi hover
+        opacity: 1; // THÊM: Tăng độ đậm khi hover
+      }
+    }
+  }
+
+  // THÊM: Responsive design cho category filter
+  @media (max-width: 768px) {
+    margin: 3px 0 3px 0; // SỬA: Giảm margin trên mobile
+    padding: 0 5px; // SỬA: Giảm padding trên mobile
+
+    .category-filter-inner {
+      flex-direction: column; // THÊM: Chuyển thành column trên mobile
+      gap: 12px; // SỬA: Giảm gap trên mobile
+      padding: 5px 5px; // SỬA: Giảm padding trên mobile
+      border-radius: 12px; // SỬA: Giảm border radius trên mobile
+
+      .filter-label {
+        font-size: 14px; // SỬA: Giảm font size trên mobile
+
+        i {
+          font-size: 14px; // SỬA: Giảm icon size trên mobile
+        }
+      }
+
+      .custom-select-wrapper {
+        .category-select-modern {
+          min-width: 200px; // SỬA: Giảm min-width trên mobile
+          padding: 10px 40px 10px 18px; // SỬA: Giảm padding trên mobile
+          font-size: 14px; // SỬA: Giảm font size trên mobile
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .category-filter-inner {
+      .custom-select-wrapper {
+        .category-select-modern {
+          min-width: 180px; // SỬA: Giảm thêm min-width trên mobile nhỏ
+          padding: 9px 35px 9px 15px; // SỬA: Giảm thêm padding
+          font-size: 14px; // SỬA: Giảm thêm font size
+        }
+
+        .select-arrow {
+          right: 12px; // SỬA: Điều chỉnh vị trí arrow
+          font-size: 12px; // SỬA: Giảm size arrow
+        }
+      }
     }
   }
 }

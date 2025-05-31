@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import "./ShopManage.scss";
 import { getShopByUserId } from "../../services/shopService";
@@ -148,7 +148,7 @@ class ShopManage extends Component {
       if (res.data && res.data.success) {
         // Lấy danh sách sản phẩm
         const products = res.data.products || [];
-
+        // console.log(products);
         // Lưu trữ items cho mỗi sản phẩm
         const productItems = { ...this.state.productItems };
 
@@ -161,7 +161,7 @@ class ShopManage extends Component {
               // console.log("Items response:", itemsRes);
               if (itemsRes.data && itemsRes.data.success) {
                 const items = itemsRes.data.data.items || [];
-
+                // console.log(items);
                 // Lưu items vào state
                 productItems[product.product_id] = items;
 
@@ -172,11 +172,11 @@ class ShopManage extends Component {
                       try {
                         // Lấy URL ảnh từ public_id
                         const imageResult = item.image_url;
-
+                        // console.log(imageResult);
                         if (imageResult.success) {
                           return {
                             ...item,
-                            imageUrl: imageResult.url, // Thêm imageUrl để hiển thị
+                            imageUrl: imageResult, // Thêm imageUrl để hiển thị
                           };
                         }
                       } catch (imgError) {
@@ -205,7 +205,7 @@ class ShopManage extends Component {
             if (product.image_url) {
               try {
                 const imageResult = product.item_image_url;
-                console.log(product);
+                // console.log(product);
                 if (imageResult.success) {
                   return {
                     ...product,
@@ -287,7 +287,6 @@ class ShopManage extends Component {
   openEditModal = (product) => {
     // Get items for the selected product
     const items = this.state.productItems[product.product_id] || [];
-
     this.setState({
       isModalOpen: true,
       selectedProduct: product,
@@ -461,42 +460,51 @@ class ShopManage extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map((item, idx) => (
-                      <tr key={idx}>
-                        <td>{item.sku || `Biến thể ${idx + 1}`}</td>
-                        <td>
-                          {Object.entries(item.attributes || {}).map(
-                            ([key, value], attrIdx) => (
-                              <div key={attrIdx} className="attribute-pair">
-                                <span className="attribute-key">{key}:</span>
-                                <span className="attribute-value">{value}</span>
-                              </div>
-                            )
-                          )}
-                        </td>
-                        <td>{this.formatPrice(item.price)}</td>
-                        <td>
-                          {item.sale_price
-                            ? this.formatPrice(item.sale_price)
-                            : "-"}
-                        </td>
-                        <td>{item.stock}</td>
-                        <td>
-                          {item.imageUrl ? (
-                            <div
-                              className="variant-image"
-                              style={{
-                                backgroundImage: `url(${item.imageUrl})`,
-                              }}
-                            ></div>
-                          ) : (
-                            <div className="no-image">
-                              <i className="fas fa-image"></i>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {items.map((item, idx) => {
+                      console.log(item);
+                      return (
+                        <Fragment key={idx}>
+                          <tr>
+                            <td>{item.sku || `Biến thể ${idx + 1}`}</td>
+                            <td>
+                              {Object.entries(item.attributes || {}).map(
+                                ([key, value], attrIdx) => (
+                                  <div key={attrIdx} className="attribute-pair">
+                                    <span className="attribute-key">
+                                      {key}:
+                                    </span>
+                                    <span className="attribute-value">
+                                      {value}
+                                    </span>
+                                  </div>
+                                )
+                              )}
+                            </td>
+                            <td>{this.formatPrice(item.price)}</td>
+                            <td>
+                              {item.sale_price
+                                ? this.formatPrice(item.sale_price)
+                                : "-"}
+                            </td>
+                            <td>{item.stock}</td>
+                            <td>
+                              {item.image_url ? (
+                                <div
+                                  className="variant-image"
+                                  style={{
+                                    backgroundImage: `url(${item.image_url})`,
+                                  }}
+                                ></div>
+                              ) : (
+                                <div className="no-image">
+                                  <i className="fas fa-image"></i>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        </Fragment>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -506,11 +514,11 @@ class ShopManage extends Component {
                 {items[selectedVariantIndex] && (
                   <div className="variant-card">
                     <div className="variant-image-container">
-                      {items[selectedVariantIndex].imageUrl ? (
+                      {items[selectedVariantIndex].image_url ? (
                         <div
                           className="variant-image-large"
                           style={{
-                            backgroundImage: `url(${items[selectedVariantIndex].imageUrl})`,
+                            backgroundImage: `url(${items[selectedVariantIndex].image_url})`,
                           }}
                         ></div>
                       ) : (
@@ -727,8 +735,17 @@ class ShopManage extends Component {
               {products.map((product) => (
                 <div key={product.product_id} className="product-card">
                   <div className="product-image">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.title} />
+                    {Object.values(this.state.productItems).find(
+                      (item) => item[0].product_id === product.product_id
+                    )[0].image_url ? (
+                      <img
+                        src={
+                          Object.values(this.state.productItems).find(
+                            (item) => item[0].product_id === product.product_id
+                          )[0].image_url
+                        }
+                        alt={product.title}
+                      />
                     ) : (
                       <div className="no-image">
                         <i className="fas fa-image"></i>
@@ -856,10 +873,6 @@ class ShopManage extends Component {
           isEdit={isEdit}
           shopId={shopInfo?.id}
           fetchProducts={this.fetchProducts}
-          headerStyle={{
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            color: "white",
-          }}
         />
 
         {/* Variant Details Modal */}

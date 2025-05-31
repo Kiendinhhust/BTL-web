@@ -25,6 +25,25 @@ const HomePage = (props) => {
   if (title === null) {
     title = "";
   }
+  const [categories, setCategories] = useState([
+    "Thời Trang",
+    "Thực Phẩm",
+    "Đồ Gia Dụng",
+    "Đồ Điện Tử",
+    "Sách",
+    "Thể Thao",
+    "Sức Khỏe",
+    "Mẹ Và Bé",
+    "Đồ Chơi",
+    "Thú Cưng",
+    "Nội Thất",
+    "Văn Phòng Phẩm",
+    "Thực Vật",
+  ]);
+  const [category, setCategory] = useState(query.get("category"));
+  if (category === null || category === undefined) {
+    setCategory("");
+  }
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -32,18 +51,29 @@ const HomePage = (props) => {
         setLoading(true);
 
         // Fetch products
+        const buildURL = () => {
+          let url = `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}`;
+
+          if (title !== null && title !== "") {
+            url += `&title=${title}`;
+          }
+
+          if (category && category !== "") {
+            url += `&category=${category}`;
+          }
+
+          return url;
+        };
+
         const response = await axios({
           method: "get",
-          url:
-            title !== null
-              ? `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}&title=${title}`
-              : `${process.env.REACT_APP_BACKEND_URL}/api/products?page=${page}`,
+          url: buildURL(), // SỬA: Sử dụng function buildURL
           headers: {},
         });
 
         // Process products and fetch items for each product
         const productsData = response.data.products || [];
-
+        // console.log("productsData", productsData);
         // Create a map to store items for each product
         const itemsMap = {};
 
@@ -69,6 +99,7 @@ const HomePage = (props) => {
                 Array.isArray(itemsResponse.data.data.items)
               ) {
                 items = itemsResponse.data.data.items;
+                // console.log("items", items);
                 // console.log(
                 //   `Using data.data.items for product ${product.product_id}`
                 // );
@@ -208,7 +239,7 @@ const HomePage = (props) => {
     };
 
     fetchProducts();
-  }, [page, title]);
+  }, [page, title, category]);
 
   const renderProductList = () => {
     // console.log("Products:", products);
@@ -242,44 +273,111 @@ const HomePage = (props) => {
 
   return (
     <div className="homepage-container">
+      <div className="category-filter-wrapper">
+        {" "}
+        {/* SỬA: Đổi className từ category-filter-container */}
+        <div className="category-filter-inner">
+          {" "}
+          {/* THÊM: Container bên trong để styling tốt hơn */}
+          <div className="filter-label">
+            {" "}
+            {/* THÊM: Label cho filter */}
+            <i className="fas fa-filter"></i> {/* THÊM: Icon filter */}
+            <span>Danh mục:</span> {/* THÊM: Text label */}
+          </div>
+          <div className="custom-select-wrapper">
+            {" "}
+            {/* THÊM: Wrapper cho custom select */}
+            <select
+              value={category}
+              onChange={(e) => {
+                const newCategory = e.target.value;
+                setCategory(newCategory);
+                let url = `/home?page=${page}`;
+
+                if (title !== null && title !== "") {
+                  url += `&title=${title}`;
+                }
+
+                if (newCategory && newCategory !== "") {
+                  url += `&category=${newCategory}`;
+                }
+
+                history.push(url);
+              }}
+              className="category-select-modern" /* SỬA: Đổi className từ category-select */
+            >
+              <option value="">Tất cả danh mục</option>
+              {categories.map((cat, i) => (
+                <option key={i} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+            <div className="select-arrow">
+              {" "}
+              {/* THÊM: Custom arrow cho select */}
+              <i className="fas fa-chevron-down"></i> {/* THÊM: Icon mũi tên */}
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="homepage-productscontainer">{renderProductList()}</div>
       <hr className="homepage-dash" />
       <span className="homepage-pagination">
         {page > 3 ? (
           <button
-            onClick={() =>
-              history.push(
-                title !== null && title !== ""
-                  ? `/home?page=${1}&title=${title}`
-                  : `/home?page=${1}`
-              )
-            }
+            onClick={() => {
+              let url = `/home?page=${1}`;
+
+              if (title !== null && title !== "") {
+                url += `&title=${title}`;
+              }
+
+              if (category && category !== "") {
+                url += `&category=${category}`;
+              }
+
+              history.push(url);
+            }}
           >
             {1}
           </button>
         ) : null}
         {page - 2 > 0 && (
           <button
-            onClick={() =>
-              history.push(
-                title !== null && title !== ""
-                  ? `/home?page=${Number(page) - 2}&title=${title}`
-                  : `/home?page=${Number(page) - 2}`
-              )
-            }
+            onClick={() => {
+              let url = `/home?page=${Number(page) - 2}`;
+
+              if (title !== null && title !== "") {
+                url += `&title=${title}`;
+              }
+
+              if (category && category !== "") {
+                url += `&category=${category}`;
+              }
+
+              history.push(url);
+            }}
           >
             {Number(page) - 2}
           </button>
         )}
         {page - 1 > 0 && (
           <button
-            onClick={() =>
-              history.push(
-                title !== null && title !== ""
-                  ? `/home?page=${Number(page) - 1}&title=${title}`
-                  : `/home?page=${Number(page) - 1}`
-              )
-            }
+            onClick={() => {
+              let url = `/home?page=${Number(page) - 1}`;
+
+              if (title !== null && title !== "") {
+                url += `&title=${title}`;
+              }
+
+              if (category && category !== "") {
+                url += `&category=${category}`;
+              }
+
+              history.push(url);
+            }}
           >
             {Number(page) - 1}
           </button>
@@ -287,35 +385,53 @@ const HomePage = (props) => {
 
         <button
           className="homepage-pagination-now"
-          onClick={() =>
-            history.push(
-              title !== null && title !== ""
-                ? `/home?page=${Number(page)}&title=${title}`
-                : `/home?page=${Number(page)}`
-            )
-          }
+          onClick={() => {
+            let url = `/home?page=${Number(page)}`;
+
+            if (title !== null && title !== "") {
+              url += `&title=${title}`;
+            }
+
+            if (category && category !== "") {
+              url += `&category=${category}`;
+            }
+
+            history.push(url);
+          }}
         >
           {Number(page)}
         </button>
         <button
-          onClick={() =>
-            history.push(
-              title !== null && title !== ""
-                ? `/home?page=${Number(page) + 1}&title=${title}`
-                : `/home?page=${Number(page) + 1}`
-            )
-          }
+          onClick={() => {
+            let url = `/home?page=${Number(page) + 1}`;
+
+            if (title !== null && title !== "") {
+              url += `&title=${title}`;
+            }
+
+            if (category && category !== "") {
+              url += `&category=${category}`;
+            }
+
+            history.push(url);
+          }}
         >
           {Number(page) + 1}
         </button>
         <button
-          onClick={() =>
-            history.push(
-              title !== null && title !== ""
-                ? `/home?page=${Number(page) + 2}&title=${title}`
-                : `/home?page=${Number(page) + 2}`
-            )
-          }
+          onClick={() => {
+            let url = `/home?page=${Number(page) + 2}`;
+
+            if (title !== null && title !== "") {
+              url += `&title=${title}`;
+            }
+
+            if (category && category !== "") {
+              url += `&category=${category}`;
+            }
+
+            history.push(url);
+          }}
         >
           {Number(page) + 2}
         </button>
