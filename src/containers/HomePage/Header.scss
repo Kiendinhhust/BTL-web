@@ -85,12 +85,15 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   list-style: none;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 25px;
   margin: 0;
   padding: 0;
+  flex: 1;
 }
 
 .nav-item {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -148,6 +151,8 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   position: relative;
   display: flex;
   align-items: center;
+  width: 75%;
+  max-width:  1000px;
 }
 
 .searchImage-header {
@@ -167,8 +172,7 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .searchBar {
-  flex-grow: 1;
-  // width: 50%;
+  width: 100%;
   height: 38px;
   border: none;
   border-radius: $border-radius;

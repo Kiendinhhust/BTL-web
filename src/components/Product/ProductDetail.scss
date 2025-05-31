@@ -36,7 +36,15 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   min-height: 80vh;
   margin: 30px auto;
   padding: 0 20px;
-  overflow-y: scroll;
+  overflow-y: auto;
+
+  // Ẩn scrollbar
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar { /* WebKit */
+    display: none;
+  }
 
   .loading-container {
     display: flex;
@@ -500,8 +508,20 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
       p {
         color: $dark-gray;
-        line-height: 1.6;
-        margin-bottom: 15px;
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 16px;
+        text-align: justify;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+
+        &:first-child {
+          margin-top: 0;
+        }
+
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
 
       ul {
@@ -510,6 +530,30 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         li {
           margin-bottom: 8px;
           color: $dark-gray;
+          line-height: 1.6;
+        }
+      }
+
+      // Styling cho description content
+      .description-content {
+        background-color: $light-gray;
+        padding: 20px;
+        border-radius: $border-radius;
+        border-left: 4px solid $navy-medium;
+
+        h4 {
+          color: $navy-dark;
+          margin-bottom: 12px;
+          font-size: 16px;
+          font-weight: 600;
+        }
+
+        p {
+          margin-bottom: 15px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
         }
       }
     }

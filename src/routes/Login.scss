@@ -220,28 +220,36 @@ body {
 }
 
 .custom-input-password i {
+  margin-top: 20px;
   position: absolute;
-  right: 10px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #6c757d; /* Màu xám */
+  color: #7f8c8d;
   transition: color 0.3s ease;
+  z-index: 1;
+  font-size: 16px;
+  line-height: 50px; /* Giống với height của input */
 }
 
 .form-control {
   padding-right: 35px; /* Để chừa chỗ cho icon */
+  margin-bottom: 25px;
 }
+
 
 .login-input input {
   width: 100%;
-  padding: 14px 20px;
+  padding: 14px 45px 14px 20px; /* Right padding cho icon eye */
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #f8f9fa; /* Màu nền sáng */
-  color: #2c3e50; /* Màu chữ tối */
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  height: 50px; /* Đặt chiều cao cố định */
+  box-sizing: border-box;
 }
 
 .login-input input:focus {
@@ -254,10 +262,6 @@ body {
 .login-input input::placeholder {
   color: #95a5a6;
   font-weight: 300;
-}
-
-.custom-input-password i {
-  color: #7f8c8d;
 }
 
 .custom-input-password i:hover {

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { KeyCodeUtils, LanguageUtils } from "../utils";
 import userIcon from "../../src/assets/images/user.svg";
+import emailIcon from "../../src/assets/images/email.svg";
 import passIcon from "../../src/assets/images/pass.svg";
 import "./Register.scss";
 import { FormattedMessage } from "react-intl";
@@ -283,7 +284,7 @@ class Register extends Component {
                 <FormattedMessage id="register.email" defaultMessage="Email:" />
               </label>
               <div className="custom-input">
-                <img className="icon" alt="Email Icon" />
+                <img className="icon" src={emailIcon} alt="Email Icon" />
                 <input
                   type="email"
                   className="form-control"

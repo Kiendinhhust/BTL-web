@@ -3,8 +3,15 @@
   margin: 0 auto;
   padding: 30px 20px;
   min-height: calc(100vh - 100px);
-  overflow-y: scroll;
-  // scrollbar-width: none;
+  overflow-y: auto;
+
+  // Ẩn scrollbar
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar { /* WebKit */
+    display: none;
+  }
   .my-orders-header {
     margin-bottom: 30px;
 
