@@ -94,7 +94,7 @@ Order.hasOne(OrderShipping, {
   onDelete: "CASCADE",
   as: "orderShipping",
 });
-OrderShipping.belongsTo(Order, { foreignKey: "order_id" });
+OrderShipping.belongsTo(Order, { foreignKey: "order_id", as: 'order' });
 
 // 1 ShippingMethod có nhiều OrderShipping
 ShippingMethod.hasMany(OrderShipping, {
@@ -115,6 +115,11 @@ OrderShipping.belongsTo(UserAddress, {
   foreignKey: "shipping_address_id",
   as: "shippingAddress",
 });
+OrderShipping.belongsTo(User, { foreignKey: "shipper_id", as: "shipper", onDelete: "SET NULL" }); // <<<<<<<<<< THÊM MỚI
+
+
+// 1 Shipper có nhiều đơn ship
+User.hasMany(OrderShipping, { foreignKey: "shipper_id", as: "assignedShipments", onDelete: "SET NULL" }); // <<<<<<<<<< THÊM MỚI
 
 // 1 User có nhiều ProductReviews
 User.hasMany(ProductReview, { foreignKey: "user_id", onDelete: "CASCADE" });

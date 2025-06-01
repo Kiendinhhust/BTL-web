@@ -207,6 +207,8 @@ const refreshAccessToken = (req, res) => {
     }
   }
 
+  console.log(refreshToken)
+
   // If still no refresh token, check if it's in the request body
   if (!refreshToken && req.body.refreshToken) {
     refreshToken = req.body.refreshToken;
