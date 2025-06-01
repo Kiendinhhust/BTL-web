@@ -89,6 +89,7 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   font-size: 12px;
   font-weight: 600;
   color: $navy-dark;
+  flex-grow: 1;
   // overflow: hidden;
   max-width: 100%;
   text-overflow: ellipsis;
