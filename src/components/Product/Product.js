@@ -182,9 +182,7 @@ const Product = (props) => {
           }
         />
       </div>
-      <div className="product-name limit-text-to-2-lines">
-        {props.product.title}
-      </div>
+      <div className="product-name">{props.product.title}</div>
 
       <div className="product-shop">
         <i className="fas fa-store"></i>

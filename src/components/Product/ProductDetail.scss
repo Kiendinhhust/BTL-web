@@ -42,7 +42,8 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
 
-  &::-webkit-scrollbar { /* WebKit */
+  &::-webkit-scrollbar {
+    /* WebKit */
     display: none;
   }
 
@@ -408,6 +409,7 @@ $box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       padding: 14px 25px;
       font-size: 16px;
       font-weight: 600;
+      height: fit-content;
       cursor: pointer;
       border-radius: $border-radius;
       transition: $transition;

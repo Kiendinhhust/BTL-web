@@ -40,8 +40,12 @@
     }
 
     @keyframes spin {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     &.modal-loading {
@@ -93,13 +97,28 @@
         .header-cell {
           padding: 0 10px;
 
-          &.order-id   { width: 12%; }
-          &.customer   { width: 15%; }
-          &.date       { width: 18%; }
-          &.items      { width: 20%; }
-          &.total      { width: 12%; }
-          &.status     { width: 13%; }
-          &.actions    { width: 10%; text-align: center; }
+          &.order-id {
+            width: 12%;
+          }
+          &.customer {
+            width: 15%;
+          }
+          &.date {
+            width: 18%;
+          }
+          &.items {
+            width: 20%;
+          }
+          &.total {
+            width: 12%;
+          }
+          &.status {
+            width: 13%;
+          }
+          &.actions {
+            width: 10%;
+            text-align: center;
+          }
         }
       }
 
@@ -110,8 +129,12 @@
           border-bottom: 1px solid #dddddd;
           align-items: center;
 
-          &:last-child { border-bottom: none; }
-          &:hover      { background-color: rgba(221, 221, 221, 0.5); }
+          &:last-child {
+            border-bottom: none;
+          }
+          &:hover {
+            background-color: rgba(221, 221, 221, 0.5);
+          }
 
           .cell {
             padding: 0 10px;
@@ -273,8 +296,10 @@
 
   .order-details-modal {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 1000;
     display: flex;
     align-items: center;
@@ -282,8 +307,10 @@
 
     .modal-overlay {
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background-color: rgba(10, 31, 68, 0.7);
     }
 
@@ -319,7 +346,9 @@
           font-size: 20px;
           cursor: pointer;
           transition: all 0.3s ease;
-          &:hover { color: #e74c3c; }
+          &:hover {
+            color: #e74c3c;
+          }
         }
       }
 
@@ -605,6 +634,315 @@
               border-radius: 6px;
               color: #0a1f44;
               font-style: italic;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Media query cho màn hình nhỏ hơn 800px
+@media (max-width: 800px) {
+  .seller-orders-container {
+    max-width: 1000px;
+    padding: 24px 16px;
+    min-height: calc(100vh - 160px);
+
+    .seller-orders-header {
+      margin-bottom: 24px;
+
+      h1 {
+        font-size: 22px;
+      }
+    }
+
+    .loading-container {
+      padding: 48px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #dddddd;
+        border-top: 4px solid #1a3f6d;
+        margin-bottom: 16px;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      &.modal-loading {
+        padding: 24px 0;
+      }
+    }
+
+    .no-orders {
+      padding: 48px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+      i {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+
+      p {
+        font-size: 15px;
+        margin-bottom: 24px;
+      }
+    }
+
+    .orders-list {
+      margin-bottom: 24px;
+
+      .orders-table {
+        border-radius: 5px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+        .table-header {
+          padding: 12px;
+
+          .header-cell {
+            padding: 0 8px;
+          }
+        }
+
+        .table-body {
+          .table-row {
+            padding: 12px;
+
+            .cell {
+              padding: 0 8px;
+
+              &.date {
+                font-size: 12px;
+              }
+
+              &.items {
+                .items-preview {
+                  img {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 3px;
+                    margin-right: 8px;
+                  }
+
+                  span {
+                    font-size: 12px;
+                  }
+                }
+              }
+
+              &.status {
+                .status-badge {
+                  padding: 4px 8px;
+                  border-radius: 16px;
+                  font-size: 10px;
+                }
+              }
+
+              &.actions {
+                .view-btn {
+                  padding: 5px 10px;
+                  border-radius: 5px;
+                  font-size: 12px;
+
+                  i {
+                    margin-right: 4px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .pagination {
+      margin: 24px 0;
+
+      .page-item {
+        margin: 0 4px;
+        border-radius: 3px;
+
+        .page-link {
+          width: 32px;
+          height: 32px;
+        }
+      }
+    }
+
+    .order-details-modal {
+      .modal-content {
+        max-width: 720px;
+        border-radius: 5px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+        .modal-header {
+          padding: 16px;
+
+          h2 {
+            font-size: 16px;
+          }
+
+          .close-btn {
+            font-size: 16px;
+          }
+        }
+
+        .modal-body {
+          padding: 16px;
+          max-height: calc(90vh - 56px);
+
+          .order-status-section {
+            border-radius: 5px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            padding: 16px;
+            margin-bottom: 16px;
+
+            h3 {
+              font-size: 15px;
+              margin-bottom: 12px;
+              padding-bottom: 8px;
+            }
+
+            .current-status {
+              margin-bottom: 16px;
+
+              .status-label {
+                margin-right: 8px;
+              }
+
+              .status-badge {
+                padding: 5px 10px;
+                border-radius: 16px;
+                font-size: 12px;
+              }
+            }
+
+            .status-actions {
+              h4 {
+                font-size: 14px;
+                margin-bottom: 8px;
+              }
+
+              .status-buttons {
+                gap: 8px;
+
+                .status-btn {
+                  padding: 8px 12px;
+                  border-radius: 5px;
+                  font-size: 12px;
+                }
+              }
+            }
+          }
+
+          .order-details {
+            gap: 16px;
+
+            .order-info,
+            .order-items,
+            .shipping-info,
+            .order-note {
+              border-radius: 5px;
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+              padding: 16px;
+
+              h3 {
+                font-size: 15px;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+              }
+            }
+
+            .info-grid {
+              gap: 12px;
+
+              .info-item {
+                .info-label {
+                  font-size: 12px;
+                  margin-bottom: 4px;
+                }
+
+                .info-value {
+                  font-size: 14px;
+                }
+              }
+            }
+
+            .items-list {
+              gap: 12px;
+
+              .item {
+                padding: 12px;
+                border-radius: 5px;
+
+                .item-image {
+                  width: 48px;
+                  height: 48px;
+                  margin-right: 12px;
+
+                  img {
+                    border-radius: 3px;
+                  }
+                }
+
+                .item-details {
+                  .item-name {
+                    margin-bottom: 4px;
+                  }
+
+                  .item-attributes {
+                    gap: 6px;
+
+                    .attribute-item {
+                      padding: 3px 6px;
+                      border-radius: 3px;
+                      font-size: 10px;
+                    }
+                  }
+                }
+
+                .item-price {
+                  width: 96px;
+                  margin-right: 12px;
+                  font-size: 12px;
+                }
+
+                .item-total {
+                  width: 80px;
+                }
+              }
+            }
+
+            .shipping-details {
+              gap: 16px;
+
+              h4 {
+                font-size: 14px;
+                margin-bottom: 8px;
+              }
+
+              .address-info,
+              .method-info {
+                padding: 12px;
+                border-radius: 5px;
+
+                p {
+                  margin-bottom: 4px;
+                }
+              }
+            }
+
+            .order-note {
+              p {
+                padding: 12px;
+                border-radius: 5px;
+              }
             }
           }
         }
