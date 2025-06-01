@@ -10,7 +10,7 @@
   position: relative;
   font-family: "Inter", Arial, sans-serif;
   min-height: 70vh;
-  overflow: scroll;
+  overflow: auto;
 
   // Navy gradient strip at top
   &::before {
