@@ -5,18 +5,20 @@
   max-width: 600px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(26, 39, 70, 0.10);
+  box-shadow: 0 4px 24px rgba(26, 39, 70, 0.1);
   padding: 32px 24px 40px 24px;
   position: relative;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   min-height: 70vh;
-  overflow: hidden;
+  overflow: scroll;
 
   // Navy gradient strip at top
   &::before {
-    content: '';
+    content: "";
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 6px;
     background: linear-gradient(135deg, #1a3a6c, #2c4272, #3a5998);
     background-size: 200% 200%;
@@ -43,9 +45,10 @@
       position: relative;
 
       &::after {
-        content: '';
+        content: "";
         position: absolute;
-        bottom: 0; left: 0;
+        bottom: 0;
+        left: 0;
         height: 3px;
         width: 60px;
         background: linear-gradient(135deg, #1a3a6c, #3a5998);
@@ -124,9 +127,18 @@
           background: #e3eaf6;
           color: #1a3a6c;
 
-          &.home { background: #e8f0fa; color: #1a3a6c; }
-          &.office { background: #e3e9f6; color: #2c4272; }
-          &.other { background: #edf2f9; color: #3a5998; }
+          &.home {
+            background: #e8f0fa;
+            color: #1a3a6c;
+          }
+          &.office {
+            background: #e3e9f6;
+            color: #2c4272;
+          }
+          &.other {
+            background: #edf2f9;
+            color: #3a5998;
+          }
         }
 
         .default-badge {
@@ -163,16 +175,23 @@
           transition: color 0.18s, background 0.18s;
 
           &.btn-edit {
-            &:hover { color: #3a5998; background: #e3eaf6; }
+            &:hover {
+              color: #3a5998;
+              background: #e3eaf6;
+            }
           }
           &.btn-delete {
             color: #e53935;
-            &:hover { background: #fdeaea; }
+            &:hover {
+              background: #fdeaea;
+            }
           }
           &.btn-set-default {
             color: #1a3a6c;
             text-decoration: underline;
-            &:hover { color: #3a5998; }
+            &:hover {
+              color: #3a5998;
+            }
           }
         }
       }
@@ -204,7 +223,8 @@
   // MODAL
   .address-modal {
     position: fixed;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     background: #fff;
     padding: 2rem 2.2rem;
@@ -252,7 +272,9 @@
         font-size: 1rem;
       }
 
-      input, textarea, select {
+      input,
+      textarea,
+      select {
         width: 100%;
         padding: 0.7rem;
         border: 1.2px solid #dde3f1;
@@ -332,7 +354,8 @@
           }
         }
 
-        &.btn-save, &.btn-confirm-delete {
+        &.btn-save,
+        &.btn-confirm-delete {
           background: linear-gradient(90deg, #1a3a6c 0%, #3a5998 100%);
           color: #fff;
           &:hover {
@@ -372,15 +395,31 @@
 }
 
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 @keyframes fadeInOverlay {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes modalShow {
-  from { opacity: 0; transform: translate(-50%, -60%) scale(0.95);}
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1);}
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }

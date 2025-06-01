@@ -48,7 +48,7 @@ const ProductDetail = (props) => {
             if (item.image_url) {
               try {
                 const imageResult = item.item_image_url;
-                if (imageResult.success) {
+                if (imageResult?.success) {
                   imageUrl = imageResult.url;
                 }
               } catch (imgError) {
@@ -145,7 +145,7 @@ const ProductDetail = (props) => {
 
       const result = await addItemToCart(cartItem);
 
-      if (result.success) {
+      if (result?.success) {
         toast.success("Đã thêm sản phẩm vào giỏ hàng", {
           position: "top-right",
           autoClose: 3000,
