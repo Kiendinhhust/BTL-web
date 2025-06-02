@@ -349,7 +349,6 @@ const getShipperById = async (req, res) => {
             plainShipper.totalDeliveredOrders = 0;
         }
         delete plainShipper.assignedShipments;
-
         res.status(200).json(plainShipper);
     } catch (error) {
         console.error(`Lỗi khi lấy thông tin shipper ID ${req.params.shipperId}:`, error);
@@ -428,7 +427,8 @@ const setUserAsShipper = async (req, res) => {
         }
 
         // --- Kiểm tra điều kiện tiên quyết: User phải có số điện thoại trong UserInfo ---
-        if (!user.user_info || !user.user_info.phone_number) {
+        console.log(user)
+        if (!user.UserInfo || !user.UserInfo.phone_number) {
             await transaction.rollback();
             return res.status(400).json({ message: "Không thể đặt làm shipper. Người dùng này chưa cập nhật số điện thoại." });
         }
@@ -471,7 +471,7 @@ const removeShipperRole = async (req, res) => {
         const activeAssignments = await OrderShipping.count({
             where: {
                 shipper_id: userIdToUpdate,
-                status: { [Op.notIn]: ['delivered', 'canceled', 'returned'] }
+                status: { [Op.notIn]: ['pending', 'awaiting_pickup', 'shipped', 'delivered', 'canceled', 'failed_delivery', 'assigned', 'on_the_way'] }
             },
             transaction
         });
