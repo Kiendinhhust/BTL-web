@@ -1,7 +1,7 @@
 const sequelize = require("../config/db");
 
 // Import tất cả các model
-const User = require("./user");
+const User = require("./User");
 const UserAddress = require("./UserAddress");
 const UserInfo = require("./UserInfo");
 const UserActivityLog = require("./UserActivityLog");
