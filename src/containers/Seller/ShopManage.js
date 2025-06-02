@@ -157,13 +157,13 @@ class ShopManage extends Component {
           products.map(async (product) => {
             // Lấy danh sách items cho sản phẩm
             try {
-              const itemsRes = await getItemsByProduct(product.product_id);
+              const itemsRes = await getItemsByProduct(product?.product_id);
               // console.log("Items response:", itemsRes);
               if (itemsRes.data && itemsRes.data.success) {
                 const items = itemsRes.data.data.items || [];
                 // console.log(items);
                 // Lưu items vào state
-                productItems[product.product_id] = items;
+                productItems[product?.product_id] = items;
 
                 // Xử lý ảnh cho mỗi item
                 const itemsWithImages = await Promise.all(
@@ -187,7 +187,7 @@ class ShopManage extends Component {
                   })
                 );
 
-                productItems[product.product_id] = itemsWithImages;
+                productItems[product?.product_id] = itemsWithImages;
 
                 // Sử dụng ảnh của item đầu tiên cho sản phẩm nếu có
                 if (itemsWithImages.length > 0 && itemsWithImages[0].imageUrl) {
@@ -286,7 +286,7 @@ class ShopManage extends Component {
 
   openEditModal = (product) => {
     // Get items for the selected product
-    const items = this.state.productItems[product.product_id] || [];
+    const items = this.state.productItems[product?.product_id] || [];
     this.setState({
       isModalOpen: true,
       selectedProduct: product,
@@ -409,7 +409,7 @@ class ShopManage extends Component {
 
     // Find the product
     const product = this.state.products.find(
-      (p) => p.product_id === selectedProductId
+      (p) => p?.product_id === selectedProductId
     );
 
     if (!product) {
@@ -733,15 +733,16 @@ class ShopManage extends Component {
           {products.length > 0 ? (
             <div className="products-grid">
               {products.map((product) => (
-                <div key={product.product_id} className="product-card">
+                <div key={product?.product_id} className="product-card">
                   <div className="product-image">
                     {Object.values(this.state.productItems).find(
-                      (item) => item[0].product_id === product.product_id
+                      (item) => item[0]?.product_id === product?.product_id
                     )[0].image_url ? (
                       <img
                         src={
                           Object.values(this.state.productItems).find(
-                            (item) => item[0].product_id === product.product_id
+                            (item) =>
+                              item[0]?.product_id === product?.product_id
                           )[0].image_url
                         }
                         alt={product.title}
@@ -755,22 +756,26 @@ class ShopManage extends Component {
                   <div className="product-info">
                     <h3>{product.title}</h3>
                     <div className="product-variants">
-                      {this.state.productItems[product.product_id] &&
-                      this.state.productItems[product.product_id].length > 0 ? (
+                      {this.state.productItems[product?.product_id] &&
+                      this.state.productItems[product?.product_id].length >
+                        0 ? (
                         <div className="variants-info">
                           <div className="variant-count">
-                            {this.state.productItems[product.product_id].length}{" "}
+                            {
+                              this.state.productItems[product?.product_id]
+                                .length
+                            }{" "}
                             biến thể
                           </div>
                           <div className="price-range">
                             {this.formatPriceRange(
-                              this.state.productItems[product.product_id]
+                              this.state.productItems[product?.product_id]
                             )}
                           </div>
                           <div className="total-stock">
                             Tổng tồn kho:{" "}
                             {this.calculateTotalStock(
-                              this.state.productItems[product.product_id]
+                              this.state.productItems[product?.product_id]
                             )}
                           </div>
 
@@ -779,7 +784,7 @@ class ShopManage extends Component {
                             <button
                               className="view-variants-btn"
                               onClick={() =>
-                                this.showVariantDetails(product.product_id, -1)
+                                this.showVariantDetails(product?.product_id, -1)
                               }
                             >
                               Xem tất cả biến thể
@@ -787,7 +792,7 @@ class ShopManage extends Component {
 
                             {/* Display first 3 variants as quick access */}
                             <div className="quick-variants">
-                              {this.state.productItems[product.product_id]
+                              {this.state.productItems[product?.product_id]
                                 .slice(0, 3)
                                 .map((item, idx) => (
                                   <div
@@ -795,7 +800,7 @@ class ShopManage extends Component {
                                     className="variant-item"
                                     onClick={() =>
                                       this.showVariantDetails(
-                                        product.product_id,
+                                        product?.product_id,
                                         idx
                                       )
                                     }
@@ -811,11 +816,11 @@ class ShopManage extends Component {
                                   </div>
                                 ))}
 
-                              {this.state.productItems[product.product_id]
+                              {this.state.productItems[product?.product_id]
                                 .length > 3 && (
                                 <div className="more-variants">
                                   +
-                                  {this.state.productItems[product.product_id]
+                                  {this.state.productItems[product?.product_id]
                                     .length - 3}{" "}
                                   biến thể khác
                                 </div>
@@ -842,7 +847,7 @@ class ShopManage extends Component {
                     <button
                       className="btn-delete"
                       onClick={() =>
-                        this.handleDeleteProduct(product.product_id)
+                        this.handleDeleteProduct(product?.product_id)
                       }
                       disabled={shopInfo?.status !== "accepted"}
                     >

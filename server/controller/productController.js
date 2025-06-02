@@ -490,15 +490,62 @@ const deleteProduct = async (req, res) => {
   const id = req.params.id;
 
   try {
-    // Xóa sản phẩm
+    // Kiểm tra xem sản phẩm có tồn tại không
+    const product = await Product.findByPk(id);
+    if (!product) {
+      return res.status(404).send({
+        success: false,
+        message: `Không tìm thấy sản phẩm với id=${id}!`,
+      });
+    }
+
+    // Xóa tất cả đơn hàng chứa sản phẩm này
+    const OrderItem = require("../models/OrderItem");
+    const Order = require("../models/Order");
+
+    // Tìm tất cả order_items chứa sản phẩm này
+    const orderItems = await OrderItem.findAll({
+      where: { product_id: id },
+      attributes: ["order_id"],
+    });
+
+    if (orderItems.length > 0) {
+      // Lấy danh sách order_id duy nhất
+      const orderIds = [...new Set(orderItems.map((item) => item.order_id))];
+
+      console.log(
+        `Đang xóa ${orderIds.length} đơn hàng chứa sản phẩm ${id}:`,
+        orderIds
+      );
+
+      // Xóa tất cả đơn hàng (cascade sẽ xóa order_items, payments, shipping)
+      await Order.destroy({
+        where: { order_id: orderIds },
+      });
+
+      console.log(`Đã xóa ${orderIds.length} đơn hàng thành công`);
+    }
+
+    // Nếu không có trong đơn hàng nào, tiến hành xóa
+    // Sequelize sẽ tự động xóa các bản ghi liên quan (Items, ProductImages, etc.)
+    // nhờ onDelete: "CASCADE" đã được định nghĩa trong models/index.js
     const num = await Product.destroy({
       where: { product_id: id },
     });
 
-    if (num == 1) {
+    if (num === 1) {
+      const deletedOrdersCount =
+        orderItems.length > 0
+          ? [...new Set(orderItems.map((item) => item.order_id))].length
+          : 0;
+
       res.send({
         success: true,
-        message: "Sản phẩm đã được xóa thành công!",
+        message:
+          deletedOrdersCount > 0
+            ? `Sản phẩm đã được xóa thành công! Đã xóa ${deletedOrdersCount} đơn hàng liên quan.`
+            : "Sản phẩm đã được xóa thành công!",
+        deletedOrdersCount: deletedOrdersCount,
       });
     } else {
       res.status(404).send({
@@ -508,9 +555,18 @@ const deleteProduct = async (req, res) => {
     }
   } catch (error) {
     console.error(`Lỗi khi xóa sản phẩm id=${id}:`, error);
+
+    // Xử lý lỗi foreign key constraint cụ thể
+    if (error.name === "SequelizeForeignKeyConstraintError") {
+      return res.status(400).send({
+        success: false,
+        message: `Không thể xóa sản phẩm này vì đang được tham chiếu trong các đơn hàng. Vui lòng đặt trạng thái sản phẩm thành 'inactive' thay vì xóa.`,
+      });
+    }
+
     res.status(500).send({
       success: false,
-      message: `Không thể xóa sản phẩm với id=${id}.`,
+      message: `Không thể xóa sản phẩm với id=${id}. ${error.message}`,
     });
   }
 };
