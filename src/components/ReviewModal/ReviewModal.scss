@@ -1,0 +1,120 @@
+// src/components/ReviewModal/ReviewModal.scss
+.review-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; // Đảm bảo modal nổi lên trên
+}
+
+.review-modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+
+    h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+        text-align: center;
+    }
+
+    .product-name-review, .item-attributes-review {
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+    .star-rating {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        font-size: 2rem; // Kích thước sao to hơn
+
+        .star {
+            cursor: pointer;
+            color: #ccc; // Màu sao chưa được chọn
+            margin: 0 5px;
+            transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+
+            &:hover {
+                transform: scale(1.1);
+            }
+
+            &.filled {
+                color: #ffc107; // Màu vàng cho sao đã chọn
+            }
+        }
+        .rating-text {
+            font-size: 0.9rem;
+            margin-left: 10px;
+            color: #666;
+        }
+    }
+
+    .comment-textarea {
+        width: calc(100% - 20px); // Trừ padding
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        resize: vertical; // Cho phép thay đổi chiều cao
+        min-height: 80px;
+
+        &:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px; // Khoảng cách giữa các nút
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+        }
+
+        .btn-cancel-review {
+            background-color: #f0f0f0;
+            color: #333;
+
+            &:hover:not(:disabled) {
+                background-color: #e0e0e0;
+            }
+        }
+
+        .btn-submit-review {
+            background-color: #007bff;
+            color: white;
+
+            &:hover:not(:disabled) {
+                background-color: #0056b3;
+            }
+        }
+    }
+}

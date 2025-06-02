@@ -287,6 +287,51 @@
             font-weight: 700;
             color: #0a1f44;        // navy-dark
           }
+
+          .item-actions {
+            min-width: 100px;     // Đủ không gian cho nút hoặc text
+            text-align: right;      // Căn phải
+            margin-left: auto;    // Đẩy sang phải cùng nếu .order-item là flex container
+            display: flex;        // Giúp căn giữa nút/text
+            align-items: center;  // Căn giữa theo chiều dọc
+            justify-content: flex-end; // Căn các phần tử con sang phải
+
+            .btn-review-item {
+              padding: 6px 12px;
+              background-color: #5cb85c; // Màu xanh lá cây thân thiện
+              color: white;
+              border: none;
+              border-radius: 4px;
+              font-size: 0.85rem;
+              cursor: pointer;
+              transition: background-color 0.2s ease-in-out;
+              white-space: nowrap; // Ngăn text bị xuống dòng
+
+              &:hover {
+                background-color: #4cae4c; // Màu đậm hơn khi hover
+              }
+
+              &:disabled {
+                background-color: #d3d3d3; // Màu xám khi disabled
+                cursor: not-allowed;
+              }
+            }
+
+            .reviewed-badge {
+              font-size: 0.85rem;
+              color: #007bff; // Màu xanh dương cho "Đã đánh giá"
+              font-style: italic;
+              padding: 6px 0; // Để căn chỉnh tương đối với nút
+              white-space: nowrap;
+              // Tùy chọn: Thêm icon nếu muốn
+              // &::before {
+              //   content: "✔ "; // Ví dụ icon tick
+              //   color: #28a745;
+              //   margin-right: 4px;
+              // }
+            }
+          }
+          
         }
       }
     }

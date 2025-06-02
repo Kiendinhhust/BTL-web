@@ -14,6 +14,8 @@ const {
   ShippingMethod,
   Cart,
   ShopRevenue,
+  ProductReview,
+  UserInfo,
   sequelize,
 } = db;
 const { Op } = require("sequelize");
@@ -826,10 +828,142 @@ const getShopOrders = async (req, res) => {
   }
 };
 
+// --- HELPER FUNCTIONS (Nếu cần) ---
+// Ví dụ: hàm cập nhật rating trung bình của sản phẩm
+const updateProductAverageRating = async (productId, transaction) => {
+    const result = await ProductReview.findOne({
+        where: { product_id: productId, is_approved: true }, // Chỉ tính các review đã được duyệt
+        attributes: [
+            [sequelize.fn('AVG', sequelize.col('rating')), 'averageRating'],
+            [sequelize.fn('COUNT', sequelize.col('review_id')), 'reviewCount']
+        ],
+        raw: true,
+        transaction
+    });
+
+    const averageRating = result && result.averageRating ? parseFloat(result.averageRating).toFixed(2) : 0.00;
+    // const reviewCount = result && result.reviewCount ? parseInt(result.reviewCount) : 0; // Nếu muốn lưu cả số lượng review
+
+    await Product.update(
+        { rating: averageRating },
+        { where: { product_id: productId }, transaction }
+    );
+    return averageRating;
+};
+
+
+const createProductReview = async (req, res) => {
+    const userId = req.user.user_id; // Từ middleware xác thực
+    const {
+        product_id,
+        item_id,    // Optional: Đánh giá cho một biến thể cụ thể (item)
+        order_id,   // Required: ID của đơn hàng chứa sản phẩm này
+        rating,     // Required: Số sao từ 1-5
+        comment,    // Optional: Bình luận
+    } = req.body;
+
+    // --- Validations ---
+    if (!product_id || !order_id || !rating) {
+        return res.status(400).json({ message: "Vui lòng cung cấp ID sản phẩm, ID đơn hàng và số sao đánh giá." });
+    }
+    if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
+        return res.status(400).json({ message: "Số sao đánh giá phải là số nguyên từ 1 đến 5." });
+    }
+
+    const transaction = await sequelize.transaction();
+    try {
+        // --- Kiểm tra điều kiện tiên quyết ---
+        // a. Sản phẩm có tồn tại không?
+        const product = await Product.findByPk(product_id, { transaction });
+        if (!product) {
+            await transaction.rollback();
+            return res.status(404).json({ message: "Không tìm thấy sản phẩm." });
+        }
+
+        // b. Người dùng đã mua sản phẩm này trong đơn hàng được cung cấp chưa?
+        // Và đơn hàng đã được giao thành công chưa?
+        const orderItemRecord = await OrderItem.findOne({
+            where: {
+                order_id: order_id,
+                // product_id: product_id, // product_id trong OrderItem là product_id gốc
+                ...(item_id && { item_id: item_id }) // Nếu đánh giá theo item_id
+            },
+            include: [{
+                model: Order,
+                where: {
+                    user_id: userId,
+                    status: 'delivered' // Chỉ cho phép đánh giá đơn đã giao
+                },
+                required: true // INNER JOIN
+            }],
+            transaction
+        });
+
+        if (!orderItemRecord) {
+            await transaction.rollback();
+            return res.status(403).json({ message: "Bạn không thể đánh giá sản phẩm này từ đơn hàng này, hoặc đơn hàng chưa được giao thành công." });
+        }
+        // Nếu không có item_id trong request, nhưng product_id có nhiều item_id trong đơn hàng đó, bạn có thể yêu cầu user chọn item_id
+        // Hoặc mặc định đánh giá cho product_id nói chung.
+        // Hiện tại, `product_id` trong OrderItem đã đủ để liên kết với Product gốc.
+
+        // c. Người dùng đã đánh giá sản phẩm này từ đơn hàng này chưa? (Dựa trên UNIQUE constraint)
+        // Sequelize sẽ tự ném lỗi nếu vi phạm UNIQUE constraint `UNIQUE(product_id, user_id, order_id)`
+
+        // --- Tạo ProductReview ---
+        const newReview = await ProductReview.create({
+            product_id,
+            item_id: item_id || orderItemRecord.item_id, // Ưu tiên item_id từ req, nếu không thì lấy từ orderItemRecord
+            user_id: userId,
+            order_id,
+            rating,
+            comment,
+            is_approved: true // Mặc định duyệt luôn, hoặc false để chờ admin duyệt
+        }, { transaction });
+
+        // --- (Tùy chọn) Xử lý hình ảnh đính kèm ---
+        // Nếu dùng image_urls (đã upload trước):
+        // if (req.body.image_urls && Array.isArray(req.body.image_urls) && req.body.image_urls.length > 0) {
+        //     const reviewImages = req.body.image_urls.map(url => ({
+        //         review_id: newReview.review_id,
+        //         image_url: url
+        //     }));
+        //     await ReviewImage.bulkCreate(reviewImages, { transaction });
+        // }
+        // Hoặc nếu dùng multer để upload file trực tiếp trong request này:
+        // if (req.files && req.files.length > 0) {
+        //     const uploadedImages = await uploadMultipleImagesToCloudinary(req.files, 'reviews'); // Ví dụ hàm helper
+        //     const reviewImages = uploadedImages.map(img => ({
+        //         review_id: newReview.review_id,
+        //         image_url: img.secure_url
+        //     }));
+        //     await ReviewImage.bulkCreate(reviewImages, { transaction });
+        // }
+
+
+        // --- Cập nhật rating trung bình cho sản phẩm ---
+        await updateProductAverageRating(product_id, transaction);
+
+        await transaction.commit();
+
+        res.status(201).json({ message: "Đánh giá sản phẩm thành công!"});
+
+    } catch (error) {
+        if (transaction) await transaction.rollback();
+        if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({ message: "Bạn đã đánh giá sản phẩm này từ đơn hàng này rồi." });
+        }
+        console.error("Lỗi khi tạo đánh giá:", error);
+        res.status(500).json({ message: "Lỗi máy chủ khi tạo đánh giá." });
+    }
+};
+
+
 module.exports = {
   createOrder,
   getUserOrders,
   getOrderDetails,
   updateOrderStatus,
   getShopOrders,
+  createProductReview
 };
