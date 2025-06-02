@@ -1,6 +1,6 @@
 const Shop = require("../models/Shop");
 const ShopRevenue = require("../models/ShopRevenue");
-const User = require("../models/user");
+const User = require("../models/User");
 const sequelize = require("../config/db");
 const { Op } = require("sequelize");
 
